@@ -49,7 +49,6 @@
   "title": "A Day at the Market",
   "book_id": "book-1",
   "unit_id": "unit-1-1",
-  "hash": "sha256-abc123...",
   "grammar_points": [
     {"name": "Simple Present Tense", "explanation": "...", "examples": ["..."]}
   ],
@@ -66,10 +65,10 @@
     ]
   },
   "listening": {
-    "audio_text": "Every Sunday, Anna goes to the market...",
     "questions": [
       {
         "type": "choice",
+        "audio_segment": "Every Sunday, Anna goes to the market...",
         "question": "Where does Anna go every Sunday?",
         "options": ["School", "Market", "Park", "Library"],
         "answer": 1
@@ -78,19 +77,18 @@
   },
   "fill_blanks": {
     "gaps": [
-      {"gap_index": 1, "word": "Sunday", "hint": "a day of the week"},
-      {"gap_index": 2, "word": "market", "hint": "a place to buy things"},
-      {"gap_index": 3, "word": "fresh", "hint": "not old or stale"}
+      {"gap_index": 1, "word": "Sunday", "initial": "S", "pos": "n.", "meaning_cn": "星期日"},
+      {"gap_index": 2, "word": "market", "initial": "M", "pos": "n.", "meaning_cn": "市场"},
+      {"gap_index": 3, "word": "fresh", "initial": "F", "pos": "adj.", "meaning_cn": "新鲜的"}
     ],
     "template": "Every ___, Anna goes to the ___. She buys ___ vegetables and fruit."
   },
   "vocabulary_exercises": {
-    "flashcards": [{"word": "market", "definition_cn": "市场", "example": "..."}],
-    "spelling": [{"word": "market", "audio_hint": true}],
-    "matching": [{"en": "market", "cn_options": ["市场", "学校", "公园", "图书馆"], "answer": 0}]
+    "flashcards": [0],
+    "spelling": [0],
+    "matching": [{"en_index": 0, "cn_options": ["市场", "学校", "公园", "图书馆"], "answer": 0}]
   },
   "reading": {
-    "passage": "Every Sunday, Anna goes to the market...",
     "questions": [
       {
         "type": "detail",
@@ -104,7 +102,8 @@
   "speaking": {
     "sentences": [
       {"text": "Every Sunday, Anna goes to the market.", "difficulty": 1},
-      {"text": "She buys fresh vegetables and fruit.", "difficulty": 1}
+      {"text": "She buys fresh vegetables and fruit.", "difficulty": 2},
+      {"text": "Anna enjoys the colorful stalls and fresh produce every weekend morning.", "difficulty": 3}
     ]
   }
 }
@@ -116,7 +115,39 @@
 
 > `gap_index` 从 1 开始计数，表示 `template` 中第 N 个 `___` 占位符。
 > 例如：`gap_index: 1` → 第一个 `___`，`gap_index: 2` → 第二个 `___`。
-> `hint` 向用户展示提示信息（如首字母、词性、中文释义）。
+>
+> 每个 gap 为结构化提示：
+> - `initial`：首字母，供用户参考
+> - `pos`：词性（n. / v. / adj. / adv. / prep. 等）
+> - `meaning_cn`：中文释义
+>
+> App 端根据 `initial` + `pos` + `meaning_cn` 渲染提示区，无需自行解析。
+
+### listening 字段说明
+
+> 每道 listening 题目自带 `audio_segment` 字段，表示该题对应的 TTS 朗读片段（截取自课文的关键段落）。
+> 不同题目可对应不同片段，实现「错题重听对应片段」。不再使用全局 `audio_text`。
+
+### vocabulary_exercises 字段说明
+
+> `flashcards`、`spelling`、`matching` 中的数字为 **`new_vocabulary` 数组的索引**（从 0 开始），不再重复存储词条数据。
+>
+> - `flashcards: [0]` → 取 `new_vocabulary[0]` 作为闪卡词条
+> - `spelling: [0]` → 取 `new_vocabulary[0]` 作为拼写练习词
+> - `matching[].en_index` → 取 `new_vocabulary[N]` 作为英文，与 `cn_options` 做匹配
+
+### reading 字段说明
+
+> `reading` 不再包含 `passage` 字段。Step 5 阅读理解共用 Step 1 的 `passage.text`，避免同一段课文在 JSON 中重复存储。
+
+### speaking 字段说明
+
+> `difficulty` 取值 1-3，反映句子长度和复杂度：
+> - `1`（简单）：≤ 8 词，基础句型
+> - `2`（中等）：9-15 词，含从句或并列结构
+> - `3`（困难）：> 15 词，长难句
+>
+> App 端按 `difficulty` 升序排列句子，并在 UI 上标注难度标签（简单 / 中等 / 困难）。
 
 ---
 
