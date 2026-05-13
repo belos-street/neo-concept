@@ -78,10 +78,11 @@
   },
   "fill_blanks": {
     "gaps": [
-      {"position": 3, "word": "Sunday", "hint": "a day of the week"},
-      {"position": 7, "word": "fresh", "hint": "not old or stale"}
+      {"gap_index": 1, "word": "Sunday", "hint": "a day of the week"},
+      {"gap_index": 2, "word": "market", "hint": "a place to buy things"},
+      {"gap_index": 3, "word": "fresh", "hint": "not old or stale"}
     ],
-    "template": "Every ___, Anna goes to the ___. She buys ___ vegetables and fruit..."
+    "template": "Every ___, Anna goes to the ___. She buys ___ vegetables and fruit."
   },
   "vocabulary_exercises": {
     "flashcards": [{"word": "market", "definition_cn": "市场", "example": "..."}],
@@ -108,6 +109,14 @@
   }
 }
 ```
+
+---
+
+### fill_blanks 字段说明
+
+> `gap_index` 从 1 开始计数，表示 `template` 中第 N 个 `___` 占位符。
+> 例如：`gap_index: 1` → 第一个 `___`，`gap_index: 2` → 第二个 `___`。
+> `hint` 向用户展示提示信息（如首字母、词性、中文释义）。
 
 ---
 
