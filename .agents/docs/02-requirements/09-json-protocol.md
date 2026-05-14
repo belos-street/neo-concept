@@ -18,7 +18,7 @@
       "title": "Book 1: Foundations",
       "description": "...",
       "level": "beginner",
-      "target_vocabulary": 800,
+      "target_vocabulary": 500,
       "units": [
         {
           "id": "unit-1-1",
@@ -55,7 +55,6 @@
   "new_vocabulary": [
     {"word": "market", "phonetic": "/ˈmɑːrkɪt/", "definition_cn": "市场", "part_of_speech": "n.", "example": "She goes to the market every Sunday."}
   ],
-  "review_vocabulary": ["apple", "go", "every"],
   "passage": {
     "title": "A Day at the Market",
     "text": "Every Sunday, Anna goes to the market. She buys fresh vegetables and fruit...",
@@ -125,8 +124,8 @@
 
 ### listening 字段说明
 
-> 每道 listening 题目自带 `audio_segment` 字段，表示该题对应的 TTS 朗读片段（截取自课文的关键段落）。
-> 不同题目可对应不同片段，实现「错题重听对应片段」。不再使用全局 `audio_text`。
+> 每道 listening 题目自带 `audio_segment` 字段，为课文关键段落的 **文本内容**（非音频文件）。
+> App 端通过 TTS 引擎实时合成播放。不同题目可对应不同文本片段，实现「错题重听对应片段」。
 
 ### vocabulary_exercises 字段说明
 
