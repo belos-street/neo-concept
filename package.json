@@ -1,0 +1,44 @@
+{
+  "name": "neo-concept",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "bun test",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "react": "19.2.3",
+    "react-native": "0.85.3",
+    "@react-native/new-app-screen": "0.85.3",
+    "react-native-safe-area-context": "^5.5.2",
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/bottom-tabs": "^6.6.1",
+    "@react-navigation/native-stack": "^6.11.0",
+    "react-native-screens": "^4.6.0",
+    "zustand": "^5.0.0",
+    "react-native-mmkv": "^3.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "@babel/runtime": "^7.25.0",
+    "@react-native-community/cli": "20.1.0",
+    "@react-native-community/cli-platform-android": "20.1.0",
+    "@react-native-community/cli-platform-ios": "20.1.0",
+    "@react-native/babel-preset": "0.85.3",
+    "@react-native/eslint-config": "0.85.3",
+    "@react-native/metro-config": "0.85.3",
+    "@react-native/typescript-config": "0.85.3",
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^13.3.3",
+    "@types/react": "^19.2.0",
+    "babel-plugin-module-resolver": "^5.0.3",
+    "eslint": "^8.19.0",
+    "prettier": "2.8.8",
+    "typescript": "^5.8.3"
+  }
+}

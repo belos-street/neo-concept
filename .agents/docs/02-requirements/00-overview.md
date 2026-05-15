@@ -42,7 +42,7 @@
 | 维度 | 说明 |
 |---|---|
 | **项目名** | neo-concept |
-| **产品形态** | 手机 App（React Native 0.76+ / TypeScript），Android 优先 |
+| **产品形态** | 手机 App（React Native 0.76+ / TypeScript），Android 优先，iOS 接口预留 |
 | **App 定位** | 离线优先、系统化英语学习工具 |
 | **Agent CLI** | **不在本项目开发范围内**。Agent 是独立外部工具（如 LangChain CLI），负责 LLM 生成课程内容 → JSON → Git 仓库 → App 消费。本文档定义 Agent ↔ App 的 **JSON 数据协议契约** |
 | **目标用户** | 英语基础薄弱、希望体系化提升的学习者 |
@@ -66,8 +66,8 @@
 
 | 维度 | 说明 |
 |------|------|
-| 目标平台 | **Android**（初期不涉及 iOS） |
-| 开发设备 | macOS |
+| 目标平台 | **Android**（初期，iOS 代码接口预留，后续补充原生模块即可） |
+| 开发设备 | macOS / Windows |
 | 开发工具 | VS Code + Android Studio（模拟器） |
-| 包管理 | bun |
-| 测试策略 | 初期手动测试为主，后期补充 jest + React Native Testing Library |
+| 包管理 | bun（依赖管理 + 脚本运行 + 单元测试） |
+| 测试策略 | 手动测试为主 + bun test（jest 兼容）关键逻辑单元测试 |

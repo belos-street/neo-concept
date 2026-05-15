@@ -8,7 +8,7 @@
 
 - 个人项目，**手动测试为主 + 关键逻辑单元测试**
 - 不追求高覆盖率，聚焦核心路径
-- 测试工具：Jest + React Native Testing Library
+- 测试工具：bun test（兼容 Jest expect API）
 
 ---
 
@@ -138,22 +138,16 @@
 
 ## 测试工具配置
 
-### Jest 配置
+### bun test 配置
 
-```javascript
-// jest.config.js
-module.exports = {
-  preset: 'react-native',
-  setupFilesAfterSetup: ['./jest.setup.js'],
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  testMatch: ['**/__tests__/**/*.test.(ts|tsx)'],
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/index.ts',
-  ],
-}
+```toml
+# bunfig.toml — 测试相关配置
+[test]
+preload = ["./test-setup.ts"]
 ```
+
+bun test 原生支持 TypeScript，无需额外配置。断言 API 兼容 Jest（`expect`, `describe`, `it`, `beforeEach` 等）。
+测试文件统一放在 `__tests__/`，命名 `*.test.ts`。
 
 ### 测试文件结构
 
