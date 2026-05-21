@@ -111,3 +111,28 @@ dist
 
 # TernJS port file
 .tern-port
+
+# IDE
+.idea/
+*.iml
+
+# iOS build artifacts
+ios/Pods/
+ios/build/
+ios/DerivedData/
+ios/*.xcworkspace
+ios/.xcode.env.local
+ios/.xcode.env
+
+# Android native build cache
+android/.gradle/
+android/app/.cxx/
+android/app/build/
+android/build/
+*.hprof
+*.keystore
+!android/debug.keystore
+local.properties
+
+# Metro bundler
+.metro-health-check-*
