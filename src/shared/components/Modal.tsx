@@ -2,47 +2,56 @@ import {
   Modal as RNModal,
   View,
   Text,
+  Pressable,
   StyleSheet,
-  Pressable
+  Dimensions,
 } from 'react-native'
+import { color, border, space, typography } from '@shared/theme'
 
 interface ModalProps {
   visible: boolean
   title?: string
-  message: string
+  message?: string
+  children?: React.ReactNode
   confirmText?: string
   cancelText?: string
   onConfirm: () => void
   onCancel?: () => void
 }
 
+const { height: SCREEN_HEIGHT } = Dimensions.get('window')
+
 export function Modal({
   visible,
   title,
   message,
-  confirmText = '确定',
+  children,
+  confirmText,
   cancelText,
   onConfirm,
-  onCancel
+  onCancel,
 }: ModalProps) {
   return (
     <RNModal
       visible={visible}
       transparent
-      animationType="fade"
-      onRequestClose={onCancel || onConfirm}>
+      animationType="none"
+      onRequestClose={onCancel || onConfirm}
+    >
       <Pressable style={styles.overlay} onPress={onCancel || onConfirm}>
-        <Pressable style={styles.container}>
-          {title ? <Text style={styles.title}>{title}</Text> : null}
-          <Text style={styles.message}>{message}</Text>
+        <Pressable style={styles.sheet} onPress={() => {}}>
+          <View style={styles.handle} />
+          {title ? <Text style={styles.title}>{title.toUpperCase()}</Text> : null}
+          {message ? <Text style={styles.message}>{message}</Text> : null}
+          {children}
           <View style={styles.actions}>
             {cancelText ? (
               <Pressable style={styles.cancelBtn} onPress={onCancel}>
-                <Text style={styles.cancelText}>{cancelText}</Text>
+                <Text style={styles.cancelLabel}>{cancelText.toUpperCase()}</Text>
               </Pressable>
             ) : null}
             <Pressable style={styles.confirmBtn} onPress={onConfirm}>
-              <Text style={styles.confirmText}>{confirmText}</Text>
+              <Text style={styles.confirmLabel}>{confirmText?.toUpperCase() || 'OK'}</Text>
             </Pressable>
           </View>
         </Pressable>
@@ -55,51 +64,59 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 32
+    justifyContent: 'flex-end',
   },
-  container: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 24,
-    width: '100%',
-    maxWidth: 340
+  sheet: {
+    backgroundColor: color.bg,
+    borderTopWidth: border.width,
+    borderTopColor: color.border,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    padding: space[5],
+    maxHeight: SCREEN_HEIGHT * 0.7,
+  },
+  handle: {
+    width: 32,
+    height: 3,
+    backgroundColor: color.muted,
+    alignSelf: 'center',
+    marginBottom: space[4],
   },
   title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 8
+    ...typography.titleSm,
+    marginBottom: space[3],
   },
   message: {
-    fontSize: 15,
-    color: '#4b5563',
-    lineHeight: 22
+    ...typography.body,
+    marginBottom: space[4],
   },
   actions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: 20,
-    gap: 12
+    gap: space[3],
+    marginTop: space[4],
   },
   cancelBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 8
+    height: 44,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: border.width,
+    borderColor: color.border,
   },
-  cancelText: {
-    fontSize: 15,
-    color: '#6b7280'
+  cancelLabel: {
+    ...typography.label,
+    color: color.fg,
   },
   confirmBtn: {
-    backgroundColor: '#2563eb',
-    borderRadius: 8,
+    height: 44,
     paddingHorizontal: 20,
-    paddingVertical: 8
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: color.fg,
   },
-  confirmText: {
-    fontSize: 15,
-    color: '#ffffff',
-    fontWeight: '600'
-  }
+  confirmLabel: {
+    ...typography.label,
+    color: color.bg,
+  },
 })

@@ -81,6 +81,13 @@
 | [03-interaction-design.md](.agents/docs/03-interaction-design.md) | 交互设计 | 底部 Tab 导航、路由树（TabNavigator → Stack → Screen）、核心页面布局与交互规则 |
 | [05-architecture.md](.agents/docs/05-architecture.md) | 系统架构 | 技术栈总览、项目目录结构、原生模块桥接架构（Piper/Whisper/ECDICT 的 TS 接口与 Kotlin 实现要点） |
 
+### 🎨 UI 设计
+
+| 文件 | 阶段 | 内容 |
+|------|------|------|
+| [theme.md](.agents/docs/ui-design/theme.md) | 视觉规范 | Swiss International 风格移动端适配（颜色、字体、间距、动画原则、Accessibility） |
+| [components.md](.agents/docs/ui-design/components.md) | 组件规范 | 所有 UI 组件的尺寸、状态、交互方式、文件结构及一致性规则 |
+
 ### 🔧 工程文档
 
 | 文件 | 阶段 | 内容 |

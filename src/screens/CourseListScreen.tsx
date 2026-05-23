@@ -1,10 +1,36 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, StyleSheet } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { ScreenHeader, Divider, Button } from '@shared/components'
+import { color, space, typography } from '@shared/theme'
 
 export function CourseListScreen() {
+  const insets = useSafeAreaInsets()
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>课程列表</Text>
-      <Text style={styles.subtitle}>Book → Unit → Lesson 将在此展开</Text>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <ScreenHeader
+        title="课程"
+        rightAction={{ label: '检查更新', onPress: () => {} }}
+      />
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyIcon}>∅</Text>
+          <Text style={styles.emptyTitle}>暂无课程</Text>
+          <Text style={styles.emptyDesc}>
+            请在设置中配置课程仓库 URL，{'\n'}
+            或点击右上角「检查更新」获取课程列表
+          </Text>
+          <Divider />
+          <Button
+            title="配置仓库地址"
+            variant="secondary"
+            onPress={() => {}}
+          />
+        </View>
+      </ScrollView>
     </View>
   )
 }
@@ -12,18 +38,34 @@ export function CourseListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: color.bg,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: space[4],
+    paddingVertical: space[8],
+  },
+  emptyState: {
     alignItems: 'center',
-    backgroundColor: '#f9fafb'
+    paddingTop: 80,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1f2937'
+  emptyIcon: {
+    fontSize: 48,
+    color: color.fg,
+    marginBottom: space[4],
+    opacity: 0.2,
   },
-  subtitle: {
-    marginTop: 8,
-    fontSize: 14,
-    color: '#9ca3af'
-  }
+  emptyTitle: {
+    ...typography.title,
+    marginBottom: space[3],
+  },
+  emptyDesc: {
+    ...typography.bodySm,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: space[4],
+    opacity: 0.6,
+  },
 })

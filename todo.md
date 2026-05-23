@@ -18,7 +18,10 @@
 | 1.3 | Stack 导航（CourseStack） | ✅ |
 | 1.4 | Zustand 基础配置 + useSettingsStore | ✅ |
 | 1.5 | MMKV 持久化封装 | ✅ |
-| 1.6 | 共享组件库（Button, Card, Modal, Loading） | ✅ |
+| 1.6 | 共享组件库（Button, Card, Modal, Loading, ScreenHeader, Divider） | ✅ |
+| 1.7 | Swiss Design token 系统（`src/shared/theme.ts`） | ✅ |
+| 1.8 | 组件库重构：Swiss 风格（0 圆角/2px 黑边框/无阴影/Pressable） | ✅ |
+| 1.9 | 三个 Screen 重构：Swiss 风格（CourseList/Stats/Settings） | ✅ |
 
 ### Sprint 2：原生模块桥接
 

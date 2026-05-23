@@ -1,68 +1,110 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Platform } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { ScreenHeader, Divider } from '@shared/components'
 import { useSettingsStore } from '@features/settings/store'
-import { Card } from '@shared/components'
+import { color, space, typography } from '@shared/theme'
 
 export function SettingsScreen() {
-  const { settings, updateSetting } = useSettingsStore()
+  const insets = useSafeAreaInsets()
+  const { settings } = useSettingsStore()
+
+  const learningModeLabel =
+    settings.learningMode === 'linear' ? '线性模式' : '自由模式'
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.heading}>设置</Text>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <ScreenHeader title="设置" />
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <Text style={styles.sectionTitle}>学习</Text>
+        <SettingRow
+          label="学习模式"
+          value={learningModeLabel}
+        />
+        <SettingRow
+          label="TTS 语速"
+          value={`${settings.ttsSpeed}x`}
+        />
+        <SettingRow
+          label="口语评分阈值"
+          value={`${settings.speakingThreshold}%`}
+        />
 
-        <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>学习模式</Text>
-          <Text style={styles.value}>
-            当前：{settings.learningMode === 'linear' ? '线性模式' : '自由模式'}
-          </Text>
-        </Card>
+        <Divider />
 
-        <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>TTS 朗读速度</Text>
-          <Text style={styles.value}>当前：{settings.ttsSpeed}x</Text>
-        </Card>
+        <Text style={styles.sectionTitle}>课程</Text>
+        <SettingRow
+          label="课程仓库 URL"
+          value={settings.repoUrl || '未配置'}
+          mono
+        />
 
-        <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>口语评分阈值</Text>
-          <Text style={styles.value}>当前：{settings.speakingThreshold}%</Text>
-        </Card>
+        <Divider />
 
-        <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>课程仓库 URL</Text>
-          <Text style={styles.value}>
-            {settings.repoUrl || '未配置'}
-          </Text>
-        </Card>
-      </View>
-    </ScrollView>
+        <Text style={styles.sectionTitle}>关于</Text>
+        <SettingRow label="版本" value="0.1.0" />
+      </ScrollView>
+    </View>
+  )
+}
+
+function SettingRow({
+  label,
+  value,
+  mono,
+}: {
+  label: string
+  value: string
+  mono?: boolean
+}) {
+  return (
+    <View style={styles.settingRow}>
+      <Text style={styles.settingLabel}>{label}</Text>
+      <Text style={[styles.settingValue, mono && styles.settingValueMono]}>
+        {value}
+      </Text>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb'
+    backgroundColor: color.bg,
   },
-  content: {
-    padding: 16
+  scroll: {
+    flex: 1,
   },
-  heading: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 16
-  },
-  section: {
-    marginBottom: 12
+  scrollContent: {
+    paddingHorizontal: space[4],
+    paddingVertical: space[6],
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6b7280',
-    marginBottom: 4
+    ...typography.label,
+    color: color.accent,
+    marginBottom: space[4],
   },
-  value: {
-    fontSize: 16,
-    color: '#1f2937'
-  }
+  settingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: space[3],
+    borderBottomWidth: 1,
+    borderBottomColor: color.muted,
+  },
+  settingLabel: {
+    ...typography.body,
+  },
+  settingValue: {
+    ...typography.bodySm,
+    opacity: 0.6,
+  },
+  settingValueMono: {
+    fontSize: 12,
+    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
+    maxWidth: '60%',
+    textAlign: 'right',
+  },
 })

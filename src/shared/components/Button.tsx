@@ -1,108 +1,118 @@
 import {
-  TouchableOpacity,
+  Pressable,
   Text,
   StyleSheet,
-  type TouchableOpacityProps,
+  type PressableProps,
   type StyleProp,
   type ViewStyle,
-  type TextStyle
 } from 'react-native'
+import { color, border, touch, typography } from '@shared/theme'
 
-interface ButtonProps extends TouchableOpacityProps {
+interface ButtonProps extends PressableProps {
   title: string
-  variant?: 'primary' | 'secondary' | 'ghost'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: 'primary' | 'secondary' | 'text'
   style?: StyleProp<ViewStyle>
-  textStyle?: StyleProp<TextStyle>
 }
 
 export function Button({
   title,
   variant = 'primary',
-  size = 'md',
   style,
-  textStyle,
   disabled,
   ...rest
 }: ButtonProps) {
   return (
-    <TouchableOpacity
-      style={[
+    <Pressable
+      style={({ pressed }) => [
         styles.base,
-        styles[variant],
-        styles[size],
+        variant === 'primary' && styles.primary,
+        variant === 'secondary' && styles.secondary,
+        variant === 'text' && styles.text,
+        pressed && variant === 'primary' && styles.primaryPressed,
+        pressed && variant === 'secondary' && styles.secondaryPressed,
+        pressed && variant === 'text' && styles.textPressed,
         disabled && styles.disabled,
-        style
+        style,
       ]}
       disabled={disabled}
-      activeOpacity={0.7}
-      {...rest}>
-      <Text
-        style={[
-          styles.text,
-          styles[`${variant}Text` as keyof typeof styles],
-          styles[`${size}Text` as keyof typeof styles],
-          disabled && styles.disabledText,
-          textStyle
-        ]}>
-        {title}
-      </Text>
-    </TouchableOpacity>
+      {...rest}
+    >
+      {({ pressed }) => (
+        <Text
+          style={[
+            styles.label,
+            variant === 'primary' && styles.primaryLabel,
+            variant === 'secondary' && styles.secondaryLabel,
+            variant === 'text' && styles.textLabel,
+            pressed && variant === 'text' && styles.textPressedLabel,
+            disabled && styles.disabledLabel,
+          ]}
+        >
+          {title.toUpperCase()}
+        </Text>
+      )}
+    </Pressable>
   )
 }
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 8,
+    height: 52,
+    paddingHorizontal: 24,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    borderWidth: border.width,
+    borderColor: color.border,
+    borderRadius: border.radius,
+    minHeight: touch.minHeight,
   },
   primary: {
-    backgroundColor: '#2563eb'
+    backgroundColor: color.fg,
+  },
+  primaryPressed: {
+    backgroundColor: color.accent,
+    borderColor: color.accent,
   },
   secondary: {
-    backgroundColor: '#e5e7eb'
+    backgroundColor: color.bg,
   },
-  ghost: {
-    backgroundColor: 'transparent'
-  },
-  sm: {
-    paddingHorizontal: 12,
-    paddingVertical: 6
-  },
-  md: {
-    paddingHorizontal: 16,
-    paddingVertical: 10
-  },
-  lg: {
-    paddingHorizontal: 24,
-    paddingVertical: 14
-  },
-  disabled: {
-    opacity: 0.5
+  secondaryPressed: {
+    backgroundColor: color.bg,
+    borderColor: color.accent,
   },
   text: {
-    fontWeight: '600'
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    minWidth: undefined,
+    paddingHorizontal: 0,
+    height: touch.minHeight,
   },
-  primaryText: {
-    color: '#ffffff'
+  textPressed: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
   },
-  secondaryText: {
-    color: '#1f2937'
+  disabled: {
+    backgroundColor: color.muted,
+    borderColor: color.muted,
   },
-  ghostText: {
-    color: '#2563eb'
+  label: {
+    ...typography.labelLg,
   },
-  smText: {
-    fontSize: 13
+  primaryLabel: {
+    color: color.bg,
   },
-  mdText: {
-    fontSize: 15
+  secondaryLabel: {
+    color: color.fg,
   },
-  lgText: {
-    fontSize: 17
+  textLabel: {
+    ...typography.label,
+    textDecorationLine: 'underline',
+    textDecorationColor: color.accent,
   },
-  disabledText: {
-    opacity: 0.5
-  }
+  textPressedLabel: {
+    color: color.accent,
+  },
+  disabledLabel: {
+    opacity: 0.5,
+  },
 })
