@@ -56,6 +56,13 @@ export const typography = StyleSheet.create({
     color: color.fg,
     textTransform: 'uppercase'
   } as TextStyle,
+  labelSm: {
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1,
+    color: color.fg,
+    textTransform: 'uppercase'
+  } as TextStyle,
   label: {
     fontSize: 12,
     fontWeight: '700',
