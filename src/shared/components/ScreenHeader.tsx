@@ -52,12 +52,13 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     marginLeft: -12,
   },
   backArrow: {
-    fontSize: 20,
+    fontSize: 26,
     color: color.fg,
+    fontWeight: '700',
   },
   title: {
     ...typography.titleSm,

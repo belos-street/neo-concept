@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    width: '100%'
+    width: '100%',
+    justifyContent: 'flex-end'
   }
 })

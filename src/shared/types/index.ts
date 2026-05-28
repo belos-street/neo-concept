@@ -33,7 +33,7 @@ export interface Lesson {
   book_id: string
   unit_id: string
   grammar_points: GrammarPoint[]
-  new_vocabulary: VocabularyItem[]
+  new_vocabulary: VocabularyItem[] | string[]
   review_vocabulary: string[]
   passage: Passage
   listening: ListeningSection

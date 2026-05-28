@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { View, Text, TextInput, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { Button, Divider } from '@shared/components'
 import { WordTooltip } from '@features/lesson/WordTooltip'
+import { resolveVocab } from '@features/lesson/resolveVocab'
 import { color, border, space, typography } from '@shared/theme'
 import type { Lesson, VocabularyItem } from '@shared/types'
 
@@ -14,6 +15,20 @@ interface VocabExerciseStepProps {
 
 export function VocabExerciseStep({ lesson, onComplete }: VocabExerciseStepProps) {
   const { new_vocabulary, vocabulary_exercises } = lesson
+
+  const [resolvedVocab, setResolvedVocab] = useState<VocabularyItem[]>(() =>
+    new_vocabulary.map((v) =>
+      typeof v === 'string'
+        ? { word: v, phonetic: '', definition_cn: '', part_of_speech: '', example: '' }
+        : v
+    )
+  )
+
+  useEffect(() => {
+    if (new_vocabulary.length === 0) return
+    if (typeof new_vocabulary[0] !== 'string') return
+    resolveVocab(new_vocabulary as string[]).then(setResolvedVocab)
+  }, [new_vocabulary])
 
   const [subMode, setSubMode] = useState<SubMode | null>(null)
   const [flashcardIdx, setFlashcardIdx] = useState(0)
@@ -28,19 +43,13 @@ export function VocabExerciseStep({ lesson, onComplete }: VocabExerciseStepProps
   )
   const [matchSubmitted, setMatchSubmitted] = useState(false)
   const [matchScore, setMatchScore] = useState(0)
-  const [tooltip, setTooltip] = useState<{
-    item: VocabularyItem
-    pos: { top: number; left: number }
-  } | null>(null)
+  const [tooltip, setTooltip] = useState<VocabularyItem | null>(null)
 
-  const currentWord = new_vocabulary[vocabulary_exercises.flashcards[flashcardIdx]]
+  const currentWord = resolvedVocab[vocabulary_exercises.flashcards[flashcardIdx]]
   const flashcardCount = vocabulary_exercises.flashcards.length
 
-  const handleWordPress = (
-    item: VocabularyItem,
-    event: { nativeEvent: { pageY: number; pageX: number } }
-  ) => {
-    setTooltip({ item, pos: { top: event.nativeEvent.pageY, left: event.nativeEvent.pageX } })
+  const handleWordPress = (item: VocabularyItem) => {
+    setTooltip(item)
   }
 
   const handleFlashcardFlip = () => {
@@ -57,7 +66,7 @@ export function VocabExerciseStep({ lesson, onComplete }: VocabExerciseStepProps
   const handleSpellSubmit = () => {
     let correct = 0
     vocabulary_exercises.spelling.forEach((wordIdx, i) => {
-      if (spellInputs[i].trim().toLowerCase() === new_vocabulary[wordIdx].word.toLowerCase()) {
+      if (spellInputs[i].trim().toLowerCase() === resolvedVocab[wordIdx].word.toLowerCase()) {
         correct++
       }
     })
@@ -248,7 +257,7 @@ export function VocabExerciseStep({ lesson, onComplete }: VocabExerciseStepProps
     <View style={styles.modeContainer}>
       <Text style={styles.modeTitle}>MATCHING</Text>
       {vocabulary_exercises.matching.map((q, i) => {
-        const word = new_vocabulary[q.en_index]
+        const word = resolvedVocab[q.en_index]
         return (
           <View key={i} style={styles.matchRow}>
             <Text style={styles.matchWord}>{word.word}</Text>
@@ -349,9 +358,8 @@ export function VocabExerciseStep({ lesson, onComplete }: VocabExerciseStepProps
       ) : null}
 
       <WordTooltip
-        item={tooltip?.item ?? null}
+        item={tooltip}
         visible={!!tooltip}
-        position={tooltip?.pos ?? { top: 0, left: 0 }}
         onClose={() => setTooltip(null)}
       />
     </View>

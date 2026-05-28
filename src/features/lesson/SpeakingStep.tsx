@@ -169,7 +169,7 @@ export function SpeakingStep({ lesson, onComplete, onRetry }: SpeakingStepProps)
           onPress={handleListen}
         >
           <Text style={[styles.listenText, isPlaying && styles.listenTextActive]}>
-            {isPlaying ? '■ STOP' : '▶ LISTEN'}
+            {isPlaying ? 'STOP' : 'LISTEN'}
           </Text>
         </Pressable>
 

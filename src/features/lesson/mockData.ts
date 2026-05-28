@@ -21,43 +21,7 @@ export const mockLesson: Lesson = {
       ]
     }
   ],
-  new_vocabulary: [
-    {
-      word: 'bench',
-      phonetic: '/bentʃ/',
-      definition_cn: '长椅',
-      part_of_speech: 'n.',
-      example: 'They sat on the bench.'
-    },
-    {
-      word: 'fountain',
-      phonetic: '/ˈfaʊntən/',
-      definition_cn: '喷泉',
-      part_of_speech: 'n.',
-      example: 'The fountain is beautiful.'
-    },
-    {
-      word: 'squirrel',
-      phonetic: '/ˈskwɜːrəl/',
-      definition_cn: '松鼠',
-      part_of_speech: 'n.',
-      example: 'A squirrel ran up the tree.'
-    },
-    {
-      word: 'path',
-      phonetic: '/pæθ/',
-      definition_cn: '小路',
-      part_of_speech: 'n.',
-      example: 'We walked along the path.'
-    },
-    {
-      word: 'shade',
-      phonetic: '/ʃeɪd/',
-      definition_cn: '阴凉处',
-      part_of_speech: 'n.',
-      example: 'Let us sit in the shade.'
-    }
-  ],
+  new_vocabulary: ['bench', 'fountain', 'squirrel', 'path', 'shade'],
   review_vocabulary: ['park', 'tree', 'walk', 'book', 'sunny'],
   passage: {
     title: 'A Day at the Park',

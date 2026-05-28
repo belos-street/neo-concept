@@ -1,4 +1,4 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { color, border, space, typography } from '@shared/theme'
 
 interface StepProgressBarProps {
@@ -9,6 +9,9 @@ interface StepProgressBarProps {
   onStepPress?: (stepIndex: number) => void
 }
 
+const DOT_SIZE = 34
+const CELL_WIDTH = 64
+
 export function StepProgressBar({
   current,
   total,
@@ -18,99 +21,86 @@ export function StepProgressBar({
 }: StepProgressBarProps) {
   return (
     <View style={styles.container}>
-      <View style={styles.dotsRow}>
-        {Array.from({ length: total }, (_, i) => {
-          const isCompleted = completed.includes(i)
-          const isCurrent = current === i
-          const isLocked = !isCompleted && !isCurrent
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View>
+          <View style={styles.dotsRow}>
+            {Array.from({ length: total }, (_, i) => {
+              const isCompleted = completed.includes(i)
+              const isCurrent = current === i
+              const isLocked = !isCompleted && !isCurrent
 
-          return (
-            <View key={i} style={styles.dotCell}>
-              <Pressable
-                style={[
-                  styles.dot,
-                  isCompleted && styles.dotCompleted,
-                  isCurrent && styles.dotCurrent,
-                  isLocked && styles.dotLocked
-                ]}
-                onPress={() => onStepPress?.(i)}
-                disabled={isLocked}
-              >
-                <Text
-                  style={[
-                    styles.dotText,
-                    isCompleted && styles.dotTextCompleted,
-                    isCurrent && styles.dotTextCurrent,
-                    isLocked && styles.dotTextLocked
-                  ]}
+              return (
+                <View key={`dot-${i}`} style={[styles.dotCell, { width: CELL_WIDTH }]}>
+                  <Pressable
+                    style={[
+                      styles.dot,
+                      isCompleted && styles.dotCompleted,
+                      isCurrent && styles.dotCurrent,
+                      isLocked && styles.dotLocked
+                    ]}
+                    onPress={() => onStepPress?.(i)}
+                    disabled={isLocked}
+                  >
+                    <Text
+                      style={[
+                        styles.dotText,
+                        isCompleted && styles.dotTextCompleted,
+                        isCurrent && styles.dotTextCurrent,
+                        isLocked && styles.dotTextLocked
+                      ]}
+                    >
+                      {isCompleted ? '✓' : String(i + 1)}
+                    </Text>
+                  </Pressable>
+                </View>
+              )
+            })}
+          </View>
+
+          <View style={styles.labelsRow}>
+            {labels.map((label, i) => {
+              const isLocked = !completed.includes(i) && current !== i
+              return (
+                <Pressable
+                  key={`lbl-${i}`}
+                  style={[styles.labelCell, { width: CELL_WIDTH }]}
+                  onPress={() => onStepPress?.(i)}
+                  disabled={isLocked}
                 >
-                  {isCompleted ? '✓' : String(i + 1)}
-                </Text>
-              </Pressable>
-            </View>
-          )
-        })}
-      </View>
-
-      <View style={styles.connectorRow}>
-        {Array.from({ length: total }, (_, i) => {
-          const isCompleted = completed.includes(i)
-          return (
-            <View key={i} style={styles.connectorCell}>
-              {i < total - 1 ? (
-                <View
-                  style={[
-                    styles.connector,
-                    isCompleted && styles.connectorCompleted
-                  ]}
-                />
-              ) : null}
-            </View>
-          )
-        })}
-      </View>
-
-      <View style={styles.labelsRow}>
-        {labels.map((label, i) => {
-          const isLocked = !completed.includes(i) && current !== i
-          return (
-            <Pressable
-              key={i}
-              style={styles.labelCell}
-              onPress={() => onStepPress?.(i)}
-              disabled={isLocked}
-            >
-              <Text
-                style={[styles.label, isLocked && styles.labelLocked]}
-                numberOfLines={1}
-              >
-                {label.toUpperCase()}
-              </Text>
-            </Pressable>
-          )
-        })}
-      </View>
+                  <Text
+                    style={[styles.label, isLocked && styles.labelLocked]}
+                    numberOfLines={1}
+                  >
+                    {(label ?? '').toUpperCase()}
+                  </Text>
+                </Pressable>
+              )
+            })}
+          </View>
+        </View>
+      </ScrollView>
     </View>
   )
 }
 
-const DOT_SIZE = 28
-
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: space[4],
-    paddingTop: space[3],
-    paddingBottom: space[3],
     backgroundColor: color.bg,
     borderBottomWidth: border.width,
-    borderBottomColor: color.border
+    borderBottomColor: color.border,
+    paddingVertical: space[3]
+  },
+  scrollContent: {
+    paddingHorizontal: space[3]
   },
   dotsRow: {
-    flexDirection: 'row',
-    alignItems: 'center'
+    flexDirection: 'row'
   },
   dotCell: {
-    flex: 1,
     alignItems: 'center'
   },
   dot: {
@@ -135,7 +125,8 @@ const styles = StyleSheet.create({
     opacity: 0.3
   },
   dotText: {
-    ...typography.labelSm,
+    ...typography.label,
+    fontSize: 14,
     color: color.fg
   },
   dotTextCompleted: {
@@ -148,38 +139,17 @@ const styles = StyleSheet.create({
     color: color.fg,
     opacity: 0.3
   },
-  connectorRow: {
-    flexDirection: 'row',
-    marginTop: -DOT_SIZE / 2,
-    zIndex: -1
-  },
-  connectorCell: {
-    flex: 1,
-    alignItems: 'center',
-    height: DOT_SIZE
-  },
-  connector: {
-    position: 'absolute',
-    top: DOT_SIZE / 2 - 1,
-    left: '50%',
-    right: '-50%',
-    height: border.width,
-    backgroundColor: color.border
-  },
-  connectorCompleted: {
-    backgroundColor: color.fg
-  },
   labelsRow: {
     flexDirection: 'row',
-    marginTop: space[1]
+    marginTop: space[2]
   },
   labelCell: {
-    flex: 1,
     alignItems: 'center'
   },
   label: {
     ...typography.labelSm,
-    textAlign: 'center'
+    textAlign: 'center',
+    fontSize: 11
   },
   labelLocked: {
     opacity: 0.25

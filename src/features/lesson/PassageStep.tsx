@@ -1,71 +1,156 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { View, Text, ScrollView, Pressable, Image, StyleSheet } from 'react-native'
 import { Button, Divider } from '@shared/components'
 import { WordTooltip } from '@features/lesson/WordTooltip'
 import { piper } from '@native/piper'
+import { resolveVocab, lookupWord } from '@features/lesson/resolveVocab'
 import { color, border, space, typography } from '@shared/theme'
 import type { Lesson, VocabularyItem } from '@shared/types'
 
-type TTSMode = 'idle' | 'full' | 'sentence'
+type TTSMode = 'idle' | 'sentence'
 
 interface PassageStepProps {
   lesson: Lesson
   onComplete: () => void
 }
 
+interface ParagraphData {
+  sentences: string[]
+}
+
+function buildParagraphs(text: string): ParagraphData[] {
+  return text
+    .split(/\n\n+/)
+    .filter((p) => p.trim().length > 0)
+    .map((p) => ({
+      sentences: p
+        .split(/(?<=[.!?])\s+/)
+        .filter((s) => s.trim().length > 0)
+    }))
+}
+
+const WORD_RE = /^([A-Za-z'\u2019-]+)(.*)$/
+
+function tokenize(sentence: string): { text: string; isWord: boolean }[] {
+  const tokens: { text: string; isWord: boolean }[] = []
+  let remaining = sentence
+  while (remaining.length > 0) {
+    if (/^[A-Za-z]/.test(remaining)) {
+      const m = remaining.match(WORD_RE)
+      if (m) {
+        tokens.push({ text: m[1], isWord: true })
+        remaining = m[2]
+        continue
+      }
+    }
+    tokens.push({ text: remaining[0], isWord: false })
+    remaining = remaining.slice(1)
+  }
+  return tokens
+}
+
 export function PassageStep({ lesson, onComplete }: PassageStepProps) {
-  const [tooltip, setTooltip] = useState<{
-    item: VocabularyItem
-    pos: { top: number; left: number }
-  } | null>(null)
+  const [tooltip, setTooltip] = useState<VocabularyItem | null>(null)
   const [ttsMode, setTtsMode] = useState<TTSMode>('idle')
-  const [sentenceIdx, setSentenceIdx] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const [paraIdx, setParaIdx] = useState(0)
+  const [sentIdx, setSentIdx] = useState(0)
   const isSpeakingRef = useRef(false)
+  const [resolvedVocab, setResolvedVocab] = useState<VocabularyItem[]>(() =>
+    lesson.new_vocabulary.map((v) =>
+      typeof v === 'string'
+        ? { word: v, phonetic: '', definition_cn: '', part_of_speech: '', example: '' }
+        : v
+    )
+  )
 
-  const sentences = lesson.passage.text
-    .split(/(?<=[.!?])\s+/)
-    .filter((s) => s.trim().length > 0)
+  useEffect(() => {
+    const raw = lesson.new_vocabulary
+    if (raw.length === 0) return
+    if (typeof raw[0] !== 'string') return
+    resolveVocab(raw as string[]).then(setResolvedVocab)
+  }, [lesson.new_vocabulary])
 
-  const handleWordPress = (
-    item: VocabularyItem,
-    event: { nativeEvent: { pageY: number; pageX: number } }
-  ) => {
-    setTooltip({
-      item,
-      pos: { top: event.nativeEvent.pageY, left: event.nativeEvent.pageX }
-    })
+  const paragraphs = buildParagraphs(lesson.passage.text)
+  const allSentences = paragraphs.flatMap((p) => p.sentences)
+  const totalCount = allSentences.length
+
+  const vocabMap = new Map<string, VocabularyItem>()
+  for (const v of resolvedVocab) {
+    vocabMap.set(v.word.toLowerCase(), v)
   }
 
-  const handleFullRead = async () => {
-    if (ttsMode === 'full') {
-      await piper.stop()
-      setTtsMode('idle')
-      isSpeakingRef.current = false
+  const flatIndex = useCallback(
+    (pi: number, si: number) => {
+      let idx = 0
+      for (let p = 0; p < pi; p++) idx += paragraphs[p].sentences.length
+      return idx + si
+    },
+    [paragraphs]
+  )
+
+  const handleWordTap = async (word: string) => {
+    const lower = word.toLowerCase()
+    const vocab = vocabMap.get(lower)
+    if (vocab) {
+      setTooltip(vocab)
       return
     }
-    setTtsMode('full')
+    const item = await lookupWord(lower)
+    setTooltip(item)
+  }
+
+  const runSentenceLoop = async (startPI: number, startSI: number) => {
     isSpeakingRef.current = true
-    try {
-      await piper.init()
-      await piper.speak(lesson.passage.text)
-    } catch (e) {
-      console.warn('[TTS] full read error:', e)
+    for (let pi = startPI; pi < paragraphs.length; pi++) {
+      for (let si = pi === startPI ? startSI : 0; si < paragraphs[pi].sentences.length; si++) {
+        if (!isSpeakingRef.current) return
+        setParaIdx(pi)
+        setSentIdx(si)
+        try {
+          await piper.speak(paragraphs[pi].sentences[si])
+        } catch (e) {
+          console.warn('[TTS] sentence error:', pi, si, e)
+          return
+        }
+      }
     }
     if (isSpeakingRef.current) {
       setTtsMode('idle')
+      setPaused(false)
+      setParaIdx(0)
+      setSentIdx(0)
+      isSpeakingRef.current = false
     }
   }
 
   const handleSentenceRead = async () => {
-    if (ttsMode === 'sentence') {
+    if (ttsMode === 'sentence' && !paused) {
       await piper.stop()
-      setTtsMode('idle')
-      setSentenceIdx(0)
+      setPaused(true)
       isSpeakingRef.current = false
       return
     }
+    if (ttsMode === 'sentence' && paused) {
+      setPaused(false)
+      const nextSI = sentIdx + 1
+      if (nextSI < paragraphs[paraIdx].sentences.length) {
+        await runSentenceLoop(paraIdx, nextSI)
+      } else {
+        const nextPI = paraIdx + 1
+        if (nextPI < paragraphs.length) {
+          await runSentenceLoop(nextPI, 0)
+        } else {
+          setTtsMode('idle')
+          setPaused(false)
+          setParaIdx(0)
+          setSentIdx(0)
+        }
+      }
+      return
+    }
     setTtsMode('sentence')
-    isSpeakingRef.current = true
+    setPaused(false)
     try {
       await piper.init()
     } catch (e) {
@@ -73,21 +158,40 @@ export function PassageStep({ lesson, onComplete }: PassageStepProps) {
       setTtsMode('idle')
       return
     }
-    for (let i = 0; i < sentences.length; i++) {
-      if (!isSpeakingRef.current) break
-      setSentenceIdx(i)
-      try {
-        await piper.speak(sentences[i])
-      } catch (e) {
-        console.warn('[TTS] sentence error:', i, e)
-        break
-      }
-    }
-    if (isSpeakingRef.current) {
-      setTtsMode('idle')
-      setSentenceIdx(0)
-      isSpeakingRef.current = false
-    }
+    await runSentenceLoop(0, 0)
+  }
+
+  const handleStop = async () => {
+    await piper.stop()
+    setTtsMode('idle')
+    setPaused(false)
+    setParaIdx(0)
+    setSentIdx(0)
+    isSpeakingRef.current = false
+  }
+
+  const currentFlat = ttsMode === 'sentence' ? flatIndex(paraIdx, sentIdx) + 1 : 0
+
+  const renderSentence = (sentence: string, isActive: boolean, onWordTap: (w: string) => void, key: string) => {
+    const tokens = tokenize(sentence)
+    return (
+      <Text key={key} style={[styles.sentence, isActive && styles.sentenceActive]}>
+        {tokens.map((t, ti) =>
+          t.isWord ? (
+            <Text
+              key={ti}
+              style={styles.wordTappable}
+              onPress={() => onWordTap(t.text)}
+              suppressHighlighting
+            >
+              {t.text}
+            </Text>
+          ) : (
+            <Text key={ti}>{t.text}</Text>
+          )
+        )}{' '}
+      </Text>
+    )
   }
 
   return (
@@ -110,54 +214,38 @@ export function PassageStep({ lesson, onComplete }: PassageStepProps) {
         </Text>
 
         <View style={styles.ttsBar}>
-          <Pressable
-            style={[
-              styles.ttsBtn,
-              ttsMode === 'full' && styles.ttsBtnActive
-            ]}
-            onPress={handleFullRead}
-          >
-            <Text
-              style={[
-                styles.ttsBtnText,
-                ttsMode === 'full' && styles.ttsBtnTextActive
-              ]}
-            >
-              {ttsMode === 'full' ? '■ STOP' : '▶ FULL'}
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[
-              styles.ttsBtn,
-              ttsMode === 'sentence' && styles.ttsBtnActive
-            ]}
-            onPress={handleSentenceRead}
-          >
-            <Text
-              style={[
-                styles.ttsBtnText,
-                ttsMode === 'sentence' && styles.ttsBtnTextActive
-              ]}
-            >
-              {ttsMode === 'sentence'
-                ? `■ STOP (${sentenceIdx + 1}/${sentences.length})`
-                : '▶ SENTENCE'}
-            </Text>
-          </Pressable>
+          {ttsMode === 'sentence' ? (
+            <>
+              <Pressable
+                style={[styles.ttsBtn, styles.ttsBtnActive]}
+                onPress={handleSentenceRead}
+              >
+                <Text style={[styles.ttsBtnText, styles.ttsBtnTextActive]}>
+                  {paused ? 'RESUME' : 'PAUSE'}
+                </Text>
+              </Pressable>
+              <Pressable style={styles.ttsBtn} onPress={handleStop}>
+                <Text style={styles.ttsBtnText}>STOP</Text>
+              </Pressable>
+              <Text style={styles.ttsCounter}>
+                {currentFlat}/{totalCount}
+              </Text>
+            </>
+          ) : (
+            <Pressable style={styles.ttsBtn} onPress={handleSentenceRead}>
+              <Text style={styles.ttsBtnText}>SENTENCE</Text>
+            </Pressable>
+          )}
         </View>
 
-        <Text style={styles.passageText}>
-          {ttsMode === 'sentence'
-            ? sentences.map((s, i) => (
-                <Text
-                  key={i}
-                  style={i === sentenceIdx ? styles.highlightedSentence : undefined}
-                >
-                  {s}{' '}
-                </Text>
-              ))
-            : lesson.passage.text}
-        </Text>
+        {paragraphs.map((para, pi) => (
+          <View key={pi} style={pi > 0 ? styles.paragraphGap : undefined}>
+            {para.sentences.map((s, si) => {
+              const isActive = ttsMode === 'sentence' && pi === paraIdx && si === sentIdx
+              return renderSentence(s, isActive, handleWordTap, `${pi}-${si}`)
+            })}
+          </View>
+        ))}
 
         {lesson.grammar_points.length > 0 ? (
           <>
@@ -179,15 +267,15 @@ export function PassageStep({ lesson, onComplete }: PassageStepProps) {
           </>
         ) : null}
 
-        {lesson.new_vocabulary.length > 0 ? (
+        {resolvedVocab.length > 0 ? (
           <>
             <Divider />
             <Text style={styles.sectionTitle}>NEW VOCABULARY</Text>
-            {lesson.new_vocabulary.map((vocab, i) => (
+            {resolvedVocab.map((vocab, i) => (
               <Pressable
                 key={i}
                 style={styles.vocabRow}
-                onPress={(e) => handleWordPress(vocab, e)}
+                onPress={() => handleWordTap(vocab.word)}
               >
                 <Text style={styles.vocabWord}>{vocab.word}</Text>
                 <Text style={styles.vocabPhonetic}>{vocab.phonetic}</Text>
@@ -205,9 +293,8 @@ export function PassageStep({ lesson, onComplete }: PassageStepProps) {
       </View>
 
       <WordTooltip
-        item={tooltip?.item ?? null}
+        item={tooltip}
         visible={!!tooltip}
-        position={tooltip?.pos ?? { top: 0, left: 0 }}
         onClose={() => setTooltip(null)}
       />
     </View>
@@ -240,7 +327,8 @@ const styles = StyleSheet.create({
   ttsBar: {
     flexDirection: 'row',
     gap: space[2],
-    marginBottom: space[3]
+    marginBottom: space[3],
+    alignItems: 'center'
   },
   ttsBtn: {
     borderWidth: border.width,
@@ -260,15 +348,26 @@ const styles = StyleSheet.create({
   ttsBtnTextActive: {
     color: color.bg
   },
-  passageText: {
+  ttsCounter: {
+    ...typography.labelSm,
+    color: color.fg,
+    opacity: 0.5
+  },
+  sentence: {
     ...typography.body,
     fontSize: 16,
-    lineHeight: 26
+    lineHeight: 26,
+    marginBottom: space[1]
   },
-  highlightedSentence: {
+  sentenceActive: {
     backgroundColor: color.accent,
-    color: color.bg,
-    fontWeight: '600'
+    color: color.bg
+  },
+  wordTappable: {
+    color: color.fg
+  },
+  paragraphGap: {
+    marginTop: space[3]
   },
   sectionTitle: {
     ...typography.labelLg,

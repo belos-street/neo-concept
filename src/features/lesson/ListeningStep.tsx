@@ -110,7 +110,7 @@ export function ListeningStep({ lesson, onComplete, onRetry }: ListeningStepProp
           onPress={handlePlay}
         >
           <Text style={[styles.playText, isPlaying && styles.playTextActive]}>
-            {isPlaying ? '■ STOP AUDIO' : '▶ PLAY AUDIO'}
+            {isPlaying ? 'STOP AUDIO' : 'PLAY AUDIO'}
           </Text>
         </Pressable>
 

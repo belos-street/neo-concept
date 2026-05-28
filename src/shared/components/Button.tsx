@@ -93,10 +93,11 @@ const styles = StyleSheet.create({
   },
   disabled: {
     backgroundColor: color.muted,
-    borderColor: color.muted,
+    borderColor: color.border,
   },
   label: {
     ...typography.labelLg,
+    includeFontPadding: false,
   },
   primaryLabel: {
     color: color.bg,
@@ -113,6 +114,6 @@ const styles = StyleSheet.create({
     color: color.accent,
   },
   disabledLabel: {
-    opacity: 0.5,
+    color: '#999999',
   },
 })

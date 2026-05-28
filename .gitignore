@@ -8,6 +8,7 @@ lerna-debug.log*
 
 # database
 *.sqlite
+assets/stardict.db
 
 # package-json
 package-json.lock
