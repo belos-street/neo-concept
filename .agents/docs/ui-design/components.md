@@ -1,7 +1,7 @@
 # UI Components — Swiss Mobile Spec
 
 > Design token reference: [theme.md](theme.md)
-> Tech stack: React Native 0.85+ / TypeScript, StyleSheet, react-native-safe-area-context
+> Tech stack: Kotlin + Jetpack Compose (Android) / Swift + SwiftUI (iOS)
 
 ---
 
@@ -30,7 +30,7 @@ The top bar of every screen. Contains back navigation, title, and optional right
 
 **States:**
 - Title always left-aligned
-- Right action text on Pressable: pressed → `colorAccent` red
+- Right action text on press: pressed → `colorAccent` red
 - Right action hidden when not provided
 
 ### 1.2 Divider
@@ -62,7 +62,7 @@ Small circle indicating lesson status.
 | Locked | `colorMuted` #F2F2F2 fill |
 | In-progress | same as current (red outline) |
 
-### 1.4 Icon (react-native-vector-icons)
+### 1.4 Icon (Platform Native)
 
 Icons are functional elements, never decorative.
 
@@ -72,7 +72,7 @@ Icons are functional elements, never decorative.
 | 20px | Inline with text (lesson status, hint) |
 | 16px | Dense UI (step progress label) |
 
-- **Style**: MaterialIcons outline or Feather
+- **Style**: Material Icons (Android) / SF Symbols (iOS)
 - **Color**: `colorFg` black by default; `colorAccent` red for active/signal states
 
 ---
@@ -101,7 +101,7 @@ Strictly rectangular, no border radius, no shadow.
 | Padding H | 24px | 24px |
 | Min touch | 44x44px | 44x44px |
 
-**States (Pressable):**
+**States (press):**
 
 | State | Primary | Secondary |
 |-------|---------|-----------|
@@ -603,7 +603,7 @@ src/features/
 
 ## 5. Design Consistency Rules
 
-1. **Every interactive component uses `Pressable`** — never `TouchableOpacity` (prevents unwanted opacity fade, enforces explicit press states)
+1. **Every interactive component uses explicit press states** — never rely on default opacity fade, enforce explicit press state styling
 2. **All borders are 2px** — never 1px (keeps Swiss boldness on mobile)
 3. **Zero `borderRadius`** — everywhere. If something needs rounding, reconsider the design
 4. **No hardcoded colors** — always reference `theme.ts` tokens

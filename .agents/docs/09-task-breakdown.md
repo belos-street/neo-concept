@@ -13,30 +13,28 @@
 
 ---
 
-## Sprint 1：项目脚手架 & 基础设施
+## Sprint 1：Android 项目脚手架 & 基础设施
 
 | # | 任务 | 优先级 | 预估 | 依赖 | 产出 |
 |---|------|--------|------|------|------|
-| 1.1 | RN 项目初始化（bun + RN 0.76 + TS） | P0 | 2h | — | 可运行的空项目 |
-| 1.2 | 底部 Tab 导航（3 个 Tab） | P0 | 2h | 1.1 | TabNavigator 骨架 |
-| 1.3 | Stack 导航（CourseStack） | P0 | 1h | 1.2 | 页面跳转可运行 |
-| 1.4 | Zustand 基础配置 + useSettingsStore | P0 | 2h | 1.1 | 设置项读写 |
-| 1.5 | MMKV 持久化封装 | P0 | 2h | 1.1 | useMMKV hook |
-| 1.6 | 共享组件库（Button, Card, Modal, Loading） | P0 | 3h | 1.1 | 基础 UI 组件 |
+| 1.1 | Android 项目初始化（Kotlin + Compose + Gradle KTS） | P0 | 2h | — | 可运行的空项目 |
+| 1.2 | Navigation Compose 配置（Tab + Stack 路由） | P0 | 2h | 1.1 | 导航骨架 |
+| 1.3 | DataStore Preferences 封装（设置 + 进度读写） | P0 | 2h | 1.1 | SettingsRepository + ProgressRepository |
+| 1.4 | 共享组件库（Button, Card, Modal, Loading — Compose） | P0 | 3h | 1.1 | 基础 UI 组件 |
+| 1.5 | Theme 定义（颜色、字体、间距 — Swiss International 风格） | P0 | 2h | 1.1 | Theme.kt |
 
 ---
 
-## Sprint 2：原生模块桥接
+## Sprint 2：原生模块
 
 | # | 任务 | 优先级 | 预估 | 依赖 | 产出 |
 |---|------|--------|------|------|------|
-| 2.1 | ECDICT 模块 — Kotlin 实现 + assets 复制 + SQLite 查询 | P0 | 4h | 1.1 | ecdict.lookup() 可调用 |
-| 2.2 | ECDICT TS 桥接层 | P0 | 1h | 2.1 | src/native/ecdict.ts |
-| 2.3 | Piper TTS 模块 — Kotlin 实现 + 播放 | P0 | 4h | 1.1 | piper.speak() 可调用 |
-| 2.4 | Piper TS 桥接层 + TTSManager 单例 | P0 | 2h | 2.3 | src/native/piper.ts + ttsManager |
-| 2.5 | Whisper ASR 模块 — Kotlin 实现 + 录音 | P0 | 4h | 1.1 | whisper.recognize() 可调用 |
-| 2.6 | Whisper TS 桥接层 | P0 | 1h | 2.5 | src/native/whisper.ts |
-| 2.7 | 原生模块集成测试（手动验证 TTS/ASR/ECDICT） | P0 | 2h | 2.2, 2.4, 2.6 | 三个模块可正常工作 |
+| 2.1 | ECDICT 模块 — SQLite 初始化 + assets 复制 + 查询 | P0 | 3h | 1.1 | EcdictDatabase.lookup() 可调用 |
+| 2.2 | ECDICT Repository + VocabularyItem 数据模型 | P0 | 2h | 2.1 | EcdictRepository |
+| 2.3 | Piper TTS 模块 — 模型初始化 + PCM 合成 + AudioTrack 播放 | P0 | 4h | 1.1 | PiperTTS.speak() 可调用 |
+| 2.4 | TTSManager 单例（播放队列 + 速度控制 + 并发管理） | P0 | 2h | 2.3 | TTSManager |
+| 2.5 | Whisper ASR 模块 — 模型初始化 + 录音 + 识别 | P0 | 4h | 1.1 | WhisperASR.recognize() 可调用 |
+| 2.6 | 原生模块集成测试（手动验证 TTS/ASR/ECDICT） | P0 | 2h | 2.2, 2.4, 2.5 | 三个模块可正常工作 |
 
 ---
 
@@ -44,8 +42,8 @@
 
 | # | 任务 | 优先级 | 预估 | 依赖 | 产出 |
 |---|------|--------|------|------|------|
-| 3.1 | Manifest 拉取 + 解析 + 本地缓存 | P0 | 3h | 1.5 | useManifestStore |
-| 3.2 | 课程列表页 — Book/Unit/Lesson 树形展开 | P0 | 4h | 3.1, 1.6 | CourseListScreen |
+| 3.1 | Manifest 拉取 + 解析 + 本地缓存 | P0 | 3h | 1.3 | ManifestRepository |
+| 3.2 | 课程列表页 — Book/Unit/Lesson 树形展开（Compose） | P0 | 4h | 3.1, 1.4 | CourseListScreen |
 | 3.3 | 课程状态标识（已下载/未下载/锁定/有更新） | P0 | 2h | 3.2 | 状态图标渲染 |
 | 3.4 | 下载管理器（串行队列 + Hash 校验 + 取消） | P0 | 4h | 3.1 | DownloadManager |
 | 3.5 | 下载进度页 UI | P0 | 2h | 3.4 | DownloadScreen |
@@ -59,9 +57,9 @@
 
 | # | 任务 | 优先级 | 预估 | 依赖 | 产出 |
 |---|------|--------|------|------|------|
-| 4.1 | Step 进度条组件 | P0 | 2h | 1.6 | StepProgressBar |
-| 4.2 | LessonScreen — Step 容器 + 顺序解锁 | P0 | 3h | 4.1 | Step 切换逻辑 |
-| 4.3 | 进度持久化 — useProgressStore + MMKV | P0 | 3h | 1.5 | Step 完成即写入 |
+| 4.1 | Step 进度条组件（Compose） | P0 | 2h | 1.4 | StepProgressBar |
+| 4.2 | LessonScreen — Step 容器 + 顺序解锁（Compose） | P0 | 3h | 4.1 | Step 切换逻辑 |
+| 4.3 | 进度持久化 — ProgressRepository + DataStore | P0 | 3h | 1.3 | Step 完成即写入 |
 | 4.4 | ResumeOverlay（继续学习/回顾） | P0 | 2h | 4.3 | 恢复弹窗 |
 | 4.5 | 线性模式锁定逻辑（Unit 内） | P0 | 2h | 3.2, 4.3 | 🔒 状态渲染 |
 | 4.6 | Step 中途退出确认弹窗 | P0 | 1h | 4.2 | ConfirmDialog |
@@ -72,8 +70,8 @@
 
 | # | 任务 | 优先级 | 预估 | 依赖 | 产出 |
 |---|------|--------|------|------|------|
-| 5.1 | WordTooltip 组件（全局复用） | P0 | 3h | 2.1, 2.2 | 点击单词弹出释义 |
-| 5.2 | Step 1 — 课文展示 + AI 配图 | P0 | 2h | 5.1 | PassageView |
+| 5.1 | WordTooltip 组件（全局复用 — Compose BottomSheet） | P0 | 3h | 2.1, 2.2 | 点击单词弹出释义 |
+| 5.2 | Step 1 — 课文展示 + AI 配图（Compose） | P0 | 2h | 5.1 | PassageView |
 | 5.3 | Step 1 — TTS 全文/逐句朗读 | P0 | 3h | 2.4, 5.2 | 播放控制 |
 | 5.4 | Step 1 — 语法点卡片 | P0 | 1h | 5.2 | GrammarCard |
 | 5.5 | Step 2 — 填词练习交互 | P0 | 4h | 5.1, 2.4 | Step2FillBlanks |
@@ -121,25 +119,25 @@
 ## 任务依赖图
 
 ```
-Sprint 1 (脚手架)
-  ├── 1.1 RN 初始化
-  │   ├── 1.2 Tab 导航 → 1.3 Stack 导航
-  │   ├── 1.4 Zustand
-  │   ├── 1.5 MMKV
-  │   └── 1.6 共享组件
+Sprint 1 (Android 脚手架)
+  ├── 1.1 Android + Compose 初始化
+  │   ├── 1.2 Navigation Compose
+  │   ├── 1.3 DataStore 封装
+  │   ├── 1.4 共享组件
+  │   └── 1.5 Theme 定义
   │
 Sprint 2 (原生模块) ← 1.1
   ├── 2.1-2.2 ECDICT
   ├── 2.3-2.4 Piper TTS
-  ├── 2.5-2.6 Whisper ASR
-  └── 2.7 集成测试 ← 2.2, 2.4, 2.6
+  ├── 2.5 Whisper ASR
+  └── 2.6 集成测试 ← 2.2, 2.4, 2.5
   │
-Sprint 3 (课程管理) ← 1.5, 1.6
+Sprint 3 (课程管理) ← 1.3, 1.4
   ├── 3.1 Manifest → 3.2 列表 → 3.3 状态
   ├── 3.4 下载器 → 3.5 下载 UI
   └── 3.6 引导, 3.7 错误处理
   │
-Sprint 4 (学习框架) ← 1.5, 1.6, 3.2
+Sprint 4 (学习框架) ← 1.3, 1.4, 3.2
   ├── 4.1 进度条 → 4.2 Step 容器
   ├── 4.3 进度持久化 → 4.4 ResumeOverlay
   └── 4.5 线性锁定, 4.6 退出确认

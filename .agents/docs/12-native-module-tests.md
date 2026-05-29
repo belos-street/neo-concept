@@ -8,9 +8,9 @@
 ## A — 前置条件
 
 - [ ] Android 模拟器或真机已连接 `adb devices`
-- [ ] Metro bundler 运行中 (`bun start`)
-- [ ] App 已安装到设备 (`bun run-android`)
-- [ ] 打开 App 开发者菜单（摇一摇或 `adb shell input keyevent 82`），确认无红盒报错
+- [ ] Android Studio 项目已打开，Gradle 同步完成
+- [ ] App 已安装到设备（Run from Android Studio）
+- [ ] Logcat 打开，过滤 `com.neoconcept`，确认无崩溃
 
 ---
 
@@ -18,8 +18,8 @@
 
 ### B1 模块加载
 
-- [ ] **B1.1** 应用启动后无 `Native module cannot be null` 崩溃
-- [ ] **B1.2** 控制台无 `EcdictModule` 相关报错
+- [ ] **B1.1** 应用启动后无 ECDICT 相关崩溃
+- [ ] **B1.2** Logcat 无 `EcdictDatabase` 相关报错
 
 ### B2 初始化
 
@@ -51,8 +51,8 @@
 
 ### C1 模块加载
 
-- [ ] **C1.1** 应用启动后无 `Native module` 崩溃
-- [ ] **C1.2** 控制台无 `PiperModule` 相关报错
+- [ ] **C1.1** 应用启动后无 TTS 相关崩溃
+- [ ] **C1.2** Logcat 无 `PiperTTS` 相关报错
 
 ### C2 初始化
 
@@ -95,8 +95,8 @@
 
 ### D1 模块加载
 
-- [ ] **D1.1** 应用启动后无 `Native module` 崩溃
-- [ ] **D1.2** 控制台无 `WhisperModule` 相关报错
+- [ ] **D1.1** 应用启动后无 ASR 相关崩溃
+- [ ] **D1.2** Logcat 无 `WhisperASR` 相关报错
 
 ### D2 初始化
 

@@ -1,4 +1,4 @@
-# Design Style: Swiss International — Mobile (React Native)
+# Design Style: Swiss International — Mobile (Native)
 
 ## Design Philosophy
 
@@ -84,11 +84,11 @@ All text uses Inter font family (Helvetica/Akzidenz-Grotesk).
 
 ### Touch Interactions (Replacing Hover)
 
-Mobile has no hover. Replace Web hover effects with press state (`Pressable` pressed):
+Mobile has no hover. Replace Web hover effects with press state:
 
 | Web (hover) | Mobile (press) |
 |-------------|----------------|
-| Color inversion on hover | Background color snap on `Pressable` press |
+| Color inversion on hover | Background color snap on press |
 | Scale(1.0 → 1.05) on hover | Scale(1.0 → 0.97) on press (brief) |
 | Underline on hover | No underline; use bg color change |
 | Shadow elevation on hover | **Not used** — no shadows |
@@ -99,13 +99,13 @@ All interactive elements: **44x44px** minimum. Buttons with text adapt to conten
 
 ### Safe Area
 
-- Top: offset by status bar height (use `react-native-safe-area-context`)
-- Bottom: offset by navigation bar / home indicator (use `SafeAreaView` edge)
+- Top: offset by status bar height (use platform safe area APIs)
+- Bottom: offset by navigation bar / home indicator
 - Tab bar sits above the safe bottom area
 
 ### Iconography
 
-Use `react-native-vector-icons` (MaterialIcons outline style) or custom SVG icons.
+Use platform-native icon systems (Material Icons on Android, SF Symbols on iOS) or custom SVG icons.
 - **Stroke width**: 2px (matching border weight)
 - **Icons are functional** — always enclosed in context, never standalone decorative
 - **Icon size**: 24px (standard), 20px (inline with text)
@@ -155,7 +155,7 @@ Use `react-native-vector-icons` (MaterialIcons outline style) or custom SVG icon
 - **Easing**: Linear or ease-out — no spring, no bounce
 - **Allowed animations**:
   - Press feedback: scale 1.0→0.97, 100ms
-  - Page transition: slide in from right (React Navigation default is acceptable)
+  - Page transition: slide in from right (platform default navigation transition)
   - Card flip (flashcard): 300ms, linear
   - Progress bar fill: 300ms, ease-out
   - Correct/wrong feedback: instant color snap, no fade
@@ -167,9 +167,9 @@ Use `react-native-vector-icons` (MaterialIcons outline style) or custom SVG icon
 
 - **Contrast**: Black on White = 21:1 (exceeds AA). Red `#FF3000` on White = 6.5:1 (passes AA for large text)
 - **Touch targets**: minimum 44x44px
-- **Focus**: React Native handles focus rings per platform
-- **Reduced motion**: `AccessibilityInfo.reduceMotionEnabled` → disable card flip animation
-- **Semantics**: `accessibilityLabel` on all icon buttons, `accessibilityRole` on tabs and buttons
+- **Focus**: Platform handles focus indicators per platform conventions
+- **Reduced motion**: Use platform accessibility APIs to detect reduced motion preference → disable card flip animation
+- **Semantics**: Content descriptions (Android) / accessibility labels (iOS) on all icon buttons, semantic roles on tabs and buttons
 
 ---
 

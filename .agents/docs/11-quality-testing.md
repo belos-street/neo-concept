@@ -8,7 +8,7 @@
 
 - 个人项目，**手动测试为主 + 关键逻辑单元测试**
 - 不追求高覆盖率，聚焦核心路径
-- 测试工具：bun test（兼容 Jest expect API）
+- 测试工具：JUnit 5 (Android) / XCTest (iOS)
 
 ---
 
@@ -138,26 +138,20 @@
 
 ## 测试工具配置
 
-### bun test 配置
+### Android 单元测试配置
 
-```toml
-# bunfig.toml — 测试相关配置
-[test]
-preload = ["./test-setup.ts"]
-```
-
-bun test 原生支持 TypeScript，无需额外配置。断言 API 兼容 Jest（`expect`, `describe`, `it`, `beforeEach` 等）。
-测试文件统一放在 `__tests__/`，命名 `*.test.ts`。
+使用 JUnit 5 + Kotlin Coroutines Test。测试文件放在 `android/app/src/test/java/com/neoconcept/`。
+关键模块（scoring, progress, download）使用纯 Kotlin 函数，方便单元测试。
 
 ### 测试文件结构
 
 ```
-__tests__/
-├── scoring.test.ts           # 评分算法
-├── progressStore.test.ts     # 进度持久化
-├── downloadManager.test.ts   # 下载 + Hash 校验
-├── settingsStore.test.ts     # 设置读写
-└── manifestParser.test.ts    # Manifest 解析
+android/app/src/test/java/com/neoconcept/
+├── ScoringTest.kt              # 评分算法
+├── ProgressRepositoryTest.kt   # 进度持久化
+├── DownloadManagerTest.kt      # 下载 + Hash 校验
+├── SettingsRepositoryTest.kt   # 设置读写
+└── ManifestParserTest.kt       # Manifest 解析
 ```
 
 ---
@@ -170,7 +164,7 @@ __tests__/
 | ECDICT 查询 | < 10ms | 单元测试计时 |
 | TTS 首次播放延迟 | < 500ms | 手动感知 |
 | ASR 识别（3-5s 音频） | < 2s | 手动计时 |
-| 课程列表滚动 | 60fps | Flipper Performance 监控 |
+| 课程列表滚动 | 60fps | Android Studio Profiler |
 | App 冷启动 | < 3s | 手动计时 |
 
 ---

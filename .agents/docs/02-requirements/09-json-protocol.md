@@ -163,7 +163,7 @@ Git 仓库 (GitHub)
   │  manifest.json
   │  images/
   ▼
-App (React Native)  ← 本项目范围
+App (Android / iOS)  ← 本项目范围
   │  1. 首次启动 → fetch manifest.json
   │  2. 用户选择课程 → fetch lesson-{id}.json
   │  3. 检查更新 → 对比 manifest 中 hash
