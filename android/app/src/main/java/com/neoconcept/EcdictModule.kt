@@ -43,7 +43,7 @@ class EcdictModule(reactContext: ReactApplicationContext) :
     }
     try {
       val cursor = db!!.rawQuery(
-        """SELECT word, phonetic, definition, pos, exchange
+        """SELECT word, phonetic, translation, definition, pos, exchange
            FROM stardict WHERE word = ? COLLATE NOCASE LIMIT 1""",
         arrayOf(word)
       )
@@ -51,9 +51,10 @@ class EcdictModule(reactContext: ReactApplicationContext) :
         val result = Arguments.createMap().apply {
           putString("word", cursor.getString(0))
           putString("phonetic", cursor.getString(1) ?: "")
-          putString("definition", cursor.getString(2) ?: "")
-          putString("pos", cursor.getString(3) ?: "")
-          putString("exchange", cursor.getString(4) ?: "")
+          putString("translation", cursor.getString(2) ?: "")
+          putString("definition", cursor.getString(3) ?: "")
+          putString("pos", cursor.getString(4) ?: "")
+          putString("exchange", cursor.getString(5) ?: "")
         }
         cursor.close()
         promise.resolve(result)

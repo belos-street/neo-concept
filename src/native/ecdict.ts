@@ -5,6 +5,7 @@ const { EcdictModule } = NativeModules
 export interface WordEntry {
   word: string
   phonetic: string
+  translation: string
   definition: string
   pos: string
   exchange: string
