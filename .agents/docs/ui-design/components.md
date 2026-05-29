@@ -553,50 +553,51 @@ Used for step progress bar (1-6 at top of lesson screens).
 
 ## 4. Component Architecture (File Structure)
 
-All shared components live under `src/shared/components/`:
+All shared components live under `ui/components/`:
 
 ```
-src/shared/components/
-├── Button.tsx
-├── Card.tsx
-├── ScreenHeader.tsx
-├── TextInput.tsx
-├── BottomSheet.tsx
-├── ProgressDots.tsx
-├── StatusDot.tsx
-├── Divider.tsx
-├── ProgressBar.tsx
-├── GrammarCard.tsx
-├── PassingView.tsx          # reusable passage text block
-├── OptionList.tsx            # radio-button style options (Step 4-5)
-├── TTSControlBar.tsx         # play + speed selector
-└── index.ts                  # barrel exports
-```
-
-Feature-specific components live alongside their screen in `src/features/`:
-
-```
-src/features/
-├── course-list/
-│   ├── BookRow.tsx
-│   ├── UnitRow.tsx
-│   └── LessonCard.tsx
-├── lesson/
-│   ├── Step1Passage.tsx
-│   ├── Step2FillBlanks.tsx
-│   ├── Step3Vocabulary/
-│   │   ├── FlashcardMode.tsx
-│   │   ├── SpellingMode.tsx
-│   │   └── MatchingMode.tsx
-│   ├── Step4Listening.tsx
-│   ├── Step5Reading.tsx
-│   └── Step6Speaking.tsx
-├── download/
-│   └── DownloadProgressCard.tsx
-├── stats/
-│   └── StatsCard.tsx
-└── settings/
-    └── SettingsRow.tsx
+app/src/main/java/com/neoconcept/
+├── ui/
+│   ├── components/
+│   │   ├── Button.kt
+│   │   ├── Card.kt
+│   │   ├── ScreenHeader.kt
+│   │   ├── TextInput.kt
+│   │   ├── BottomSheet.kt
+│   │   ├── ProgressDots.kt
+│   │   ├── StatusDot.kt
+│   │   ├── Divider.kt
+│   │   ├── ProgressBar.kt
+│   │   ├── GrammarCard.kt
+│   │   ├── PassageView.kt           # reusable passage text block
+│   │   ├── OptionList.kt            # radio-button style options (Step 4-5)
+│   │   └── TTSControlBar.kt        # play + speed selector
+│   └── theme/
+│       └── Theme.kt                 # Design tokens (color, space, border, typography)
+├── features/
+│   ├── course/
+│   │   ├── BookRow.kt
+│   │   ├── UnitRow.kt
+│   │   └── LessonCard.kt
+│   ├── lesson/
+│   │   ├── PassageStep.kt
+│   │   ├── FillBlanksStep.kt
+│   │   ├── VocabExerciseStep.kt
+│   │   │   ├── FlashcardMode.kt
+│   │   │   ├── SpellingMode.kt
+│   │   │   └── MatchingMode.kt
+│   │   ├── ListeningStep.kt
+│   │   ├── ReadingStep.kt
+│   │   └── SpeakingStep.kt
+│   ├── download/
+│   │   └── DownloadProgressCard.kt
+│   ├── stats/
+│   │   └── StatsCard.kt
+│   └── settings/
+│       └── SettingsRow.kt
+└── data/
+    ├── repository/
+    └── model/
 ```
 
 ---
@@ -606,7 +607,7 @@ src/features/
 1. **Every interactive component uses explicit press states** — never rely on default opacity fade, enforce explicit press state styling
 2. **All borders are 2px** — never 1px (keeps Swiss boldness on mobile)
 3. **Zero `borderRadius`** — everywhere. If something needs rounding, reconsider the design
-4. **No hardcoded colors** — always reference `theme.ts` tokens
-5. **UPPERCASE** for titles and labels via code (`text.toUpperCase()`) — not by typing uppercase in data, so it's transformable per locale
+4. **No hardcoded colors** — always reference `Theme.kt` tokens
+5. **UPPERCASE** for titles and labels via code (`uppercase()`) — not by typing uppercase in data, so it's transformable per locale
 6. **Left alignment** for all body text and headings — only buttons and single-line elements may center
 7. **Touch targets always >= 44x44px** — verify in PR review

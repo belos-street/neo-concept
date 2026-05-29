@@ -6,19 +6,39 @@
 
 ## 技术栈总览
 
-| 层次 | Android | iOS | 用途 |
-|------|---------|-----|------|
-| 语言 | Kotlin | Swift | 平台原生开发 |
-| UI 框架 | Jetpack Compose | SwiftUI | 声明式 UI |
-| 导航 | Navigation Compose | NavigationStack | 页面路由 |
-| 状态管理 | ViewModel + StateFlow | ObservableObject | 响应式状态 |
-| KV 存储 | DataStore Preferences | UserDefaults | 进度/设置持久化 |
-| SQLite | Room (SQLite) | GRDB / SQLite.swift | ECDICT 词典查询 |
-| TTS | Piper (kathleen-low) | Piper (kathleen-low) | 离线语音合成 |
-| ASR | Whisper.cpp (tiny.en) | Whisper.cpp (tiny.en) | 离线语音识别 |
-| 构建工具 | Gradle (Kotlin DSL) | Xcode / SPM | 项目构建 |
+| 层次 | 技术选型 | 用途 |
+|------|---------|------|
+| 语言 | Kotlin | Android 原生开发 |
+| UI 框架 | Jetpack Compose (Material 3) | 声明式 UI |
+| 导航 | Navigation 3 | Tab + Stack 页面路由 |
+| 状态管理 | ViewModel + StateFlow | 响应式状态 |
+| KV 存储 | DataStore Preferences | 进度/设置持久化 |
+| SQLite | SQLiteOpenHelper (原生) | ECDICT 词典查询 |
+| TTS | Piper (kathleen-low) | 离线语音合成 |
+| ASR | Whisper.cpp (tiny.en) | 离线语音识别 |
+| 构建工具 | Gradle (Kotlin DSL) | 项目构建 |
 
-> **双平台独立原生开发**，不使用跨平台框架。Android 优先开发，iOS 后续 vibe-coding 复刻。
+> **Android 优先开发**，iOS 版本后续通过 Vibe Coding 复刻。
+
+### Android Gradle 依赖
+
+| 依赖 | artifact | 用途 |
+|------|----------|------|
+| Compose BOM | `androidx.compose:compose-bom:2025.05.00` | 统一 Compose 库版本 |
+| Material 3 | `androidx.compose.material3:material3` | UI 组件库 |
+| Navigation 3 | `androidx.navigation3:navigation3-runtime` | Tab + Stack 导航 |
+| ViewModel | `androidx.lifecycle:lifecycle-viewmodel-compose` | 状态管理 |
+| DataStore | `androidx.datastore:datastore-preferences` | KV 持久化 |
+| Coroutines | `org.jetbrains.kotlinx:kotlinx-coroutines-android` | 异步操作 |
+| OkHttp | `com.squareup.okhttp3:okhttp:4.12.0` | HTTP 下载 |
+| Gson | `com.google.code.gson:gson:2.11.0` | JSON 解析 |
+| SQLite | Android 原生 (`android.database.sqlite`) | ECDICT 词典查询 |
+| Piper TTS | JNI (ONNX Runtime) | 离线语音合成 |
+| Whisper ASR | JNI (GGML) | 离线语音识别 |
+
+> compileSdk = 37, minSdk = 26, targetSdk = 37, Kotlin = 2.1.x
+>
+> **版本兼容性说明**：minSdk = 26（Android 8.0 Oreo）确保覆盖 95%+ 的活跃设备，同时支持 DataStore、Navigation 3 等现代 Jetpack 库。
 
 ---
 
@@ -87,52 +107,6 @@ neo-concept/
     └── stardict.db                 # ECDICT 完整数据库
 ```
 
-### iOS (Swift) — 后续开发
-
-```
-neo-concept/
-├── ios/
-│   ├── NeoConcept/
-│   │   ├── App/
-│   │   │   └── NeoConceptApp.swift
-│   │   ├── Navigation/
-│   │   │   └── AppNavigation.swift
-│   │   ├── Screens/
-│   │   │   ├── CourseListScreen.swift
-│   │   │   ├── DownloadScreen.swift
-│   │   │   ├── LessonScreen.swift
-│   │   │   ├── StatsScreen.swift
-│   │   │   └── SettingsScreen.swift
-│   │   ├── Features/
-│   │   │   ├── Lesson/
-│   │   │   │   ├── PassageStep.swift
-│   │   │   │   ├── FillBlanksStep.swift
-│   │   │   │   ├── VocabExerciseStep.swift
-│   │   │   │   ├── ListeningStep.swift
-│   │   │   │   ├── ReadingStep.swift
-│   │   │   │   ├── SpeakingStep.swift
-│   │   │   │   └── WordTooltip.swift
-│   │   │   ├── Course/
-│   │   │   │   ├── CourseViewModel.swift
-│   │   │   │   └── DownloadManager.swift
-│   │   │   └── Settings/
-│   │   │       └── SettingsViewModel.swift
-│   │   ├── Data/
-│   │   │   ├── EcdictDatabase.swift
-│   │   │   ├── ProgressStore.swift
-│   │   │   └── Models/
-│   │   │       ├── Lesson.swift
-│   │   │       ├── VocabularyItem.swift
-│   │   │       └── Manifest.swift
-│   │   ├── Audio/
-│   │   │   ├── PiperTTS.swift
-│   │   │   ├── TTSManager.swift
-│   │   │   └── WhisperASR.swift
-│   │   └── Theme/
-│   │       └── Theme.swift
-│   └── NeoConcept.xcodeproj
-```
-
 ---
 
 ## 核心模块
@@ -195,7 +169,7 @@ data class VocabularyItem(
 ```
 
 **实现要点：**
-- 使用 Room 或原生 SQLiteOpenHelper，db 文件从 assets 复制到 `databases/`
+- 使用原生 SQLiteOpenHelper，db 文件从 assets 复制到 `databases/`
 - 查询语句：`SELECT word, phonetic, translation, definition, pos, exchange FROM stardict WHERE word = ? COLLATE NOCASE LIMIT 1`
 - `translation` 字段为中文释义，`definition` 字段为英文释义
 - 预计查询 < 10ms（索引命中）
@@ -229,8 +203,7 @@ class SettingsViewModel : ViewModel() {
 data class Settings(
     val learningMode: String = "linear",    // "linear" | "free"
     val ttsSpeed: Float = 1.0f,             // 0.5 - 1.5
-    val speakingThreshold: Int = 60,        // 40-90
-    val repoUrl: String = ""
+    val speakingThreshold: Int = 60         // 40-90
 )
 ```
 

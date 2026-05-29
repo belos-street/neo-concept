@@ -32,16 +32,16 @@
 
 ### 数据来源
 
-ECDICT 离线 SQLite 数据库（~10 MB），查询 <10ms。数据结构：
+ECDICT 离线 SQLite 数据库（~5 MB），查询 <10ms。数据结构：
 
-```typescript
-interface WordEntry {
-  word: string           // "beautiful"
-  phonetic: string       // "/ˈbjuːtɪfl/"
-  pos: string            // "adj."
-  meaning: string        // "美丽的；漂亮的"
-  sentence: string       // "She is a beautiful girl."
-}
+```kotlin
+data class WordEntry(
+    val word: String,           // "beautiful"
+    val phonetic: String,       // "/ˈbjuːtɪfl/"
+    val pos: String,            // "adj."
+    val meaning: String,        // "美丽的；漂亮的"
+    val sentence: String        // "She is a beautiful girl."
+)
 ```
 
 ### 异常流程

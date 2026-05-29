@@ -18,7 +18,7 @@
 | # | 任务 | 优先级 | 预估 | 依赖 | 产出 |
 |---|------|--------|------|------|------|
 | 1.1 | Android 项目初始化（Kotlin + Compose + Gradle KTS） | P0 | 2h | — | 可运行的空项目 |
-| 1.2 | Navigation Compose 配置（Tab + Stack 路由） | P0 | 2h | 1.1 | 导航骨架 |
+| 1.2 | Navigation 3 配置（Tab + Stack 路由） | P0 | 2h | 1.1 | 导航骨架 |
 | 1.3 | DataStore Preferences 封装（设置 + 进度读写） | P0 | 2h | 1.1 | SettingsRepository + ProgressRepository |
 | 1.4 | 共享组件库（Button, Card, Modal, Loading — Compose） | P0 | 3h | 1.1 | 基础 UI 组件 |
 | 1.5 | Theme 定义（颜色、字体、间距 — Swiss International 风格） | P0 | 2h | 1.1 | Theme.kt |
@@ -88,7 +88,7 @@
 | 6.1 | Step 4 — 听力练习（TTS 播放 + 选择题） | P0 | 4h | 2.4, 5.1 | Step4Listening |
 | 6.2 | Step 5 — 阅读理解（课文 + 选择题 + evidence 高亮） | P0 | 4h | 5.1 | Step5Reading |
 | 6.3 | Step 6 — 录音交互（按住录音 + 松手停止） | P0 | 3h | 2.5, 2.6 | RecordButton |
-| 6.4 | Step 6 — 评分逻辑（编辑距离 + 偏差词标红） | P0 | 3h | 6.3 | scoring.ts |
+| 6.4 | Step 6 — 评分逻辑（编辑距离 + 偏差词标红） | P0 | 3h | 6.3 | ScoringUtil.kt |
 | 6.5 | Step 6 — 口语练习完整页面 | P0 | 2h | 6.3, 6.4 | Step6Speaking |
 | 6.6 | 各 Step 通过/重做逻辑统一处理 | P0 | 2h | 5.5-6.5 | 重做计数 + 放行 |
 

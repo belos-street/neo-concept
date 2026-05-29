@@ -8,7 +8,7 @@
 
 - 个人项目，**手动测试为主 + 关键逻辑单元测试**
 - 不追求高覆盖率，聚焦核心路径
-- 测试工具：JUnit 5 (Android) / XCTest (iOS)
+- 测试工具：JUnit 5
 
 ---
 
@@ -32,8 +32,8 @@
 
 | 模块 | 测试对象 | 测试内容 |
 |------|---------|---------|
-| scoring.ts | `calculateAccuracy()` | 正常句子、完全匹配、完全不匹配、空输入、大小写、标点 |
-| scoring.ts | `highlightDiffs()` | 偏差词标红、全对、全错 |
+| ScoringUtil.kt | `calculateAccuracy()` | 正常句子、完全匹配、完全不匹配、空输入、大小写、标点 |
+| ScoringUtil.kt | `highlightDiffs()` | 偏差词标红、全对、全错 |
 | progress store | `completeStep()` | Step 完成写入、分数记录、attemptCount 递增 |
 | progress store | `loadProgress()` | 正常加载、数据损坏降级、key 不存在 |
 | download manager | `verifyHash()` | Hash 匹配、Hash 不匹配、空文件 |

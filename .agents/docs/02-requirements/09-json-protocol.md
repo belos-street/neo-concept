@@ -158,14 +158,53 @@ Agent CLI（外部工具，非本项目范围）
   │  计算 SHA256 hash
   │  更新 manifest.json
   ▼
-Git 仓库 (GitHub)
+GitHub Pages（静态托管）
   │  book-1/unit-1/lesson-*.json
   │  manifest.json
   │  images/
   ▼
-App (Android / iOS)  ← 本项目范围
+App (Android)  ← 本项目范围
   │  1. 首次启动 → fetch manifest.json
   │  2. 用户选择课程 → fetch lesson-{id}.json
   │  3. 检查更新 → 对比 manifest 中 hash
   │  4. 增量下载变更的课程 + 图片
 ```
+
+---
+
+## Schema 版本演进策略
+
+### 版本号规范
+
+- **主版本号（Major）**：不兼容的 Schema 变更（如字段删除、类型变更）
+- **次版本号（Minor）**：向后兼容的新增字段或可选字段
+- **修订号（Patch）**：文档修正、字段说明澄清
+
+### 向后兼容原则
+
+1. **新增字段必须可选**：App 解析时忽略未知字段，不崩溃
+2. **字段删除需两版本过渡**：v1.x 标记 deprecated，v2.0 移除
+3. **字段类型不可变更**：如需变更，新增字段并废弃旧字段
+
+### App 端兼容性处理
+
+```kotlin
+// 使用 Gson 解析，忽略未知字段
+val gson = GsonBuilder()
+    .setLenient()
+    .create()
+
+// 或使用 @SerializedName + 默认值
+data class Lesson(
+    val id: String,
+    val title: String,
+    val newVocabulary: List<VocabularyItem> = emptyList(),  // 默认值防止旧 JSON 缺失
+    val passage: Passage? = null  // 可选字段
+)
+```
+
+### 版本检查流程
+
+1. App 启动时读取 manifest.json 中的 `version` 字段
+2. 若主版本号不匹配（如 App 支持 v1.x，manifest 为 v2.0）→ 提示用户更新 App
+3. 若次版本号更高 → 正常解析，忽略未知字段

@@ -66,7 +66,7 @@ Step 6（口语练习）
 App 启动
   │
   ├─ 首次启动
-  │   ├─ fetch manifest.json（从配置的 Git 仓库 URL）
+  │   ├─ fetch manifest.json（从内置的 GitHub Pages URL）
   │   ├─ 成功 → 缓存到本地 → 解析显示课程列表
   │   └─ 失败 → 显示错误 + 重试按钮
   │

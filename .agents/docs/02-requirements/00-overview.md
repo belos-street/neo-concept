@@ -42,9 +42,9 @@
 | 维度 | 说明 |
 |---|---|
 | **项目名** | neo-concept |
-| **产品形态** | 双平台独立原生 App（Android: Kotlin + Jetpack Compose，iOS: Swift + SwiftUI），Android 优先 |
+| **产品形态** | Android 原生 App（Kotlin + Jetpack Compose）；iOS 版本后续通过 Vibe Coding 实现 |
 | **App 定位** | 离线优先、系统化英语学习工具 |
-| **Agent CLI** | **不在本项目开发范围内**。Agent 是独立外部工具（如 LangChain CLI），负责 LLM 生成课程内容 → JSON → Git 仓库 → App 消费。本文档定义 Agent ↔ App 的 **JSON 数据协议契约** |
+| **Agent CLI** | **不在本项目开发范围内**。Agent 是独立外部工具（如 LangChain CLI），负责 LLM 生成课程内容 → JSON → 推送到课程仓库 → GitHub Pages 自动部署 → App 消费。本文档定义 Agent ↔ App 的 **JSON 数据协议契约** |
 | **目标用户** | 英语基础薄弱、希望体系化提升的学习者 |
 | **开源协议** | GPL-3.0 |
 
@@ -66,8 +66,8 @@
 
 | 维度 | 说明 |
 |------|------|
-| 目标平台 | **Android**（初期，Kotlin + Jetpack Compose）；**iOS** 后续独立开发（Swift + SwiftUI） |
+| 目标平台 | **Android**（Kotlin + Jetpack Compose）；iOS 版本后续通过 Vibe Coding 复刻 |
 | 开发设备 | macOS / Windows |
-| 开发工具 | Android Studio（Android）；Xcode（iOS） |
-| 包管理 | Gradle Kotlin DSL（Android）；SPM（iOS） |
-| 测试策略 | 手动测试为主 + JUnit（Android）/ XCTest（iOS）关键逻辑单元测试 |
+| 开发工具 | Android Studio |
+| 包管理 | Gradle Kotlin DSL |
+| 测试策略 | 手动测试为主 + JUnit 关键逻辑单元测试 |

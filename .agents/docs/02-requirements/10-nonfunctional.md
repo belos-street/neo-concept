@@ -9,12 +9,12 @@
 | 类别 | 要求 |
 |------|------|
 | **离线能力** | 全部学习功能无需联网（课程 JSON 下载除外） |
-| **App 模型总大小** | ~105 MB。ECDICT 10 MB + ASR (Whisper) 75 MB + TTS (Piper) 20 MB 全部打包进 APK（assets），无需网络下载 |
+| **App 模型总大小** | ~100 MB。ECDICT 5 MB + ASR (Whisper) 75 MB + TTS (Piper) 20 MB 全部打包进 APK（assets），无需网络下载 |
 | **单课加载** | 下载 JSON < 100KB，解析 < 500ms |
 | **词典查询** | ECDICT SQLite 查询 < 10ms |
 | **TTS 延迟** | 点击播放到出声 < 500ms |
 | **ASR 识别** | 3-5 秒短句识别 < 2s |
-| **存储** | 进度数据 DataStore / UserDefaults（瞬时读写）；课程 JSON + 图片本地文件系统 |
+| **存储** | 进度数据 DataStore（瞬时读写）；课程 JSON + 图片本地文件系统 |
 | **崩溃恢复** | App 被杀后，进度不丢失（Per-Step 即时写入本地存储） |
 | **字体大小** | 跟随系统字体大小设置，保证阅读舒适度 |
 | **文本选择** | 课文、题目等英文文本区域支持长按选择和系统复制 |
@@ -27,13 +27,14 @@
 | 层次 | 选型 | 原因 |
 |------|------|------|
 | Android 框架 | Kotlin + Jetpack Compose | 原生性能、调试方便、声明式 UI |
-| iOS 框架 | Swift + SwiftUI | 原生性能、与 Android 独立开发 |
 | 语音识别 (ASR) | Whisper.cpp (tiny.en) | 离线识别，~75 MB，英语专用，39M 参数 |
 | 语音合成 (TTS) | Piper (kathleen-low) | 离线朗读，~20 MB，轻量英文女声 |
 | 离线词典 | ECDICT (mini) | 英汉离线词典，~5 MB，20000 高频词，SQLite |
-| 状态管理 | ViewModel + StateFlow (Android) / ObservableObject (iOS) | 平台原生响应式方案 |
-| 本地持久化 | DataStore (Android) / UserDefaults (iOS) + SQLite | KV 存储(进度) + SQLite(词典查询) |
-| 内容分发 | Git 仓库 HTTP 拉取 + SHA256 Hash 校验 | 版本化课程内容管理 |
+| 状态管理 | ViewModel + StateFlow | 平台原生响应式方案 |
+| 本地持久化 | DataStore + SQLite | KV 存储(进度) + SQLite(词典查询) |
+| 内容分发 | GitHub Pages (静态 JSON) + SHA256 校验 | 免费、CDN 加速、稳定 URL、无需用户配置 |
+
+> **注**：iOS 版本后续通过 Vibe Coding 复刻，技术选型届时另行确定。
 
 ---
 
@@ -44,7 +45,6 @@
 | Whisper.cpp 包体积 (~75 MB) | 低 | tiny.en 仅 75 MB，打包进 APK，无额外下载 |
 | 口语评分准确度 | 高 | 初版仅做编辑距离比对；后续考虑发音置信度评分 |
 | 口语「流畅对话」目标 | 中 | 明确课程边界：「说得出、说得对」而非「说得溜」 |
-| RN 原生模块桥接工作量 | 中 | 已决策转为纯原生开发，无桥接开销 |
 | LLM 生成内容质量不稳定 | 中 | Agent 端增加校验层：语法检查 + 人工审核；structured output 保证格式 |
 | 版权风险 | 低 | 所有内容 LLM 原创生成，不复制新概念课文文本 |
 
@@ -55,7 +55,7 @@
 - ❌ 不做用户账号系统（纯本地）
 - ❌ 不做云端同步（用导入/导出替代）
 - ❌ 不做社交功能（排行榜、好友、分享）
-- ❌ 不做 iOS 适配（Android 优先，iOS 后续独立开发）
+- ❌ 当前不做 iOS 开发（Android 优先，iOS 后续通过 Vibe Coding 复刻）
 - ❌ 不做多语言 / 国际化（App 语言固定中文）
 - ❌ 不照搬新概念英语课文内容
 - ❌ Agent CLI 不在本项目开发范围内

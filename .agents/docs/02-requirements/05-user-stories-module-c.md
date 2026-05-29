@@ -83,6 +83,31 @@
 - 拼写：全部 20-30 词拼写完毕即完成；正确率 ≥ 60% 视为通过，< 60% 可重做拼写子模式，最多重做 3 次。3 次后仍不通过则标记 completed 但不影响后续 Step 解锁
 - 匹配：全部配对完毕即完成
 
+### 子模式进度保存策略
+
+**保存粒度**：每个子模式完成后立即写入进度，而非整个 Step 3 完成后才写入。
+
+**进度数据结构扩展**：
+```kotlin
+data class Step3Progress(
+    val flashcard: SubModeProgress? = null,  // 闪卡子模式
+    val spelling: SubModeProgress? = null,   // 拼写子模式
+    val matching: SubModeProgress? = null    // 匹配子模式
+)
+
+data class SubModeProgress(
+    val status: String,           // "idle" | "in_progress" | "completed"
+    val completedAt: Long? = null,
+    val score: Int? = null,       // 拼写/匹配的正确率
+    val attemptCount: Int = 0     // 重做次数
+)
+```
+
+**恢复逻辑**：
+- 进入 Step 3 时，检查三个子模式的进度
+- 从第一个未完成的子模式开始（如闪卡已完成，拼写未完成，则直接进入拼写）
+- 已完成的子模式显示 ✅ 标记，不可重复进入（除非整课重置）
+
 ### 异常流程
 
 - **TTS 发音加载失败（拼写模式）**：显示单词文本替代，不阻塞拼写

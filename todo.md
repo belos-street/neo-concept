@@ -128,8 +128,8 @@
 | 5.2 | Step 1 — PassageStep（课文展示 + AI 配图） | 5.1 | ⬜ |
 | 5.3 | Step 1 — TTS 全文/逐句朗读 | 2.2, 5.2 | ⬜ |
 | 5.4 | Step 1 — GrammarCard 语法点卡片 | 5.2 | ⬜ |
-| 5.5 | Step 2 — ReadingStep 交互阅读 | 5.1 | ⬜ |
-| 5.6 | Step 3 — ListeningStep 听力填空 | 2.2 | ⬜ |
+| 5.5 | Step 2 — FillBlanksStep 填词练习 | 5.1 | ⬜ |
+| 5.6 | Step 3 — VocabExerciseStep 词汇记忆（闪卡/拼写/匹配） | 2.2, 5.1 | ⬜ |
 
 ---
 
@@ -137,9 +137,9 @@
 
 | # | 任务 | 依赖 | 状态 |
 |---|------|------|:--:|
-| 6.1 | Step 4 — VocabExerciseStep 词汇辨义 | 5.1 | ⬜ |
-| 6.2 | Step 5 — FillBlanksStep 课文填空 | 5.1 | ⬜ |
-| 6.3 | Step 6 — SpeakingStep 句子跟读 | 2.2, 2.3 | ⬜ |
+| 6.1 | Step 4 — ListeningStep 听力练习 | 2.2, 5.1 | ⬜ |
+| 6.2 | Step 5 — ReadingStep 阅读理解 | 5.1 | ⬜ |
+| 6.3 | Step 6 — SpeakingStep 口语跟读 | 2.2, 2.3 | ⬜ |
 | 6.4 | Step 6 — ASR 识别 + 模糊匹配评分 | 6.3 | ⬜ |
 | 6.5 | Step 6 — 通过/未通过 UI | 6.4 | ⬜ |
 | 6.6 | 各 Step 通过/重做逻辑统一 | 6.1-6.5 | ⬜ |

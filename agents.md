@@ -5,13 +5,13 @@
 | 维度 | 说明 |
 |------|------|
 | **项目名** | neo-concept |
-| **产品形态** | 双平台独立原生 App（Android: Kotlin + Jetpack Compose，iOS: Swift + SwiftUI） |
+| **产品形态** | Android 原生 App（Kotlin + Jetpack Compose）；iOS 版本后续通过 Vibe Coding 实现 |
 | **App 定位** | 离线优先、系统化英语学习工具 |
 | **目标用户** | 英语基础薄弱、希望体系化提升的学习者 |
 | **开源协议** | GPL-3.0 |
-| **包管理器** | Gradle KTS (Android) / SPM (iOS) |
+| **包管理器** | Gradle KTS |
 | **开发设备** | macOS / Windows |
-| **开发工具** | Android Studio / Xcode |
+| **开发工具** | Android Studio |
 
 ### 核心原则
 
@@ -19,7 +19,7 @@
 - **纯本地**：无账号、无云端同步、无社交功能
 - **非商业**：个人开源项目，课程内容由 LLM 原创生成，仅供学习交流
 - **输入→加工→输出**：每课 6 个 Step 按认知规律递进，15-25 min/课
-- **双平台原生**：Android (Kotlin + Jetpack Compose) 优先实现，iOS (Swift + SwiftUI) 后续 Vibecoding 复刻；业务逻辑各端独立实现，UI 风格保持一致
+- **Android 优先**：当前专注于 Android 原生开发，iOS 版本后续通过 Vibe Coding 复刻
 
 ---
 
@@ -77,7 +77,7 @@
 | 文件 | 阶段 | 内容 |
 |------|------|------|
 | [03-interaction-design.md](.agents/docs/03-interaction-design.md) | 交互设计 | 底部 Tab 导航、路由树（TabNavigator → Stack → Screen）、核心页面布局与交互规则 |
-| [05-architecture.md](.agents/docs/05-architecture.md) | 系统架构 | 技术栈总览、Android/iOS 项目目录结构、原生模块接口（Piper/Whisper/ECDICT）、状态管理、存储方案 |
+| [05-architecture.md](.agents/docs/05-architecture.md) | 系统架构 | 技术栈总览、Android 项目目录结构、原生模块接口（Piper/Whisper/ECDICT）、状态管理、存储方案 |
 
 ### 🎨 UI 设计
 
@@ -92,6 +92,7 @@
 |------|------|------|
 | [09-task-breakdown.md](.agents/docs/09-task-breakdown.md) | 任务拆解 | 8 个 Sprint，每个任务 ≤ 4h，含依赖关系图：S1 脚手架 → S2 原生模块 → S3 课程管理 → S4 学习框架 → S5 Step 1-3 → S6 Step 4-6 → S7 设置&统计 → S8 测试打磨 |
 | [11-quality-testing.md](.agents/docs/11-quality-testing.md) | 测试策略 | 手动测试为主 + 关键逻辑单元测试，P0/P1 测试范围清单，手动测试检查表 |
+| [12-native-module-tests.md](.agents/docs/12-native-module-tests.md) | 原生模块测试 | Sprint 2 手动测试用例：ECDICT/TTS/ASR 模块初始化、功能验证、错误处理 |
 
 ### 📝 历史文档
 
