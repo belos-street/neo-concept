@@ -5,13 +5,13 @@
 | 维度 | 说明 |
 |------|------|
 | **项目名** | neo-concept |
-| **产品形态** | 手机 App（React Native 0.76+ / TypeScript），Android 优先，iOS 接口预留 |
+| **产品形态** | 双平台独立原生 App（Android: Kotlin + Jetpack Compose，iOS: Swift + SwiftUI） |
 | **App 定位** | 离线优先、系统化英语学习工具 |
 | **目标用户** | 英语基础薄弱、希望体系化提升的学习者 |
 | **开源协议** | GPL-3.0 |
-| **包管理器** | bun（依赖管理 + 脚本运行 + 单元测试） |
+| **包管理器** | Gradle KTS (Android) / SPM (iOS) |
 | **开发设备** | macOS / Windows |
-| **开发工具** | VS Code + Android Studio（模拟器） |
+| **开发工具** | Android Studio / Xcode |
 
 ### 核心原则
 
@@ -19,7 +19,7 @@
 - **纯本地**：无账号、无云端同步、无社交功能
 - **非商业**：个人开源项目，课程内容由 LLM 原创生成，仅供学习交流
 - **输入→加工→输出**：每课 6 个 Step 按认知规律递进，15-25 min/课
-- **跨平台设计**：业务逻辑与 UI 层保持平台无关（React Native 层），平台相关代码通过 `src/native/` 桥接层隔离；Android 优先实现，iOS 接口预留，后续只需补充 iOS 原生模块即可复用全部上层代码
+- **双平台原生**：Android (Kotlin + Jetpack Compose) 优先实现，iOS (Swift + SwiftUI) 后续 Vibecoding 复刻；业务逻辑各端独立实现，UI 风格保持一致
 
 ---
 
@@ -32,10 +32,10 @@
 | 技能 | 路径 | 作用 |
 |------|------|------|
 | **belos-street** | `skills/belos-street/` | 个人编码规范：命名约定、代码组织、代码风格、测试理念、LLM 编码指南 |
-| **bun** | `skills/bun/` | Bun 运行时专项：基础 API、包管理、CLI 工具、测试、服务端 |
-| **react-best-practices** | `skills/react-best-practices/` | React 最佳实践：Hooks、Event、Context、Performance、TypeScript、Suspense 等 62 个参考文档 |
-| **react-native-skills** | `skills/react-native-skills/` | React Native 专项：列表性能、动画、导航、UI 组件、原生模块等 |
-| **zustand** | `skills/zustand/` | Zustand 状态管理：store 定义、selectors、middleware、TypeScript 支持 |
+| **android-navigation-3** | `skills/android-navigation-3/` | Jetpack Navigation 3：Tab/Stack 导航、深链、多回退栈、BottomSheet、Dialog |
+| **android-compose-theming** | `skills/android-compose-theming/` | Compose Styles API：组件主题、自定义样式、Modifier.styleable |
+| **android-testing** | `skills/android-testing/` | Android 测试策略：单元测试、UI 测试、截图测试、覆盖率 |
+| **android-edge-to-edge** | `skills/android-edge-to-edge/` | Edge-to-edge 全屏显示：系统栏、IME 处理、导航栏适配 |
 
 ### 设计与流程技能
 
@@ -48,9 +48,7 @@
 
 ### 辅助技能
 
-| 技能 | 路径 | 作用 |
-|------|------|------|
-| **langchain** | `skills/langchain/` | LangChain 框架：Agent CLI 生成课程内容时使用（App 本体不依赖） |
+（暂无）
 
 ---
 
@@ -79,7 +77,7 @@
 | 文件 | 阶段 | 内容 |
 |------|------|------|
 | [03-interaction-design.md](.agents/docs/03-interaction-design.md) | 交互设计 | 底部 Tab 导航、路由树（TabNavigator → Stack → Screen）、核心页面布局与交互规则 |
-| [05-architecture.md](.agents/docs/05-architecture.md) | 系统架构 | 技术栈总览、项目目录结构、原生模块桥接架构（Piper/Whisper/ECDICT 的 TS 接口与 Kotlin 实现要点） |
+| [05-architecture.md](.agents/docs/05-architecture.md) | 系统架构 | 技术栈总览、Android/iOS 项目目录结构、原生模块接口（Piper/Whisper/ECDICT）、状态管理、存储方案 |
 
 ### 🎨 UI 设计
 
