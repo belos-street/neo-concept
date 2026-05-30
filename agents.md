@@ -20,6 +20,7 @@
 - **非商业**：个人开源项目，课程内容由 LLM 原创生成，仅供学习交流
 - **输入→加工→输出**：每课 6 个 Step 按认知规律递进，15-25 min/课
 - **Android 优先**：当前专注于 Android 原生开发，iOS 版本后续通过 Vibe Coding 复刻
+- **统一 UI 风格**：所有 UI 组件必须严格遵循 `SwissTheme` 设计规范（详见 `.agents/docs/ui-design/theme.md`），禁止使用 Material3 默认样式
 
 ---
 

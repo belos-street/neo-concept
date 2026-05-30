@@ -8,6 +8,8 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -15,15 +17,20 @@ val Context.progressDataStore: DataStore<Preferences> by preferencesDataStore(na
 
 data class LessonProgress(
     val lessonId: String,
-    val step: Int,
-    val completed: Boolean,
-    val timeSpentSeconds: Int,
-    val lastUpdated: Long
+    val currentStep: Int = 0,
+    val totalSteps: Int = 6,
+    val completedSteps: List<Int> = emptyList(),
+    val lastAccessedAt: Long = System.currentTimeMillis(),
+    val finished: Boolean = false,
+    val timeSpentSeconds: Int = 0
 )
 
 class ProgressRepository(private val context: Context) {
+    private val gson = Gson()
+    private val type = object : TypeToken<Map<String, LessonProgress>>() {}.type
+
     private object Keys {
-        val LESSON_PROGRESS = stringPreferencesKey("lesson_progress")
+        val PROGRESS_MAP = stringPreferencesKey("progress_map")
         val TOTAL_TIME_SPENT = longPreferencesKey("total_time_spent")
         val COMPLETED_LESSONS = intPreferencesKey("completed_lessons")
     }
@@ -36,57 +43,109 @@ class ProgressRepository(private val context: Context) {
         preferences[Keys.COMPLETED_LESSONS] ?: 0
     }
 
-    val lessonProgressMap: Flow<Map<String, LessonProgress>> = context.progressDataStore.data.map { preferences ->
-        val progressJson = preferences[Keys.LESSON_PROGRESS] ?: "{}"
-        parseProgressJson(progressJson)
+    val progressMap: Flow<Map<String, LessonProgress>> =
+        context.progressDataStore.data.map { preferences ->
+            val json = preferences[Keys.PROGRESS_MAP] ?: "{}"
+            try {
+                gson.fromJson(json, type) ?: emptyMap()
+            } catch (e: Exception) {
+                emptyMap()
+            }
+        }
+
+    fun getLessonProgress(lessonId: String): Flow<LessonProgress?> =
+        progressMap.map { it[lessonId] }
+
+    suspend fun startLesson(lessonId: String, totalSteps: Int = 6) {
+        context.progressDataStore.edit { preferences ->
+            val current = loadMap(preferences)
+            val updated = current.toMutableMap()
+            updated[lessonId] = LessonProgress(
+                lessonId = lessonId,
+                currentStep = 0,
+                totalSteps = totalSteps,
+                completedSteps = emptyList(),
+                lastAccessedAt = System.currentTimeMillis(),
+                finished = false
+            )
+            preferences[Keys.PROGRESS_MAP] = gson.toJson(updated)
+        }
     }
 
-    suspend fun updateLessonProgress(progress: LessonProgress) {
+    suspend fun completeStep(lessonId: String, stepIndex: Int) {
         context.progressDataStore.edit { preferences ->
-            val currentProgress = parseProgressJson(preferences[Keys.LESSON_PROGRESS] ?: "{}")
-            val updatedProgress = currentProgress.toMutableMap()
-            updatedProgress[progress.lessonId] = progress
-            preferences[Keys.LESSON_PROGRESS] = serializeProgressJson(updatedProgress)
-
-            val oldProgress = currentProgress[progress.lessonId]
-            val timeDiff = progress.timeSpentSeconds - (oldProgress?.timeSpentSeconds ?: 0)
-            if (timeDiff > 0) {
-                preferences[Keys.TOTAL_TIME_SPENT] = (preferences[Keys.TOTAL_TIME_SPENT] ?: 0L) + timeDiff
-            }
-
-            if (progress.completed && (oldProgress == null || !oldProgress.completed)) {
-                preferences[Keys.COMPLETED_LESSONS] = (preferences[Keys.COMPLETED_LESSONS] ?: 0) + 1
+            val current = loadMap(preferences)
+            val progress = current[lessonId] ?: return@edit
+            if (stepIndex !in progress.completedSteps) {
+                val updated = current.toMutableMap()
+                updated[lessonId] = progress.copy(
+                    completedSteps = progress.completedSteps + stepIndex,
+                    currentStep = stepIndex,
+                    lastAccessedAt = System.currentTimeMillis()
+                )
+                preferences[Keys.PROGRESS_MAP] = gson.toJson(updated)
             }
         }
     }
 
-    private fun parseProgressJson(json: String): Map<String, LessonProgress> {
-        if (json == "{}") return emptyMap()
+    suspend fun undoCompleteStep(lessonId: String, stepIndex: Int) {
+        context.progressDataStore.edit { preferences ->
+            val current = loadMap(preferences)
+            val progress = current[lessonId] ?: return@edit
+            val updated = current.toMutableMap()
+            updated[lessonId] = progress.copy(
+                completedSteps = progress.completedSteps.filter { it != stepIndex },
+                currentStep = stepIndex,
+                finished = false,
+                lastAccessedAt = System.currentTimeMillis()
+            )
+            preferences[Keys.PROGRESS_MAP] = gson.toJson(updated)
+        }
+    }
+
+    suspend fun goToStep(lessonId: String, stepIndex: Int) {
+        context.progressDataStore.edit { preferences ->
+            val current = loadMap(preferences)
+            val progress = current[lessonId] ?: return@edit
+            val updated = current.toMutableMap()
+            updated[lessonId] = progress.copy(
+                currentStep = stepIndex,
+                lastAccessedAt = System.currentTimeMillis()
+            )
+            preferences[Keys.PROGRESS_MAP] = gson.toJson(updated)
+        }
+    }
+
+    suspend fun finishLesson(lessonId: String) {
+        context.progressDataStore.edit { preferences ->
+            val current = loadMap(preferences)
+            val progress = current[lessonId] ?: return@edit
+            val updated = current.toMutableMap()
+            updated[lessonId] = progress.copy(
+                finished = true,
+                lastAccessedAt = System.currentTimeMillis()
+            )
+            preferences[Keys.PROGRESS_MAP] = gson.toJson(updated)
+
+            preferences[Keys.COMPLETED_LESSONS] = (preferences[Keys.COMPLETED_LESSONS] ?: 0) + 1
+        }
+    }
+
+    suspend fun resetLesson(lessonId: String) {
+        context.progressDataStore.edit { preferences ->
+            val current = loadMap(preferences)
+            val updated = current.toMutableMap()
+            updated.remove(lessonId)
+            preferences[Keys.PROGRESS_MAP] = gson.toJson(updated)
+        }
+    }
+
+    private fun loadMap(preferences: Preferences): Map<String, LessonProgress> {
+        val json = preferences[Keys.PROGRESS_MAP] ?: "{}"
         return try {
-            val map = mutableMapOf<String, LessonProgress>()
-            val entries = json.removeSurrounding("{", "}").split("},")
-            for (entry in entries) {
-                val parts = entry.split(":")
-                if (parts.size >= 2) {
-                    val lessonId = parts[0].trim().removeSurrounding("\"")
-                    val step = parts[1].trim().toIntOrNull() ?: 0
-                    val completed = parts.getOrNull(2)?.trim()?.toBooleanStrictOrNull() ?: false
-                    val timeSpent = parts.getOrNull(3)?.trim()?.toIntOrNull() ?: 0
-                    val lastUpdated = parts.getOrNull(4)?.trim()?.toLongOrNull() ?: 0L
-                    map[lessonId] = LessonProgress(lessonId, step, completed, timeSpent, lastUpdated)
-                }
-            }
-            map
+            gson.fromJson(json, type) ?: emptyMap()
         } catch (e: Exception) {
             emptyMap()
         }
-    }
-
-    private fun serializeProgressJson(progress: Map<String, LessonProgress>): String {
-        if (progress.isEmpty()) return "{}"
-        val entries = progress.entries.joinToString(",") { (id, p) ->
-            "\"$id\":${p.step},${p.completed},${p.timeSpentSeconds},${p.lastUpdated}"
-        }
-        return "{$entries}"
     }
 }

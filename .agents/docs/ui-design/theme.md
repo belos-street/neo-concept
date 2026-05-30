@@ -181,9 +181,11 @@ Use platform-native icon systems (Material Icons on Android, SF Symbols on iOS) 
 - "Check update" button: text-only, right-aligned, uppercase label 12px with underline
 
 ### Lesson Screen (Step Container)
+- **Bottom navigation bar: HIDDEN** (fullscreen learning mode, no distractions)
 - Step progress bar: 6 dots (12px diameter), connected by 2px line, completed=black, current=red outline, future=light gray
 - Content area: fills remaining space, ScrollView
 - "Next step" button: full-width at bottom, 52px height, black bg, white label uppercase 14px
+- Back navigation: system back gesture or button only
 
 ### Fill Blank Exercise
 - Blank input: dashed underline (placeholder), filled text uses body 16px

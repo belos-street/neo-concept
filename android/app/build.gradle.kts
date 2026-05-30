@@ -74,6 +74,9 @@ dependencies {
     // SQLite (原生 Android)
     // 使用 android.database.sqlite，无需额外依赖
 
+    // ONNX Runtime (for Piper TTS)
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.16.0")
+
     // Core
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.activity:activity-compose:1.9.3")
