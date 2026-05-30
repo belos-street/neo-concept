@@ -2,7 +2,7 @@ package com.neoconcept.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
@@ -24,7 +24,7 @@ import com.neoconcept.screens.SettingsScreen
 import com.neoconcept.screens.StatsScreen
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    data object CourseList : Screen("course_list", "课程", Icons.Default.List)
+    data object CourseList : Screen("course_list", "课程", Icons.AutoMirrored.Filled.List)
     data object Stats : Screen("stats", "统计", Icons.Default.Star)
     data object Settings : Screen("settings", "设置", Icons.Default.Settings)
 }
