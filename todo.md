@@ -70,15 +70,15 @@
 
 | # | 任务 | 依赖 | 状态 |
 |---|------|------|:--:|
-| 1.1 | 备份 ecdict.db 到 `assets/ecdict.db` | 0.16 | ⬜ |
-| 1.2 | Android Studio 创建新项目（Kotlin + Compose，minSdk 26） | 0.16 | ⬜ |
-| 1.3 | Gradle KTS 配置（Compose、Navigation、DataStore、Coroutines） | 1.2 | ⬜ |
-| 1.4 | 包结构：`ui/`、`data/`、`domain/`、`native/` | 1.2 | ⬜ |
-| 1.5 | 移入 ecdict.db → `app/src/main/assets/` | 1.1, 1.2 | ⬜ |
-| 1.6 | Theme 定义 — Swiss International（黑白+红、无圆角、无阴影） | 1.2 | ⬜ |
-| 1.7 | Navigation Compose — 底部 Tab + Stack | 1.3 | ⬜ |
-| 1.8 | DataStore 封装 — PreferencesDataStore | 1.3 | ⬜ |
-| 1.9 | 基础 UI 组件 — Button/Card/Divider/Modal/ScreenHeader/Loading | 1.6 | ⬜ |
+| 1.1 | 备份 ecdict.db 到 `assets/ecdict.db` | 0.16 | ✅ |
+| 1.2 | Android Studio 创建新项目（Kotlin + Compose，minSdk 26） | 0.16 | ✅ |
+| 1.3 | Gradle KTS 配置（Compose、Navigation、DataStore、Coroutines） | 1.2 | ✅ |
+| 1.4 | 包结构：`ui/`、`data/`、`domain/`、`native/` | 1.2 | ✅ |
+| 1.5 | 移入 ecdict.db → `app/src/main/assets/` | 1.1, 1.2 | ✅ |
+| 1.6 | Theme 定义 — Swiss International（黑白+红、无圆角、无阴影） | 1.2 | ✅ |
+| 1.7 | Navigation Compose — 底部 Tab + Stack | 1.3 | ✅ |
+| 1.8 | DataStore 封装 — PreferencesDataStore | 1.3 | ✅ |
+| 1.9 | 基础 UI 组件 — Button/Card/Divider/Modal/ScreenHeader/Loading | 1.6 | ✅ |
 
 ---
 

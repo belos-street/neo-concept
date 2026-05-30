@@ -12,7 +12,7 @@
 
 ## 项目结构
 
-- `android/` — Android 原生项目（待创建）
+- `android/` — Android 原生项目
 - `ios/` — iOS 原生项目（待创建）
 - `src/` — 旧 RN 代码（Vibecoding 参考，不参与编译）
 - `scripts/` — 工具脚本（ECDICT 裁剪）
@@ -24,7 +24,6 @@
 ### Android
 
 ```sh
-# 待 android/ 项目创建后：
 # 用 Android Studio 打开 android/ 目录
 # 或命令行构建
 cd android && ./gradlew assembleDebug
