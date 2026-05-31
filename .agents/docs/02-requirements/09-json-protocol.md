@@ -1,111 +1,132 @@
-# 09 — JSON 数据协议（Agent ↔ App 契约）
+# 09 — YAML 数据协议（Agent ↔ App 契约）
 
 > 所属：Neo Concept 结构化需求文档
 >
-> 这是 Agent 与 App 之间的硬契约。Agent 必须按此 Schema 产出 JSON，App 按此 Schema 解析消费。
+> 这是 Agent 与 App 之间的硬契约。Agent 必须按此 Schema 产出 YAML，App 按此 Schema 解析消费。
+>
+> **为什么选择 YAML？**
+> - 中文内容友好，无需转义引号
+> - 多行文本（课文）使用 `|` 块语法更清晰
+> - 手动编辑更友好，不易出错
+> - 可读性更强
 
 ---
 
-## manifest.json — 课程索引
+## manifest.yaml — 课程索引
 
-```json
-{
-  "version": "1.0.0",
-  "generated_at": "2026-05-12T00:00:00Z",
-  "books": [
-    {
-      "id": "book-1",
-      "title": "Book 1: Foundations",
-      "description": "...",
-      "level": "beginner",
-      "target_vocabulary": 500,
-      "units": [
-        {
-          "id": "unit-1-1",
-          "title": "Unit 1: Simple Present Tense",
-          "grammar_points": ["simple present", "subject-verb agreement"],
-          "lessons": [
-            {
-              "id": "lesson-1-1",
-              "title": "A Day at the Market",
-              "hash": "sha256-abc123...",
-              "file": "book-1/unit-1/lesson-1-1.json"
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
+```yaml
+version: "1.0.0"
+lastUpdated: "2026-05-30T00:00:00Z"
+
+books:
+  - id: book-1
+    title: Book 1: Foundations
+    description: "..."
+    level: beginner
+    target_vocabulary: 500
+    units:
+      - id: unit-1-1
+        title: "Unit 1: Simple Present Tense"
+        grammar_points:
+          - simple present
+          - subject-verb agreement
+        lessons:
+          - id: lesson-1-1
+            title: "A Day at the Market"
+            hash: "sha256-abc123..."
+            file: "book-1/unit-1/lesson-1-1.yaml"
 ```
 
 ---
 
-## lesson-{id}.json — 单课内容
+## lesson-{id}.yaml — 单课内容
 
-```json
-{
-  "id": "lesson-1-1",
-  "title": "A Day at the Market",
-  "book_id": "book-1",
-  "unit_id": "unit-1-1",
-  "grammar_points": [
-    {"name": "Simple Present Tense", "explanation": "...", "examples": ["..."]}
-  ],
-  "new_vocabulary": [
-    {"word": "market", "phonetic": "/ˈmɑːrkɪt/", "definition_cn": "市场", "part_of_speech": "n.", "example": "She goes to the market every Sunday."}
-  ],
-  "passage": {
-    "title": "A Day at the Market",
-    "text": "Every Sunday, Anna goes to the market. She buys fresh vegetables and fruit...",
-    "word_count": 150,
-    "images": [
-      {"url": "book-1/unit-1/lesson-1-1_img1.png", "alt": "A busy outdoor market with colorful stalls"}
-    ]
-  },
-  "listening": {
-    "questions": [
-      {
-        "type": "choice",
-        "audio_segment": "Every Sunday, Anna goes to the market...",
-        "question": "Where does Anna go every Sunday?",
-        "options": ["School", "Market", "Park", "Library"],
-        "answer": 1
-      }
-    ]
-  },
-  "fill_blanks": {
-    "gaps": [
-      {"gap_index": 1, "word": "Sunday", "initial": "S", "pos": "n.", "meaning_cn": "星期日"},
-      {"gap_index": 2, "word": "market", "initial": "M", "pos": "n.", "meaning_cn": "市场"},
-      {"gap_index": 3, "word": "fresh", "initial": "F", "pos": "adj.", "meaning_cn": "新鲜的"}
-    ],
-    "template": "Every ___, Anna goes to the ___. She buys ___ vegetables and fruit."
-  },
-  "vocabulary_exercises": {
-    "flashcards": [0],
-    "spelling": [0],
-    "matching": [{"en_index": 0, "cn_options": ["市场", "学校", "公园", "图书馆"], "answer": 0}]
-  },
-  "reading": {
-    "questions": [
-      {
-        "type": "detail",
-        "question": "What does Anna buy at the market?",
-        "options": ["Meat and rice", "Vegetables and fruit", "Bread and milk", "Fish and chips"],
-        "answer": 1,
-        "evidence": "She buys fresh vegetables and fruit"
-      }
-    ]
-  },
-  "speaking": {
-    "sentences": [
-      {"text": "Every Sunday, Anna goes to the market.", "difficulty": 1},
-      {"text": "She buys fresh vegetables and fruit.", "difficulty": 2},
-      {"text": "Anna enjoys the colorful stalls and fresh produce every weekend morning.", "difficulty": 3}
-    ]
-  }
-}
+```yaml
+id: lesson-1-1
+title: "A Day at the Market"
+book_id: book-1
+unit_id: unit-1-1
+
+grammar_points:
+  - name: Simple Present Tense
+    explanation: "..."
+    examples:
+      - "..."
+
+new_vocabulary:
+  - word: market
+    phonetic: "/ˈmɑːrkɪt/"
+    definition_cn: 市场
+    part_of_speech: n.
+    example: "She goes to the market every Sunday."
+
+passage:
+  title: "A Day at the Market"
+  text: |
+    Every Sunday, Anna goes to the market.
+    She buys fresh vegetables and fruit...
+  word_count: 150
+  images:
+    - url: "book-1/unit-1/lesson-1-1_img1.png"
+      alt: "A busy outdoor market with colorful stalls"
+
+listening:
+  questions:
+    - type: choice
+      audio_segment: "Every Sunday, Anna goes to the market..."
+      question: "Where does Anna go every Sunday?"
+      options: [School, Market, Park, Library]
+      answer: 1
+
+fill_blanks:
+  template: |
+    Every ___, Anna goes to the ___.
+    She buys ___ vegetables and fruit.
+  gaps:
+    - gap_index: 1
+      word: Sunday
+      initial: S
+      pos: n.
+      meaning_cn: 星期日
+
+    - gap_index: 2
+      word: market
+      initial: M
+      pos: n.
+      meaning_cn: 市场
+
+    - gap_index: 3
+      word: fresh
+      initial: F
+      pos: adj.
+      meaning_cn: 新鲜的
+
+vocabulary_exercises:
+  flashcards: [0]
+  spelling: [0]
+  matching:
+    - en_index: 0
+      cn_options: [市场, 学校, 公园, 图书馆]
+      answer: 0
+
+reading:
+  questions:
+    - type: detail
+      question: "What does Anna buy at the market?"
+      options: [Meat and rice, Vegetables and fruit, Bread and milk, Fish and chips]
+      answer: 1
+      evidence: "She buys fresh vegetables and fruit"
+
+speaking:
+  sentences:
+    - text: "Every Sunday, Anna goes to the market."
+      difficulty: 1
+
+    - text: "She buys fresh vegetables and fruit."
+      difficulty: 2
+
+    - text: "Anna enjoys the colorful stalls and fresh produce every weekend morning."
+      difficulty: 3
 ```
 
 ---
@@ -137,7 +158,7 @@
 
 ### reading 字段说明
 
-> `reading` 不再包含 `passage` 字段。Step 5 阅读理解共用 Step 1 的 `passage.text`，避免同一段课文在 JSON 中重复存储。
+> `reading` 不再包含 `passage` 字段。Step 5 阅读理解共用 Step 1 的 `passage.text`，避免同一段课文在 YAML 中重复存储。
 
 ### speaking 字段说明
 
@@ -150,61 +171,40 @@
 
 ---
 
-## 内容分发流程
+## YAML 语法要点
 
+### 多行文本
+使用 `|` 保留换行符：
+```yaml
+text: |
+  First line.
+  
+  Second line.
 ```
-Agent CLI（外部工具，非本项目范围）
-  │  使用 LLM 生成 course JSON
-  │  计算 SHA256 hash
-  │  更新 manifest.json
-  ▼
-GitHub Pages（静态托管）
-  │  book-1/unit-1/lesson-*.json
-  │  manifest.json
-  │  images/
-  ▼
-App (Android)  ← 本项目范围
-  │  1. 首次启动 → fetch manifest.json
-  │  2. 用户选择课程 → fetch lesson-{id}.json
-  │  3. 检查更新 → 对比 manifest 中 hash
-  │  4. 增量下载变更的课程 + 图片
+
+### 列表
+```yaml
+items:
+  - item1
+  - item2
+```
+
+### 字符串引号
+包含特殊字符时需要引号：
+```yaml
+title: "Lesson 1: Excuse me!"
+example: "She goes to the market every Sunday."
 ```
 
 ---
 
-## Schema 版本演进策略
+## 依赖库
 
-### 版本号规范
-
-- **主版本号（Major）**：不兼容的 Schema 变更（如字段删除、类型变更）
-- **次版本号（Minor）**：向后兼容的新增字段或可选字段
-- **修订号（Patch）**：文档修正、字段说明澄清
-
-### 向后兼容原则
-
-1. **新增字段必须可选**：App 解析时忽略未知字段，不崩溃
-2. **字段删除需两版本过渡**：v1.x 标记 deprecated，v2.0 移除
-3. **字段类型不可变更**：如需变更，新增字段并废弃旧字段
-
-### App 端兼容性处理
+Android 端使用 [SnakeYAML](https://bitbucket.org/snakeyaml/snakeyaml) 解析 YAML：
 
 ```kotlin
-// 使用 Gson 解析，忽略未知字段
-val gson = GsonBuilder()
-    .setLenient()
-    .create()
-
-// 或使用 @SerializedName + 默认值
-data class Lesson(
-    val id: String,
-    val title: String,
-    val newVocabulary: List<VocabularyItem> = emptyList(),  // 默认值防止旧 JSON 缺失
-    val passage: Passage? = null  // 可选字段
-)
+// build.gradle.kts
+dependencies {
+    implementation("org.yaml:snakeyaml:2.2")
+}
 ```
-
-### 版本检查流程
-
-1. App 启动时读取 manifest.json 中的 `version` 字段
-2. 若主版本号不匹配（如 App 支持 v1.x，manifest 为 v2.0）→ 提示用户更新 App
-3. 若次版本号更高 → 正常解析，忽略未知字段

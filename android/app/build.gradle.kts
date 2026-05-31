@@ -68,8 +68,14 @@ dependencies {
     // OkHttp
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
-    // Gson
+    // SnakeYAML
+    implementation("org.yaml:snakeyaml:2.2")
+
+    // Gson (用于 DataStore 序列化)
     implementation("com.google.code.gson:gson:2.11.0")
+
+    // Coil (Image Loading)
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     // SQLite (原生 Android)
     // 使用 android.database.sqlite，无需额外依赖

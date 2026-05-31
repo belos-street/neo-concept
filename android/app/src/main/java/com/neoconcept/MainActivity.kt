@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import com.neoconcept.audio.TTSManager
 import com.neoconcept.audio.WhisperASR
 import com.neoconcept.data.repository.EcdictRepository
+import com.neoconcept.data.repository.LessonRepository
 import com.neoconcept.data.repository.ManifestRepository
 import com.neoconcept.data.repository.ProgressRepository
 import com.neoconcept.navigation.AppNavigation
@@ -24,6 +25,8 @@ class MainActivity : ComponentActivity() {
         private set
     lateinit var progressRepository: ProgressRepository
         private set
+    lateinit var lessonRepository: LessonRepository
+        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +35,7 @@ class MainActivity : ComponentActivity() {
         whisperASR = WhisperASR(this)
         manifestRepository = ManifestRepository(this)
         progressRepository = ProgressRepository(this)
+        lessonRepository = LessonRepository(this)
         TTSManager.init(this)
 
         lifecycleScope.launch {
@@ -45,7 +49,8 @@ class MainActivity : ComponentActivity() {
             NeoConceptTheme {
                 AppNavigation(
                     manifestRepository = manifestRepository,
-                    progressRepository = progressRepository
+                    progressRepository = progressRepository,
+                    lessonRepository = lessonRepository
                 )
             }
         }

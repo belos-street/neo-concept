@@ -14,6 +14,7 @@
 | 状态管理 | ViewModel + StateFlow | 响应式状态 |
 | KV 存储 | DataStore Preferences | 进度/设置持久化 |
 | SQLite | SQLiteOpenHelper (原生) | ECDICT 词典查询 |
+| YAML 解析 | SnakeYAML | 课程数据解析 |
 | TTS | Piper (kathleen-low) | 离线语音合成 |
 | ASR | Whisper.cpp (tiny.en) | 离线语音识别 |
 | 构建工具 | Gradle (Kotlin DSL) | 项目构建 |
@@ -31,7 +32,7 @@
 | DataStore | `androidx.datastore:datastore-preferences` | KV 持久化 |
 | Coroutines | `org.jetbrains.kotlinx:kotlinx-coroutines-android` | 异步操作 |
 | OkHttp | `com.squareup.okhttp3:okhttp:4.12.0` | HTTP 下载 |
-| Gson | `com.google.code.gson:gson:2.11.0` | JSON 解析 |
+| SnakeYAML | `org.yaml:snakeyaml:2.2` | YAML 解析 |
 | SQLite | Android 原生 (`android.database.sqlite`) | ECDICT 词典查询 |
 | Piper TTS | JNI (ONNX Runtime) | 离线语音合成 |
 | Whisper ASR | JNI (GGML) | 离线语音识别 |
@@ -221,10 +222,10 @@ data class Settings(
 │                 App 存储层                    │
 ├──────────────┬──────────────────────────────┤
 │  DataStore   │   文件系统                    │
-│  (KV)        │   (课程 JSON + 图片)          │
+│  (KV)        │   (课程 YAML)                │
 ├──────────────┼──────────────────────────────┤
-│ settings     │ /files/lessons/lesson-1-1.json│
-│ progress:*   │ /files/images/book-1/...png   │
+│ settings     │ /files/lessons/lesson-1-1.yaml│
+│ progress:*   │                               │
 │ manifest     │                               │
 ├──────────────┴──────────────────────────────┤
 │   SQLite                                    │
@@ -239,12 +240,19 @@ data class Settings(
 
 | 数据 | 路径 | 大小 |
 |------|------|------|
-| 课程 JSON | `{filesDir}/lessons/lesson-{id}.json` | < 100KB/课 |
-| 课程图片 | `{filesDir}/images/{path}` | 不定 |
+| 课程 YAML | `{filesDir}/lessons/lesson-{id}.yaml` | < 100KB/课 |
+| 课程图片 | HTTPS URL（远程仓库） | 按需加载缓存 |
 | ECDICT | `{filesDir}/databases/ecdict.db` | ~5 MB |
 | Piper 模型 | `{filesDir}/piper/` | ~20 MB |
 | Whisper 模型 | `{filesDir}/whisper/` | ~75 MB |
 | 临时音频 | `{cacheDir}/recording_*.wav` | 用完即删 |
+
+### 课程图片资源
+
+课程配图使用 HTTPS URL，存储在独立的课程资源仓库：
+- 仓库：`https://github.com/neo-concept/assets`
+- 格式：`https://raw.githubusercontent.com/neo-concept/assets/main/images/{book}/{unit}/{image}`
+- App 端按需下载并缓存到本地
 
 ---
 

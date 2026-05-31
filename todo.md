@@ -111,12 +111,12 @@
 
 | # | 任务 | 依赖 | 状态 |
 |---|------|------|:--:|
-| 4.1 | StepProgressBar — 进度条组件 | 1.9 | ⬜ |
-| 4.2 | LessonScreen — Step 容器 + 顺序解锁 | 4.1, 1.7 | ⬜ |
-| 4.3 | ProgressRepository — DataStore 持久化 | 1.8 | ⬜ |
-| 4.4 | ResumeOverlay — 继续学习/回顾弹窗 | 4.3 | ⬜ |
-| 4.5 | 线性模式锁定逻辑 | 3.2, 4.3 | ⬜ |
-| 4.6 | ExitModal — 退出确认弹窗 | 4.2 | ⬜ |
+| 4.1 | StepProgressBar — 进度条组件 | 1.9 | ✅ |
+| 4.2 | LessonScreen — Step 容器 + 顺序解锁 | 4.1, 1.7 | ✅ |
+| 4.3 | ProgressRepository — DataStore 持久化 | 1.8 | ✅ |
+| 4.4 | ResumeOverlay — 继续学习/回顾弹窗 | 4.3 | ✅ |
+| 4.5 | 线性模式锁定逻辑 | 3.2, 4.3 | ✅ |
+| 4.6 | ExitModal — 退出确认弹窗 | 4.2 | ✅ |
 
 ---
 

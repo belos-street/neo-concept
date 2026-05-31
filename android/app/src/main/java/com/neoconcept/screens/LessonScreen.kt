@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,8 +17,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.neoconcept.data.model.LessonContent
+import com.neoconcept.data.repository.LessonRepository
 import com.neoconcept.data.repository.ManifestRepository
 import com.neoconcept.data.repository.ProgressRepository
+import com.neoconcept.features.lesson.PassageStep
 import com.neoconcept.ui.components.ExitModal
 import com.neoconcept.ui.components.ResumeOverlay
 import com.neoconcept.ui.components.ScreenHeader
@@ -34,6 +36,7 @@ fun LessonScreen(
     lessonId: String,
     manifestRepository: ManifestRepository,
     progressRepository: ProgressRepository,
+    lessonRepository: LessonRepository,
     onBack: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -43,10 +46,12 @@ fun LessonScreen(
     var showResume by remember { mutableStateOf(false) }
     var showExit by remember { mutableStateOf(false) }
     var initialized by remember { mutableStateOf(false) }
+    var lessonData by remember { mutableStateOf<LessonContent?>(null) }
 
     val lesson = remember { manifestRepository.findLessonById(lessonId) }
 
     LaunchedEffect(lessonId) {
+        lessonData = lessonRepository.getLesson(lessonId)
         if (progress != null && !progress.finished) {
             showResume = true
         } else if (progress == null) {
@@ -92,17 +97,29 @@ fun LessonScreen(
                 !initialized -> {
                     CircularProgressIndicator()
                 }
-                lesson == null -> {
+                lesson == null || lessonData == null -> {
                     Text(
                         text = "课程未找到",
                         color = MaterialTheme.colorScheme.error
                     )
                 }
                 else -> {
-                    Text(
-                        text = "Step ${currentStep + 1}: ${STEP_LABELS.getOrElse(currentStep) { "" }}",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
+                    when (currentStep) {
+                        0 -> PassageStep(
+                            lesson = lessonData!!,
+                            onComplete = {
+                                scope.launch {
+                                    progressRepository.completeStep(lessonId, 0)
+                                }
+                            }
+                        )
+                        else -> {
+                            Text(
+                                text = "Step ${currentStep + 1}: ${STEP_LABELS.getOrElse(currentStep) { "" }}",
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+                        }
+                    }
                 }
             }
         }

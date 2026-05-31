@@ -15,7 +15,7 @@
 
 ### 核心原则
 
-- **离线优先**：ASR/TTS/词典全部打包进 APK，仅课程 JSON 需联网下载
+- **离线优先**：ASR/TTS/词典全部打包进 APK，仅课程 YAML 需联网下载
 - **纯本地**：无账号、无云端同步、无社交功能
 - **非商业**：个人开源项目，课程内容由 LLM 原创生成，仅供学习交流
 - **输入→加工→输出**：每课 6 个 Step 按认知规律递进，15-25 min/课
@@ -70,7 +70,7 @@
 | 06 | [06-user-stories-module-d.md](.agents/docs/02-requirements/06-user-stories-module-d.md) | 模块 D — 内联词汇查阅：全局单词点击 tooltip、ECDICT 查询 |
 | 07 | [07-user-stories-module-ef.md](.agents/docs/02-requirements/07-user-stories-module-ef.md) | 模块 E/F/G — 统计、导入导出、设置 |
 | 08 | [08-business-flows.md](.agents/docs/02-requirements/08-business-flows.md) | 业务流程：学习主流程、碎片恢复、内容下载、异常总览 |
-| 09 | [09-json-protocol.md](.agents/docs/02-requirements/09-json-protocol.md) | JSON 数据协议：Agent ↔ App 契约、manifest/lesson Schema、字段说明 |
+| 09 | [09-json-protocol.md](.agents/docs/02-requirements/09-json-protocol.md) | YAML 数据协议：Agent ↔ App 契约、manifest/lesson Schema、字段说明 |
 | 10 | [10-nonfunctional.md](.agents/docs/02-requirements/10-nonfunctional.md) | 非功能需求：离线能力、模型大小、技术选型、风险、范围边界 |
 
 ### 🎨 设计文档

@@ -34,6 +34,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.neoconcept.data.repository.LessonRepository
 import com.neoconcept.data.repository.ManifestRepository
 import com.neoconcept.data.repository.ProgressRepository
 import com.neoconcept.screens.CourseListScreen
@@ -54,7 +55,8 @@ val screens = listOf(Screen.CourseList, Screen.Stats, Screen.Settings)
 @Composable
 fun AppNavigation(
     manifestRepository: ManifestRepository,
-    progressRepository: ProgressRepository
+    progressRepository: ProgressRepository,
+    lessonRepository: LessonRepository
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -109,6 +111,7 @@ fun AppNavigation(
                     lessonId = lessonId,
                     manifestRepository = manifestRepository,
                     progressRepository = progressRepository,
+                    lessonRepository = lessonRepository,
                     onBack = { navController.popBackStack() }
                 )
             }
