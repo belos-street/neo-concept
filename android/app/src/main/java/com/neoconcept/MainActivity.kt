@@ -11,6 +11,7 @@ import com.neoconcept.data.repository.EcdictRepository
 import com.neoconcept.data.repository.LessonRepository
 import com.neoconcept.data.repository.ManifestRepository
 import com.neoconcept.data.repository.ProgressRepository
+import com.neoconcept.data.repository.SettingsRepository
 import com.neoconcept.navigation.AppNavigation
 import com.neoconcept.ui.theme.NeoConceptTheme
 import kotlinx.coroutines.launch
@@ -27,6 +28,8 @@ class MainActivity : ComponentActivity() {
         private set
     lateinit var lessonRepository: LessonRepository
         private set
+    lateinit var settingsRepository: SettingsRepository
+        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +39,7 @@ class MainActivity : ComponentActivity() {
         manifestRepository = ManifestRepository(this)
         progressRepository = ProgressRepository(this)
         lessonRepository = LessonRepository(this)
+        settingsRepository = SettingsRepository(this)
         TTSManager.init(this)
 
         lifecycleScope.launch {
@@ -50,7 +54,9 @@ class MainActivity : ComponentActivity() {
                 AppNavigation(
                     manifestRepository = manifestRepository,
                     progressRepository = progressRepository,
-                    lessonRepository = lessonRepository
+                    lessonRepository = lessonRepository,
+                    ecdictRepository = ecdictRepository,
+                    settingsRepository = settingsRepository
                 )
             }
         }

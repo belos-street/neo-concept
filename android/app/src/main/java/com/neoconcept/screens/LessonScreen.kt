@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.neoconcept.data.model.LessonContent
+import com.neoconcept.data.repository.EcdictRepository
 import com.neoconcept.data.repository.LessonRepository
 import com.neoconcept.data.repository.ManifestRepository
 import com.neoconcept.data.repository.ProgressRepository
@@ -37,6 +38,7 @@ fun LessonScreen(
     manifestRepository: ManifestRepository,
     progressRepository: ProgressRepository,
     lessonRepository: LessonRepository,
+    ecdictRepository: EcdictRepository,
     onBack: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -107,6 +109,7 @@ fun LessonScreen(
                     when (currentStep) {
                         0 -> PassageStep(
                             lesson = lessonData!!,
+                            ecdictRepository = ecdictRepository,
                             onComplete = {
                                 scope.launch {
                                     progressRepository.completeStep(lessonId, 0)

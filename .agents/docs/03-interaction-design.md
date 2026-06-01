@@ -167,26 +167,33 @@ App 启动 → 从内置 URL 拉取 manifest
 ├─────────────────────────────┤
 │ A Day at the Market          │
 │                             │
+│ ▶ PLAY SENTENCES             │
+│                             │
 │ Every Sunday, Anna goes to   │
 │ the market. She buys fresh   │
 │ vegetables and fruit...      │
+│                             │
+│ ┌─ NEW WORDS ──────────────┐ │
+│ │ market   /ˈmɑːrkɪt/  市场│ │
+│ │ fresh    /freʃ/     新鲜的│ │
+│ └──────────────────────────┘ │
 │                             │
 │ ┌─ 语法点 ─────────────────┐ │
 │ │ Simple Present Tense     │ │
 │ │ 表示习惯性动作...         │ │
 │ └──────────────────────────┘ │
 ├─────────────────────────────┤
-│ 🔊 全文朗读  ▶ 0.75x 1.0x   │
-│                             │
 │         [下一步 →]           │
 └─────────────────────────────┘
 ```
 
 **交互：**
-- 点击任意单词 → 弹出 WordTooltip
-- [全文朗读] → TTS 播放全文，按钮变为 ⏸
-- 点击某句 → TTS 播放该句 + 该句高亮
-- TTS 速度选择器即时切换
+- 点击任意单词 → 弹出 WordTooltip（ECDICT 释义弹窗）
+- [PLAY SENTENCES] → 逐句朗读，按钮变为 ⏸ PAUSE，当前朗读句高亮
+- 暂停后按钮变为 ▶ CONTINUE，点击继续播放
+- 朗读中显示 ■ STOP 按钮，点击停止回到初始状态
+- 词汇卡片展示本课 newVocabulary（词 + 音标 + 释义）
+- TTS 速度在全局设置页面配置（0.75× / 1.0× / 1.25× / 1.5×）
 - [下一步] → 标记 Step 1 completed，进入 Step 2
 
 ### Step 2 — 填词练习 (Step2FillBlanks)
