@@ -51,3 +51,8 @@
 （暂无）
 
 ---
+
+## 3. 文档与图表规范
+
+- **图表统一使用 Mermaid**：所有结构图、流程图、类图、状态图等统一使用 Markdown 原生的 Mermaid 语法绘制，确保在 GitHub、GitLab 及支持 Mermaid 的渲染器中可直接查看。
+- **避免 ASCII 流程图与外部图片**：不要使用纯 ASCII 流程图、截图或外部绘图工具代替 Mermaid；只有纯粹的 UI 布局线框图可保留简化 ASCII。
