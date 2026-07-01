@@ -28,16 +28,16 @@
 ### 2. 课程目录/书架设计
 
 > **已确认**：详见 [docs/superpowers/specs/2026-07-01-bookshelf-course-list.md](docs/superpowers/specs/2026-07-01-bookshelf-course-list.md)。
-> 核心：首页垂直大卡片书架；书详情页为课程列表，每 10 课粘性分组；5 种课程状态；书/课均顺序解锁，口语跳过保留待补标记。
+> 核心：首页垂直大卡片书架；书详情页为课程列表，每 10 课粘性分组；4 种课程状态（无锁定）；所有书/课自由开放，只保留完成状态标记；口语跳过保留待补标记。
 
 - [x] 用户确认首页书架形式、课程列表分组方式、解锁规则。
 
 ### 3. 内容清单与导入机制
 
-> **方案已出，待确认**：详见 [docs/superpowers/specs/2026-07-01-content-import-design.md](docs/superpowers/specs/2026-07-01-content-import-design.md)。
-> 核心：`content/manifest.json` + 每本书 `book.json`；课程 JSON 全部打包；banner 默认远程 HTTPS + 本地缓存/占位；内容更新随 App 版本；通过 `lessonId` 保留进度。
+> **方案已更新，待确认**：详见 [docs/superpowers/specs/2026-07-01-content-import-design.md](docs/superpowers/specs/2026-07-01-content-import-design.md)。
+> 核心：每节课独立 JSON；首次启动从线上拉取 manifest + book.json + lesson.json 并缓存；banner 远程按需加载 + 统一占位图；音频全部由本地 TTS 生成。
 
-- [ ] 用户确认目录结构、manifest 设计、JSON Schema、图片策略。
+- [ ] 用户确认更新后的内容导入方案。
 
 ### 4. 用户进度与状态模型
 

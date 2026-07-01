@@ -235,6 +235,46 @@
     .setting-label { font-size: 15px; font-weight: 500; }
     .setting-value { font-size: 14px; color: #666; }
 
+    /* Intro */
+    .intro-banner { padding: 0 0 16px; }
+    .placeholder-img {
+      width: 100%;
+      height: 180px;
+      background: var(--muted);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #999;
+    }
+    .intro-lesson-title {
+      font-size: 28px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+      margin: 0 0 20px;
+    }
+    .intro-section { margin-bottom: 18px; }
+    .intro-label {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .intro-section ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .intro-section li { margin-bottom: 4px; }
+
     /* Toast */
     #toast {
       position: absolute;
@@ -287,42 +327,42 @@
           </div>
         </div>
 
-        <div class="card locked">
+        <div class="card" onclick="toast('进入 Book 2')">
           <div class="book-row">
-            <div class="book-num" style="color:var(--locked)">02</div>
+            <div class="book-num" style="color:var(--fg)">02</div>
             <div class="book-info">
               <div class="book-title">Practice & Progress</div>
-              <div class="book-meta">96 课 · 未解锁</div>
+              <div class="book-meta">96 课 · 未开始</div>
               <div class="progress-bar"><div class="progress-fill" style="width: 0%"></div></div>
-              <div class="progress-text">先完成 Book 1</div>
+              <div class="progress-text">已完成 0 / 96</div>
             </div>
-            <div class="status-icon lock">🔒</div>
+            <div style="font-size:20px">→</div>
           </div>
         </div>
 
-        <div class="card locked">
+        <div class="card" onclick="toast('进入 Book 3')">
           <div class="book-row">
-            <div class="book-num" style="color:var(--locked)">03</div>
+            <div class="book-num" style="color:var(--fg)">03</div>
             <div class="book-info">
               <div class="book-title">Developing Skills</div>
-              <div class="book-meta">60 课 · 未解锁</div>
+              <div class="book-meta">60 课 · 未开始</div>
               <div class="progress-bar"><div class="progress-fill" style="width: 0%"></div></div>
-              <div class="progress-text">先完成 Book 2</div>
+              <div class="progress-text">已完成 0 / 60</div>
             </div>
-            <div class="status-icon lock">🔒</div>
+            <div style="font-size:20px">→</div>
           </div>
         </div>
 
-        <div class="card locked">
+        <div class="card" onclick="toast('进入 Book 4')">
           <div class="book-row">
-            <div class="book-num" style="color:var(--locked)">04</div>
+            <div class="book-num" style="color:var(--fg)">04</div>
             <div class="book-info">
               <div class="book-title">Fluency in English</div>
-              <div class="book-meta">60 课 · 未解锁</div>
+              <div class="book-meta">60 课 · 未开始</div>
               <div class="progress-bar"><div class="progress-fill" style="width: 0%"></div></div>
-              <div class="progress-text">先完成 Book 3</div>
+              <div class="progress-text">已完成 0 / 60</div>
             </div>
-            <div class="status-icon lock">🔒</div>
+            <div style="font-size:20px">→</div>
           </div>
         </div>
       </div>
@@ -336,6 +376,44 @@
         <div style="width:40px"></div>
       </div>
       <div id="sections"></div>
+    </div>
+
+    <!-- Pre-lesson Intro -->
+    <div id="intro" class="screen">
+      <div class="topbar">
+        <button class="back-btn" onclick="show('book')">← 返回</button>
+        <h1 style="font-size:18px" id="intro-title">课前导读</h1>
+        <div style="width:40px"></div>
+      </div>
+      <div class="content">
+        <div class="intro-banner">
+          <div class="placeholder-img" id="intro-banner-placeholder">
+            <span>BANNER PLACEHOLDER</span>
+          </div>
+        </div>
+        <h2 class="intro-lesson-title" id="intro-lesson-title">Lesson 01</h2>
+        <div class="intro-section">
+          <div class="intro-label">知识点</div>
+          <ul id="intro-points">
+            <li>疑问句 'Is this your...?' 的用法</li>
+            <li>礼貌用语 'Excuse me'</li>
+          </ul>
+        </div>
+        <div class="intro-section">
+          <div class="intro-label">口语场景</div>
+          <ul id="intro-scenarios">
+            <li>在公共场合向陌生人询问物品归属</li>
+          </ul>
+        </div>
+        <div class="intro-section">
+          <div class="intro-label">学习目标</div>
+          <ul id="intro-objectives">
+            <li>能用 'Is this your...?' 询问物品归属</li>
+            <li>能听懂并回应 'Yes, it is.' / 'Pardon?'</li>
+          </ul>
+        </div>
+        <button class="btn" style="margin-top:24px" onclick="toast('进入 Step 1 课文学习')">开始学习</button>
+      </div>
     </div>
 
     <!-- Settings -->
@@ -368,10 +446,10 @@
       { n: 6, t: 'What make is it?', s: 'completed' },
       { n: 7, t: 'Are you a teacher?', s: 'inprogress' },
       { n: 8, t: "What\'s your job?", s: 'todo' },
-      { n: 9, t: 'How are you today?', s: 'locked' },
-      { n: 10, t: 'Look at...', s: 'locked' },
-      { n: 11, t: 'Is this your shirt?', s: 'locked' },
-      { n: 12, t: 'Whose is this...?', s: 'locked' }
+      { n: 9, t: 'How are you today?', s: 'todo' },
+      { n: 10, t: 'Look at...', s: 'todo' },
+      { n: 11, t: 'Is this your shirt?', s: 'todo' },
+      { n: 12, t: 'Whose is this...?', s: 'todo' }
     ];
 
     function show(id) {
@@ -383,7 +461,6 @@
       if (state === 'completed') return '<span class="status-icon check skip-dot">✓</span>';
       if (state === 'skipped') return '<span class="status-icon check skip-dot">✓</span>';
       if (state === 'inprogress') return '<span class="status-icon"><span class="dot-current"></span></span>';
-      if (state === 'locked') return '<span class="status-icon lock">🔒</span>';
       return '<span class="status-icon"><span class="ring"></span></span>';
     }
 
@@ -391,7 +468,6 @@
       if (state === 'completed') return '已完成';
       if (state === 'skipped') return '已完成 · 口语待补';
       if (state === 'inprogress') return '进行中';
-      if (state === 'locked') return '未解锁';
       return '未开始';
     }
 
@@ -400,7 +476,7 @@
       let html = '<div class="section-title">Lessons 01–10</div>';
       lessons.forEach(l => {
         html += `
-          <div class="lesson-row ${l.s === 'locked' ? 'locked' : ''}" onclick="onLesson(${l.n}, '${l.s}')">
+          <div class="lesson-row" onclick="onLesson(${l.n}, '${l.s}')">
             <div class="lesson-num">${String(l.n).padStart(2, '0')}</div>
             <div class="lesson-title">${l.t}</div>
             ${iconFor(l.s)}
@@ -408,18 +484,14 @@
         `;
       });
       html += '<div class="section-title" style="opacity:0.4">Lessons 11–20</div>';
-      html += '<div class="lesson-row locked"><div class="lesson-num">11</div><div class="lesson-title">...</div><span class="status-icon lock">🔒</span></div>';
+      html += '<div class="lesson-row"><div class="lesson-num">11</div><div class="lesson-title">...</div><span class="status-icon"><span class="ring"></span></span></div>';
       container.innerHTML = html;
     }
 
     function onLesson(n, state) {
-      if (state === 'locked') {
-        toast('先完成前面的课程');
-      } else if (state === 'skipped') {
-        toast(`Lesson ${n}：已完成，口语待补`);
-      } else {
-        toast(`进入 Lesson ${n}`);
-      }
+      const lesson = lessons.find(l => l.n === n);
+      document.getElementById('intro-lesson-title').textContent = `Lesson ${String(n).padStart(2, '0')} · ${lesson.t}`;
+      show('intro');
     }
 
     function toast(msg) {
@@ -430,7 +502,6 @@
     }
 
     function showBook(i) {
-      if (i !== 0) return toast('该书未解锁');
       renderSections();
       show('book');
     }
