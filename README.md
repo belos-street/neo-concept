@@ -5,6 +5,7 @@
 ## 技术栈
 
 - **Android**: Kotlin + Jetpack Compose + Gradle KTS
+- **Android 图标库**: Compose Material Icons Extended（备选：Lucide）
 - **iOS**: Swift + SwiftUI
 - **数据库**: ECDICT SQLite 词典（20,000 词）
 - **TTS**: Piper (ONNX)

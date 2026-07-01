@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neo Concept — 交互 Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --fg: #000000;
+      --muted: #F2F2F2;
+      --accent: #FF3000;
+      --success: #006E2C;
+      --warning: #B25E00;
+      --locked: #9E9E9E;
+      --border: #000000;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #E5E5E5;
+      color: var(--fg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    #phone {
+      width: 375px;
+      height: 812px;
+      background: var(--bg);
+      border: 12px solid #111;
+      border-radius: 40px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .screen.active { display: flex; }
+
+    /* Header */
+    .topbar {
+      padding: 20px 20px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .topbar h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+    }
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+    }
+    .icon-btn:active { background: var(--fg); color: var(--bg); }
+    .back-btn {
+      border: none;
+      padding: 0;
+      background: transparent;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Cards */
+    .content { padding: 0 20px 24px; }
+    .card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+      background: var(--bg);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .card:active { background: var(--muted); }
+    .card.locked { opacity: 0.45; cursor: not-allowed; }
+    .card.completed { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
+    .book-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .book-num {
+      font-size: 48px;
+      font-weight: 900;
+      line-height: 1;
+      min-width: 64px;
+    }
+    .book-info { flex: 1; }
+    .book-title {
+      font-size: 18px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 4px;
+    }
+    .book-meta {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    .completed .book-meta { color: #AAA; }
+    .progress-bar {
+      height: 6px;
+      background: var(--muted);
+      border: 1px solid var(--border);
+      margin-bottom: 6px;
+    }
+    .progress-fill { height: 100%; background: var(--accent); }
+    .completed .progress-fill { background: var(--bg); }
+    .progress-text { font-size: 12px; font-weight: 500; }
+
+    /* Continue card */
+    .continue-card {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+    .continue-card .book-title { color: var(--bg); }
+    .continue-card .book-meta { color: rgba(255,255,255,0.85); }
+    .continue-card .progress-bar { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.4); }
+    .continue-card .progress-fill { background: var(--bg); }
+    .btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 14px;
+      border: 2px solid var(--border);
+      background: var(--fg);
+      color: var(--bg);
+      font-size: 14px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+    }
+    .continue-card .btn {
+      background: var(--bg);
+      color: var(--accent);
+      border-color: var(--bg);
+    }
+
+    /* Course list */
+    .section-title {
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      padding: 12px 20px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 2px solid var(--border);
+      color: var(--accent);
+    }
+    .lesson-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #DDD;
+    }
+    .lesson-row.locked { opacity: 0.45; }
+    .lesson-num {
+      font-size: 22px;
+      font-weight: 900;
+      width: 44px;
+    }
+    .lesson-title {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .status-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dot-current { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+    .ring { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); }
+    .check { color: var(--success); font-weight: 900; font-size: 18px; }
+    .lock { color: var(--locked); }
+    .skip-dot { position: relative; }
+    .skip-dot::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--warning);
+      border: 1px solid var(--bg);
+    }
+
+    /* Settings */
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid #DDD;
+    }
+    .setting-label { font-size: 15px; font-weight: 500; }
+    .setting-value { font-size: 14px; color: #666; }
+
+    /* Toast */
+    #toast {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--fg);
+      color: var(--bg);
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    #toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div id="phone">
+    <!-- Home -->
+    <div id="home" class="screen active">
+      <div class="topbar">
+        <h1>Neo Concept</h1>
+        <button class="icon-btn" onclick="show('settings')" aria-label="设置">⚙</button>
+      </div>
+      <div class="content">
+        <div class="card continue-card" onclick="showBook(0)">
+          <div class="book-row">
+            <div class="book-info">
+              <div class="book-title">继续学习</div>
+              <div class="book-meta">Book 1 · Lesson 7 · Step 3 拼写练习</div>
+              <div class="progress-bar"><div class="progress-fill" style="width: 35%"></div></div>
+              <div class="progress-text">已完成 6 / 144 课</div>
+            </div>
+          </div>
+          <button class="btn">继续学习</button>
+        </div>
+
+        <div class="card" onclick="showBook(0)">
+          <div class="book-row">
+            <div class="book-num" style="color:var(--accent)">01</div>
+            <div class="book-info">
+              <div class="book-title">First Things First</div>
+              <div class="book-meta">144 课 · 进行中</div>
+              <div class="progress-bar"><div class="progress-fill" style="width: 35%"></div></div>
+              <div class="progress-text">已完成 6 / 144</div>
+            </div>
+            <div style="font-size:20px">→</div>
+          </div>
+        </div>
+
+        <div class="card locked">
+          <div class="book-row">
+            <div class="book-num" style="color:var(--locked)">02</div>
+            <div class="book-info">
+              <div class="book-title">Practice & Progress</div>
+              <div class="book-meta">96 课 · 未解锁</div>
+              <div class="progress-bar"><div class="progress-fill" style="width: 0%"></div></div>
+              <div class="progress-text">先完成 Book 1</div>
+            </div>
+            <div class="status-icon lock">🔒</div>
+          </div>
+        </div>
+
+        <div class="card locked">
+          <div class="book-row">
+            <div class="book-num" style="color:var(--locked)">03</div>
+            <div class="book-info">
+              <div class="book-title">Developing Skills</div>
+              <div class="book-meta">60 课 · 未解锁</div>
+              <div class="progress-bar"><div class="progress-fill" style="width: 0%"></div></div>
+              <div class="progress-text">先完成 Book 2</div>
+            </div>
+            <div class="status-icon lock">🔒</div>
+          </div>
+        </div>
+
+        <div class="card locked">
+          <div class="book-row">
+            <div class="book-num" style="color:var(--locked)">04</div>
+            <div class="book-info">
+              <div class="book-title">Fluency in English</div>
+              <div class="book-meta">60 课 · 未解锁</div>
+              <div class="progress-bar"><div class="progress-fill" style="width: 0%"></div></div>
+              <div class="progress-text">先完成 Book 3</div>
+            </div>
+            <div class="status-icon lock">🔒</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Book Detail -->
+    <div id="book" class="screen">
+      <div class="topbar">
+        <button class="back-btn" onclick="show('home')">← 返回</button>
+        <h1 style="font-size:18px">Book 1</h1>
+        <div style="width:40px"></div>
+      </div>
+      <div id="sections"></div>
+    </div>
+
+    <!-- Settings -->
+    <div id="settings" class="screen">
+      <div class="topbar">
+        <button class="back-btn" onclick="show('home')">← 返回</button>
+        <h1 style="font-size:18px">设置</h1>
+        <div style="width:40px"></div>
+      </div>
+      <div class="content">
+        <div class="setting-item"><span class="setting-label">TTS 语速</span><span class="setting-value">1.0x</span></div>
+        <div class="setting-item"><span class="setting-label">TTS 音色</span><span class="setting-value">默认</span></div>
+        <div class="setting-item"><span class="setting-label">字体大小</span><span class="setting-value">标准</span></div>
+        <div class="setting-item"><span class="setting-label">清除图片与音频缓存</span><span class="setting-value">&gt;</span></div>
+        <div class="setting-item"><span class="setting-label">离线内容管理</span><span class="setting-value">&gt;</span></div>
+        <div class="setting-item"><span class="setting-label">关于 / 开源协议</span><span class="setting-value">&gt;</span></div>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+  </div>
+
+  <script>
+    const lessons = [
+      { n: 1, t: 'Excuse me!', s: 'completed' },
+      { n: 2, t: 'Is this your...?', s: 'completed' },
+      { n: 3, t: 'Sorry, sir.', s: 'completed' },
+      { n: 4, t: 'Is this your...?', s: 'skipped' },
+      { n: 5, t: 'Nice to meet you.', s: 'completed' },
+      { n: 6, t: 'What make is it?', s: 'completed' },
+      { n: 7, t: 'Are you a teacher?', s: 'inprogress' },
+      { n: 8, t: "What\'s your job?", s: 'todo' },
+      { n: 9, t: 'How are you today?', s: 'locked' },
+      { n: 10, t: 'Look at...', s: 'locked' },
+      { n: 11, t: 'Is this your shirt?', s: 'locked' },
+      { n: 12, t: 'Whose is this...?', s: 'locked' }
+    ];
+
+    function show(id) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function iconFor(state) {
+      if (state === 'completed') return '<span class="status-icon check skip-dot">✓</span>';
+      if (state === 'skipped') return '<span class="status-icon check skip-dot">✓</span>';
+      if (state === 'inprogress') return '<span class="status-icon"><span class="dot-current"></span></span>';
+      if (state === 'locked') return '<span class="status-icon lock">🔒</span>';
+      return '<span class="status-icon"><span class="ring"></span></span>';
+    }
+
+    function labelFor(state) {
+      if (state === 'completed') return '已完成';
+      if (state === 'skipped') return '已完成 · 口语待补';
+      if (state === 'inprogress') return '进行中';
+      if (state === 'locked') return '未解锁';
+      return '未开始';
+    }
+
+    function renderSections() {
+      const container = document.getElementById('sections');
+      let html = '<div class="section-title">Lessons 01–10</div>';
+      lessons.forEach(l => {
+        html += `
+          <div class="lesson-row ${l.s === 'locked' ? 'locked' : ''}" onclick="onLesson(${l.n}, '${l.s}')">
+            <div class="lesson-num">${String(l.n).padStart(2, '0')}</div>
+            <div class="lesson-title">${l.t}</div>
+            ${iconFor(l.s)}
+          </div>
+        `;
+      });
+      html += '<div class="section-title" style="opacity:0.4">Lessons 11–20</div>';
+      html += '<div class="lesson-row locked"><div class="lesson-num">11</div><div class="lesson-title">...</div><span class="status-icon lock">🔒</span></div>';
+      container.innerHTML = html;
+    }
+
+    function onLesson(n, state) {
+      if (state === 'locked') {
+        toast('先完成前面的课程');
+      } else if (state === 'skipped') {
+        toast(`Lesson ${n}：已完成，口语待补`);
+      } else {
+        toast(`进入 Lesson ${n}`);
+      }
+    }
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1800);
+    }
+
+    function showBook(i) {
+      if (i !== 0) return toast('该书未解锁');
+      renderSections();
+      show('book');
+    }
+  </script>
+</body>
+</html>
