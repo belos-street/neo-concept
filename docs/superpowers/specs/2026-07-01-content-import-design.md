@@ -1,6 +1,6 @@
 # Neo Concept — 内容清单与导入机制设计方案
 
-> 状态：待用户确认
+> 状态：已确认
 > 目标：确定课程 JSON、图片、清单文件的目录结构、命名规则与 App 发现/更新流程。
 
 ---
@@ -9,28 +9,28 @@
 
 | 问题 | 建议方案 |
 |------|----------|
-| 课程数据放哪 | 每一节课都是一个独立 JSON；首次安装从线上拉取并缓存到本地，后续启动读取本地缓存 |
-| Banner 图片 | 远程 HTTPS 加载，失败/离线时显示统一占位图；不提供「全部下载到本地」开关 |
-| App 如何发现课程 | 从线上读取 `content/manifest.json` 总清单 + 每本书的 `book.json` |
-| 内容更新 | 通过 `manifest.version` 检测远程内容变化，增量下载更新 |
-| 首次安装 | 首次启动从线上拉取 manifest + 所有 book.json + 所有 lesson.json；banner 按需下载并缓存 |
+| 课程数据放哪 | 构建时全部打包进 App 的 `assets/content/`，每一节课都是独立 JSON |
+| Banner 图片 | 远程 HTTPS 地址，离线/加载失败时显示统一占位图 |
+| App 如何发现课程 | 启动时读取本地 `assets/content/manifest.json` + 每本书的 `book.json` |
+| 内容更新 | 随 App 版本更新；用户安装新版 APK 即可获得新内容 |
+| 首次安装 | 打开即用，无需联网初始化 |
 
-> 说明：线上内容目录结构与 App 本地缓存目录结构保持一致（均为 `content/`），便于首次下载和后续增量更新。
+> 说明：课程 JSON、清单文件全部预置在 assets 中；仅 banner 图片策略待定。
 
 ---
 
 ## 2. 目录结构
 
 ```
-content/
-├── manifest.json                 # 全局清单
+app/src/main/assets/content/
+├── manifest.json                 # 全局清单（构建时打包）
 ├── books/
 │   ├── book01/
 │   │   ├── book.json             # 本书元数据 + 课程索引
 │   │   └── lessons/
 │   │       ├── L01/
 │   │       │   ├── lesson.json   # 课程数据（独立文件）
-│   │       │   └── banner.webp   # 课程 banner（远程按需下载）
+│   │       │   └── banner.webp   # 课程 banner（仅生成器侧产物；App 使用 book.json 中的 remote URL）
 │   │       ├── L02/
 │   │       │   ├── lesson.json
 │   │       │   └── banner.webp
@@ -47,9 +47,52 @@ content/
 - Banner 文件：`banner.webp`（优先 WebP，无则 fallback 到 `banner.jpg`）
 - 音频：全部由本地 TTS 实时生成，不打包、不预录
 
+### 2.2 Banner URL 约定
+
+- `book.json` 中每个课程的 `banner.remote` 直接填写完整 HTTPS URL，App 不做自动推导。
+- 推荐 URL 结构与目录结构保持一致，例如：
+  `https://cdn.example.com/neo-concept/book01/L01/banner.webp`
+- 生成器侧负责上传图片并写入 URL；App 端只读取并使用。
+
+### 2.3 生成器与 App 的对接流程
+
+```mermaid
+graph LR
+    A[独立 Agent 生成器项目] -->|生成 content/ 目录| B[生成器输出目录]
+    B -->|手动 copy| C[本项目的 app/src/main/assets/content/]
+    C --> D[构建 APK]
+```
+
+- 内容由独立 Agent 项目生成，输出符合本规范的 `content/` 目录。
+- 开发阶段手动将生成器输出 copy 到 App 的 `assets/content/`。
+- 后续可引入构建脚本自动同步，但不属于当前需求范围。
+
 ---
 
 ## 3. 全局清单 `manifest.json`
+
+### TypeScript 类型
+
+```typescript
+export interface BookMeta {
+  id: string;
+  title: string;
+  subtitle: string;
+  order: number;
+  totalLessons: number;
+  path: string;
+}
+
+export interface ContentManifest {
+  version: string;
+  schemaVersion: number;
+  minAppVersion: string;
+  updatedAt: string;
+  books: BookMeta[];
+}
+```
+
+### 示例
 
 ```json
 {
@@ -57,7 +100,6 @@ content/
   "schemaVersion": 1,
   "minAppVersion": "1.0.0",
   "updatedAt": "2024-07-01",
-  "baseUrl": "https://cdn.example.com/neo-concept/content",
   "books": [
     {
       "id": "book01",
@@ -65,8 +107,7 @@ content/
       "subtitle": "新概念英语第一册",
       "order": 1,
       "totalLessons": 144,
-      "path": "books/book01/book.json",
-      "unlockedByDefault": true
+      "path": "books/book01/book.json"
     }
   ]
 }
@@ -74,15 +115,37 @@ content/
 
 ### 字段说明
 
-- `version`：内容版本号，用于检测更新。
+- `version`：内容版本号，便于 App 追踪内容集版本（内容随 APK 更新时递增）。
 - `schemaVersion`：课程 JSON Schema 版本，App 校验用。
 - `minAppVersion`：最低 App 版本，防止旧版本读取不兼容数据。
-- `baseUrl`：内容根目录的远程 URL，App 用 `baseUrl + 相对路径` 下载文件。
 - `books`：书列表，每本书指向自己的 `book.json`。
 
 ---
 
 ## 4. 单本书清单 `book.json`
+
+### TypeScript 类型
+
+```typescript
+export interface LessonMeta {
+  id: string;
+  displayNumber: string;
+  title: string;
+  path: string;
+  banner: Banner;
+}
+
+export interface BookManifest {
+  id: string;
+  title: string;
+  subtitle: string;
+  order: number;
+  totalLessons: number;
+  lessons: LessonMeta[];
+}
+```
+
+### 示例
 
 ```json
 {
@@ -98,7 +161,8 @@ content/
       "title": "Excuse me!",
       "path": "lessons/L01/lesson.json",
       "banner": {
-        "remote": "lessons/L01/banner.webp",
+        "local": null,
+        "remote": "https://cdn.example.com/neo-concept/book01/L01/banner.webp",
         "placeholder": "banner_placeholder"
       }
     }
@@ -111,12 +175,105 @@ content/
 - `id`：全局唯一课程 ID，后续用户进度、统计都绑定此 ID。
 - `displayNumber`：显示用的课号（如 01、144）。
 - `path`：相对 `book.json` 的课程 JSON 路径。
-- `banner.remote`：banner 的相对路径，完整 URL 为 `manifest.baseUrl + books/book01/lessons/L01/...`。
-- `banner.placeholder`：App 内置占位图资源名，加载失败/离线时统一显示。
+- `banner.local`：banner 的相对路径（相对 `book.json`），用于打包进 assets。
+- `banner.remote`：可选远程 URL；如填写则优先在线加载，失败后回退到 `local` 或 `placeholder`。
+- `banner.placeholder`：App 内置占位图资源名，当 `local` 与 `remote` 都不可用时显示。
 
 ---
 
 ## 5. 单课 JSON Schema（草案）
+
+### TypeScript 类型定义（供生成器与参考使用）
+
+```typescript
+export interface Banner {
+  local: string | null;
+  remote: string | null;
+  placeholder: string;
+}
+
+export interface Introduction {
+  knowledgePoints: string[];
+  speakingScenarios: string[];
+  learningObjectives: string[];
+}
+
+export interface Sentence {
+  id: string;
+  text: string;
+  // 用于口语练习：供 ASR 比对的归一化文本，去除标点、统一大小写
+  normalizedText?: string;
+}
+
+export interface Paragraph {
+  id: string;
+  sentences: Sentence[];
+}
+
+export interface Text {
+  paragraphs: Paragraph[];
+}
+
+export interface Vocabulary {
+  id: string;
+  word: string;
+  phonetic: string;
+  translation: string;
+  example: string;
+  contextSentence: string;
+}
+
+export interface FillInBlank {
+  id: string;
+  sentence: string;
+  answer: string;
+  options: string[];
+}
+
+export interface Spelling {
+  id: string;
+  // 引用 vocabulary 中对应词条的 id，避免重复存储 phonetic/translation/contextSentence
+  vocabularyId: string;
+}
+
+export interface ComprehensionQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  answer: number;
+  explanation: string;
+}
+
+export interface Comprehension {
+  questions: ComprehensionQuestion[];
+}
+
+export interface Speaking {
+  sentences: Sentence[];
+}
+
+export interface Exercises {
+  fillInBlanks: FillInBlank[];
+  spelling: Spelling[];
+  comprehension: Comprehension;
+  speaking: Speaking;
+}
+
+export interface Lesson {
+  id: string;
+  bookId: string;
+  displayNumber: string;
+  title: string;
+  subtitle: string;
+  banner: Banner;
+  introduction: Introduction;
+  text: Text;
+  vocabulary: Vocabulary[];
+  exercises: Exercises;
+}
+```
+
+### 示例
 
 ```json
 {
@@ -126,7 +283,8 @@ content/
   "title": "Excuse me!",
   "subtitle": "",
   "banner": {
-    "remote": "banner.webp",
+    "local": null,
+    "remote": "https://cdn.example.com/neo-concept/book01/L01/banner.webp",
     "placeholder": "banner_placeholder"
   },
   "introduction": {
@@ -152,6 +310,7 @@ content/
   },
   "vocabulary": [
     {
+      "id": "v1",
       "word": "excuse",
       "phonetic": "/ɪkˈskjuːs/",
       "translation": "原谅；借口",
@@ -159,6 +318,7 @@ content/
       "contextSentence": "Excuse me! Is this your handbag?"
     },
     {
+      "id": "v2",
       "word": "handbag",
       "phonetic": "/ˈhændbæɡ/",
       "translation": "手提包",
@@ -178,10 +338,7 @@ content/
     "spelling": [
       {
         "id": "sp1",
-        "word": "excuse",
-        "phonetic": "/ɪkˈskjuːs/",
-        "translation": "原谅；借口",
-        "contextSentence": "Excuse me! Is this your handbag?"
+        "vocabularyId": "v1"
       }
     ],
     "comprehension": {
@@ -202,8 +359,8 @@ content/
     },
     "speaking": {
       "sentences": [
-        { "id": "ss1", "text": "Excuse me!" },
-        { "id": "ss2", "text": "Is this your handbag?" }
+        { "id": "ss1", "text": "Excuse me!", "normalizedText": "excuse me" },
+        { "id": "ss2", "text": "Is this your handbag?", "normalizedText": "is this your handbag" }
       ]
     }
   }
@@ -224,41 +381,37 @@ content/
 
 ```mermaid
 graph TD
-    Start[App 启动] --> HasCache{本地已有<br/>manifest?}
-    HasCache -->|是| ReadLocal[读取本地 manifest.json]
-    HasCache -->|否| FetchManifest[从线上拉取 manifest.json]
-    FetchManifest --> SaveManifest[保存 manifest 到本地]
-    SaveManifest --> ReadLocal
-    ReadLocal --> CheckVersion{本地 version<br/>与远程一致?}
-    CheckVersion -->|一致| LoadCache[加载已有课程索引]
-    CheckVersion -->|不一致| FetchBooks[拉取/更新 book.json]
-    FetchBooks --> FetchLessons[拉取/更新 lesson.json]
-    FetchLessons --> IndexLessons[建立 lessonId → 路径/元数据索引]
-    IndexLessons --> SaveCache[保存索引 + version]
-    SaveCache --> LoadCache
-    LoadCache --> RenderHome[渲染书架首页]
+    Start[App 启动] --> ReadManifest[读取 assets/content/manifest.json]
+    ReadManifest --> ReadBooks[依次读取每本书的 book.json]
+    ReadBooks --> IndexLessons[建立 lessonId → 路径/元数据索引]
+    IndexLessons --> SaveCache[保存索引到本地]
+    SaveCache --> RenderHome[渲染书架首页]
 ```
 
 ### 流程说明
 
-1. **首次启动**：本地无缓存，从远程 `manifestUrl` 拉取 `manifest.json` 并保存。
-2. **后续启动**：先读本地 manifest，再与远程 version 对比。
-3. **版本一致**：直接加载本地缓存的课程索引。
-4. **版本不一致**：按 manifest 增量拉取变更的 `book.json` 和 `lesson.json`（未变更的复用本地文件）。
-5. **索引内容**：lessonId、标题、banner URL、本地缓存路径、解锁顺序等。
-6. **渲染书架首页**。
+1. **启动**：从 `assets/content/` 读取 `manifest.json`。
+2. **加载书目**：按 manifest 中的 `books` 列表读取每本 `book.json`。
+3. **建立索引**：汇总所有课程元数据（lessonId、标题、banner 路径等）。
+4. **保存索引**：把索引写入本地偏好/数据库，供后续快速启动使用。
+5. **渲染书架首页**。
 
-> 注意：banner 不随首次同步批量下载，进入课程页时按需下载并缓存。
+> 注意：banner 从 `book.json` 中的 `remote` URL 加载，进入课程页时按需下载并缓存。
+
+### 6.1 容错策略
+
+- **manifest.json / book.json 损坏**：使用上一次启动时保存的本地索引缓存；若缓存也不存在，则显示「课程内容加载失败，请重新安装应用」。
+- **单个 lesson.json 损坏/解析失败**：记录错误日志，跳过该课程并在课程列表中标记为「不可用」；不影响其他课程加载。
+- **schemaVersion 不匹配**：旧版本 App 读取到新版 Schema 时拒绝解析，提示用户升级应用。
 
 ---
 
 ## 7. 内容更新策略
 
-- **检测更新**：每次启动对比本地 manifest.version 与远程 manifest.version。
-- **增量更新**：只下载版本发生变化的 `book.json` / `lesson.json`，未变更文件复用本地缓存。
-- **进度保留**：用户进度以 `lessonId` 为键；只要 `lessonId` 不变，更新后进度保留。
+- **更新方式**：内容随 App 版本更新，打包进新版 APK。
+- **进度保留**：用户进度以 `lessonId` 为键；只要 `lessonId` 不变，升级后进度保留。
 - **破坏性变更**：如果 `lessonId` 或 Schema 发生重大变化，提升 `schemaVersion`，旧版本 App 拒绝读取并提示升级 App。
-- **离线可用**：更新检测需要网络；若离线则使用本地缓存内容，不阻塞学习。
+- **回滚**：本地保留上一次索引缓存；如果读取 assets 失败，可降级使用缓存。
 
 ---
 
@@ -266,28 +419,29 @@ graph TD
 
 ### 首次安装
 
-- App 本身不预置任何课程 JSON 或 banner。
-- 首次启动进入「初始化/同步」界面，从远程拉取：
-  1. `manifest.json`
-  2. 所有 `book.json`
-  3. 所有 `lesson.json`
-- 同步完成后保存到本地缓存，之后无需网络即可学习。
-- Banner 不批量下载，进入课程页时按需拉取并缓存。
+- App 构建时已将所有课程 JSON、清单文件打包进 assets；banner 图片通过 `remote` URL 加载。
+- 首次启动无需联网即可学习文本与练习题，banner 进入课程页时按需加载。
+- 启动时可能有一次性的「建立课程索引」过程，耗时通常 < 1 秒。
 
 ### 离线策略
 
-- 课程文本、练习题等核心内容在首次同步后完全离线可用。
-- Banner 离线时显示 App 内置统一占位图。
-- 无「全部下载到本地」开关，简化实现。
-- 若用户完全未进行过首次同步，则显示「需要网络连接以初始化课程」提示。
+- 课程文本、练习题、词汇等核心内容完全离线可用。
+- Banner 离线或加载失败时显示统一占位图。
+- 无「全部下载到本地」开关。
+
+### 文件体积估算
+
+- 单课 `lesson.json` 约 2–8KB；4 本书约 360 课，总 JSON 体积约 1–3MB。
+- 清单文件体积可忽略。
+- Banner 图片不打包进 APK，APK 体积主要由 App 代码与本地模型（TTS/ASR/词典）决定。
 
 ---
 
 ## 9. 已确认决策
 
 1. 每节课为独立 JSON 文件。
-2. Banner 远程加载，使用统一占位图，不提供「全部下载」开关。
-3. 首次安装从线上拉取所有课程 JSON 并缓存，之后离线可用。
-4. 音频全部由本地 TTS 实时生成，不预录、不打包。
-
-> 仍需确认：线上内容托管地址（`manifestUrl` / `baseUrl`）由谁提供？生成器是否直接输出符合本目录结构的文件？
+2. `manifest.json` + `book.json` + `lesson.json` 全部打包进 App assets，不线上拉取。
+3. Banner 图片通过远程 HTTPS 加载，离线/失败时显示统一占位图。
+4. 首次安装打开即用，无需联网初始化。
+5. 内容更新随 App 版本更新。
+6. 音频全部由本地 TTS 实时生成，不预录、不打包。

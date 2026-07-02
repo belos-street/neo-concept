@@ -291,6 +291,293 @@
       transition: opacity 0.2s;
     }
     #toast.show { opacity: 1; }
+
+    /* Word Modal */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+    .modal-overlay.show { display: flex; }
+    .word-modal {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 100%;
+      max-width: 320px;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .word-text {
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+    .word-phonetic {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sound-btn {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .word-meaning {
+      font-size: 15px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #DDD;
+    }
+    .word-example-label {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .word-example {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 4px;
+    }
+    .word-example-cn {
+      font-size: 13px;
+      color: #666;
+    }
+
+    /* Lesson Screen */
+    .lesson-topbar {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--border);
+    }
+    .lesson-topbar h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      flex: 1;
+      text-align: center;
+    }
+    .steps {
+      display: flex;
+      gap: 8px;
+    }
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--locked);
+    }
+    .step-dot.done { background: var(--fg); }
+    .step-dot.current { background: var(--accent); }
+
+    .lesson-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .lesson-banner {
+      width: 100%;
+      height: 160px;
+      background: var(--muted);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: #999;
+    }
+    .lesson-text {
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .lesson-text .sentence {
+      display: inline;
+      cursor: pointer;
+      padding: 2px 0;
+    }
+    .lesson-text .sentence:hover { background: var(--muted); }
+    .lesson-text .word {
+      cursor: pointer;
+      border-bottom: 1px dashed var(--border);
+    }
+    .lesson-text .word:hover { color: var(--accent); }
+    .vocab-toggle {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 12px 0;
+      border-top: 2px solid var(--border);
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+    }
+    .vocab-list { display: none; }
+    .vocab-list.open { display: block; }
+    .vocab-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 0;
+      border-bottom: 1px solid #EEE;
+    }
+    .vocab-word { font-weight: 700; }
+    .vocab-phonetic { color: #666; font-size: 13px; }
+    .vocab-meaning { font-size: 14px; color: #333; }
+
+    .lesson-bottom {
+      padding: 16px 20px 24px;
+      border-top: 2px solid var(--border);
+    }
+    .lesson-bottom .btn { margin-top: 0; }
+    .lesson-bottom .btn-secondary {
+      background: var(--bg);
+      color: var(--fg);
+      margin-bottom: 10px;
+    }
+
+    /* Completion Screen */
+    .completion {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .completion-check {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 4px solid var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: var(--success);
+      margin-bottom: 16px;
+    }
+    .completion-title {
+      font-size: 24px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+    .key-vocab-title {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      align-self: flex-start;
+    }
+    .key-vocab-list {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 32px;
+    }
+    .key-vocab-item {
+      display: flex;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #EEE;
+      font-size: 14px;
+    }
+
+    /* Selection Sheet / Dialog */
+    .sheet-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: none;
+      align-items: flex-end;
+      z-index: 101;
+    }
+    .sheet-overlay.show { display: flex; }
+    .sheet {
+      width: 100%;
+      background: var(--bg);
+      border-top: 2px solid var(--border);
+      padding: 20px;
+    }
+    .sheet-title {
+      font-size: 14px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .sheet-option {
+      padding: 14px 0;
+      border-bottom: 1px solid #EEE;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .sheet-option.selected { color: var(--accent); font-weight: 700; }
+
+    .dialog-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 102;
+    }
+    .dialog-overlay.show { display: flex; }
+    .dialog {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 100%;
+      max-width: 280px;
+    }
+    .dialog-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .dialog-text { font-size: 14px; color: #555; margin-bottom: 20px; line-height: 1.5; }
+    .dialog-actions { display: flex; gap: 12px; }
+    .dialog-actions .btn { flex: 1; margin-top: 0; font-size: 13px; padding: 12px; }
+    .dialog-actions .btn-cancel { background: var(--bg); color: var(--fg); }
   </style>
 </head>
 <body>
@@ -412,7 +699,7 @@
             <li>能听懂并回应 'Yes, it is.' / 'Pardon?'</li>
           </ul>
         </div>
-        <button class="btn" style="margin-top:24px" onclick="toast('进入 Step 1 课文学习')">开始学习</button>
+        <button class="btn" style="margin-top:24px" onclick="show('lesson')">开始学习</button>
       </div>
     </div>
 
@@ -424,12 +711,119 @@
         <div style="width:40px"></div>
       </div>
       <div class="content">
-        <div class="setting-item"><span class="setting-label">TTS 语速</span><span class="setting-value">1.0x</span></div>
-        <div class="setting-item"><span class="setting-label">TTS 音色</span><span class="setting-value">默认</span></div>
-        <div class="setting-item"><span class="setting-label">字体大小</span><span class="setting-value">标准</span></div>
-        <div class="setting-item"><span class="setting-label">清除图片与音频缓存</span><span class="setting-value">&gt;</span></div>
+        <div class="setting-item" onclick="openSheet('tts-speed', ['0.8x', '1.0x', '1.2x'])"><span class="setting-label">TTS 语速</span><span class="setting-value" id="tts-speed-value">1.0x &gt;</span></div>
+        <div class="setting-item"><span class="setting-label">TTS 音色</span><span class="setting-value">默认 &gt;</span></div>
+        <div class="setting-item" onclick="openSheet('font-size', ['跟随系统', '标准', '大'])"><span class="setting-label">字体大小</span><span class="setting-value" id="font-size-value">标准 &gt;</span></div>
+        <div class="setting-item" onclick="openDialog('清除缓存', '将删除 banner 图片缓存和 TTS 音频缓存，不影响学习进度。')"><span class="setting-label">清除图片与音频缓存</span><span class="setting-value">&gt;</span></div>
         <div class="setting-item"><span class="setting-label">离线内容管理</span><span class="setting-value">&gt;</span></div>
         <div class="setting-item"><span class="setting-label">关于 / 开源协议</span><span class="setting-value">&gt;</span></div>
+      </div>
+    </div>
+
+    <!-- Lesson (Step 1: Text Reading) -->
+    <div id="lesson" class="screen">
+      <div class="lesson-topbar">
+        <button class="back-btn" onclick="show('book')">← 返回</button>
+        <h2>Lesson 01 · Excuse me!</h2>
+        <div class="steps">
+          <span class="step-dot current"></span>
+          <span class="step-dot"></span>
+          <span class="step-dot"></span>
+          <span class="step-dot"></span>
+          <span class="step-dot"></span>
+          <span class="step-dot"></span>
+        </div>
+      </div>
+      <div class="lesson-content">
+        <div class="lesson-banner">BANNER PLACEHOLDER</div>
+        <div class="lesson-text">
+          <span class="sentence"><span class="word" onclick="openWordModal(event, 'Excuse', '/ɪkˈskjuːs/', '原谅；借口', 'Excuse me, where is the station?', '打扰一下，车站在哪里？')">Excuse</span> me!</span>
+          <span class="sentence"> Is this your <span class="word" onclick="openWordModal(event, 'handbag', '/ˈhændbæɡ/', '手提包', 'Is this your handbag?', '这是你的手提包吗？')">handbag</span>?</span>
+          <span class="sentence"> Pardon?</span>
+          <span class="sentence"> Is this your handbag?</span>
+          <span class="sentence"> Yes, it is.</span>
+          <span class="sentence"> Thank you very much.</span>
+        </div>
+        <div class="vocab-toggle" onclick="toggleVocab()">
+          <span>核心词汇</span>
+          <span id="vocab-arrow">▼</span>
+        </div>
+        <div class="vocab-list" id="vocab-list">
+          <div class="vocab-item">
+            <button class="sound-btn">🔊</button>
+            <div>
+              <div><span class="vocab-word">excuse</span> <span class="vocab-phonetic">/ɪkˈskjuːs/</span></div>
+              <div class="vocab-meaning">原谅；借口</div>
+            </div>
+          </div>
+          <div class="vocab-item">
+            <button class="sound-btn">🔊</button>
+            <div>
+              <div><span class="vocab-word">handbag</span> <span class="vocab-phonetic">/ˈhændbæɡ/</span></div>
+              <div class="vocab-meaning">手提包</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-bottom">
+        <button class="btn" onclick="show('completion')">START EXERCISES</button>
+      </div>
+    </div>
+
+    <!-- Completion -->
+    <div id="completion" class="screen">
+      <div class="topbar">
+        <button class="back-btn" onclick="show('book')">← 返回</button>
+        <h1 style="font-size:18px">完成</h1>
+        <div style="width:40px"></div>
+      </div>
+      <div class="completion">
+        <div class="completion-check">✓</div>
+        <div class="completion-title">LESSON COMPLETED</div>
+        <div class="key-vocab-title">KEY VOCABULARY</div>
+        <div class="key-vocab-list">
+          <div class="key-vocab-item"><strong>excuse</strong><span>/ɪkˈskjuːs/</span><span>原谅；借口</span></div>
+          <div class="key-vocab-item"><strong>handbag</strong><span>/ˈhændbæɡ/</span><span>手提包</span></div>
+          <div class="key-vocab-item"><strong>pardon</strong><span>/ˈpɑːrdn/</span><span>请再说一遍</span></div>
+        </div>
+        <button class="btn" style="margin-bottom:12px" onclick="toast('进入下一课')">NEXT LESSON</button>
+        <button class="btn btn-secondary" onclick="show('book')">BACK TO COURSE</button>
+      </div>
+    </div>
+
+    <!-- Word Modal -->
+    <div id="word-modal" class="modal-overlay" onclick="closeWordModal(event)">
+      <div class="word-modal" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeWordModal()">✕</button>
+        <div class="word-text" id="modal-word">excuse</div>
+        <div class="word-phonetic">
+          <span id="modal-phonetic">/ɪkˈskjuːs/</span>
+          <button class="sound-btn">🔊</button>
+        </div>
+        <div class="word-meaning" id="modal-meaning">v. 原谅；借口</div>
+        <div class="word-example-label">EXAMPLE</div>
+        <div class="word-example" id="modal-example">Excuse me, where is the station?</div>
+        <div class="word-example-cn" id="modal-example-cn">打扰一下，车站在哪里？</div>
+      </div>
+    </div>
+
+    <!-- Selection Sheet -->
+    <div id="sheet-overlay" class="sheet-overlay" onclick="closeSheet()">
+      <div class="sheet" onclick="event.stopPropagation()">
+        <div class="sheet-title" id="sheet-title">选择</div>
+        <div id="sheet-options"></div>
+      </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div id="dialog-overlay" class="dialog-overlay" onclick="closeDialog()">
+      <div class="dialog" onclick="event.stopPropagation()">
+        <div class="dialog-title" id="dialog-title">确认</div>
+        <div class="dialog-text" id="dialog-text">确认执行此操作？</div>
+        <div class="dialog-actions">
+          <button class="btn btn-cancel" onclick="closeDialog()">CANCEL</button>
+          <button class="btn" onclick="confirmDialog()">CONFIRM</button>
+        </div>
       </div>
     </div>
 
@@ -504,6 +898,72 @@
     function showBook(i) {
       renderSections();
       show('book');
+    }
+
+    function openWordModal(event, word, phonetic, meaning, example, exampleCn) {
+      event.stopPropagation();
+      document.getElementById('modal-word').textContent = word;
+      document.getElementById('modal-phonetic').textContent = phonetic;
+      document.getElementById('modal-meaning').textContent = meaning;
+      document.getElementById('modal-example').textContent = example;
+      document.getElementById('modal-example-cn').textContent = exampleCn;
+      document.getElementById('word-modal').classList.add('show');
+    }
+
+    function closeWordModal(event) {
+      if (event && event.target !== document.getElementById('word-modal') && event.target !== document.querySelector('.modal-close')) return;
+      document.getElementById('word-modal').classList.remove('show');
+    }
+
+    function toggleVocab() {
+      const list = document.getElementById('vocab-list');
+      const arrow = document.getElementById('vocab-arrow');
+      list.classList.toggle('open');
+      arrow.textContent = list.classList.contains('open') ? '▲' : '▼';
+    }
+
+    let currentSheetId = null;
+    function openSheet(id, options) {
+      currentSheetId = id;
+      const titles = { 'tts-speed': 'TTS 语速', 'font-size': '字体大小' };
+      document.getElementById('sheet-title').textContent = titles[id] || '选择';
+      const valueEl = document.getElementById(id + '-value');
+      const current = valueEl ? valueEl.textContent.replace(' >', '') : '';
+      document.getElementById('sheet-options').innerHTML = options.map(opt =>
+        `<div class="sheet-option ${opt === current ? 'selected' : ''}" onclick="selectSheetOption('${opt}')">${opt}</div>`
+      ).join('');
+      document.getElementById('sheet-overlay').classList.add('show');
+    }
+
+    function selectSheetOption(value) {
+      if (currentSheetId) {
+        const el = document.getElementById(currentSheetId + '-value');
+        if (el) el.textContent = value + ' >';
+      }
+      closeSheet();
+    }
+
+    function closeSheet() {
+      currentSheetId = null;
+      document.getElementById('sheet-overlay').classList.remove('show');
+    }
+
+    let dialogCallback = null;
+    function openDialog(title, text, onConfirm) {
+      document.getElementById('dialog-title').textContent = title;
+      document.getElementById('dialog-text').textContent = text;
+      dialogCallback = onConfirm || function() { toast('已执行'); };
+      document.getElementById('dialog-overlay').classList.add('show');
+    }
+
+    function closeDialog() {
+      dialogCallback = null;
+      document.getElementById('dialog-overlay').classList.remove('show');
+    }
+
+    function confirmDialog() {
+      if (dialogCallback) dialogCallback();
+      closeDialog();
     }
   </script>
 </body>
