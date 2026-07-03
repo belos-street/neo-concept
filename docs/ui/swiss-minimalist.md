@@ -181,6 +181,28 @@
 | | `SelectionSheet` | 底部弹出单选 Sheet |
 | | `ConfirmDialog` | 二次确认弹窗 |
 
+### 4.8 学习页各步骤内容组件
+
+| 步骤 | 组件 | 说明 |
+|------|------|------|
+| Step 1 课文学习 | `.lesson-banner` | 16:9 Banner 或占位图 |
+| | `.lesson-text` | 按句拆分的课文，单词可点击查词 |
+| | `.vocab-toggle` + `.vocab-list` | 可折叠核心词汇 |
+| Step 2 填词练习 | `.step-title` | 步骤标签 |
+| | `.fill-sentence` + `.blank` | 带空格的句子 |
+| | `.choices` + `.choice-chip` | 候选词按钮 |
+| Step 3 拼写练习 | `.spelling-prompt` | 中文提示 |
+| | `.spelling-hint` | 发音/音标提示 |
+| | `.spelling-input` | 用户输入框 |
+| | `.spelling-context` | 文章上下文示例句 |
+| Step 4 阅读理解 | `.question` | 题目 |
+| | `.radio-option` + `.radio-ring` | 4 选项单选 |
+| Step 5 口语练习 | `.speaking-script` | 跟读脚本 |
+| | `.mic-button` | 录音按钮 |
+| | `.speaking-tip` | 操作提示 |
+| Step 6 完成页 | `.completion-check` | 大对勾 |
+| | `.key-vocab-title` + `.key-vocab-list` | 重点词汇 |
+
 ---
 
 ## 5. 核心页面组件布局详述
@@ -311,23 +333,24 @@
 - **例句标题**：`label` 大写「EXAMPLE」。
 - **例句**：`body` 字号，可点击发音，下方中文释义 `body` `muted` 色。
 
-### 5.6 学习页顶部步骤指示器
+### 5.6 学习页顶部栏
 
 ```
 ┌────────────────────────────────────┐
-│ ←  Lesson Title        ●●●●●●      │
+│ ←    Lesson 01              [占位] │
+│      Excuse me!                    │
 └────────────────────────────────────┘
 ```
 
-- **位置**：学习页顶部，固定高度 `56dp`。
-- **返回键**：左侧 `24×24dp`。
-- **课程标题**：`body` 字号，居中或左对齐，单行截断。
-- **步骤圆点**：右侧 6 个 `8dp` 圆点，间距 `8dp`：
-  - 已完成：`foreground` 实心。
-  - 当前：`accent` 实心。
-  - 未解锁：`locked` 空心或半透明实心。
+- **容器**：`.lesson-topbar`，固定高度 `64dp`，底部 `2dp` 边框。
+- **返回键**：左侧 `.back-btn`，`24×24dp`。
+- **标题区**：`.lesson-header-center`，居中，上下排列：
+  - `.lesson-header-id`：`label` 大写，强调色，如「LESSON 01」。
+  - `.lesson-header-title`：`body` 字号加粗，最多两行截断，适应长标题。
+- **右侧占位**：`.lesson-topbar-placeholder`，宽度 `40dp`，与返回键视觉平衡。
+- **步骤指示器**：不放在顶部栏，移至底部区域，避免拥挤。
 
-### 5.7 学习页底部操作区
+### 5.7 学习页底部区域
 
 ```
 ┌────────────────────────────────────┐
@@ -335,20 +358,67 @@
 │     （当前步骤内容区域）            │
 │                                    │
 ├────────────────────────────────────┤
-│  [  SKIP SPEAKING  ]               │
-│  [      NEXT STEP / CHECK      ]   │
+│         ● ● ● ● ● ●                │
+│  [      SKIP SPEAKING      ]       │
+│  [      NEXT STEP / CHECK  ]       │
 └────────────────────────────────────┘
 ```
 
-- **位置**：页面底部，避开系统导航栏与 IME 键盘。
-- **主按钮**：全宽或左右边距 `16dp`，高度 `48dp–56dp`。
-- **次按钮**：仅在 Step 5 口语显示「SKIP SPEAKING」，位于主按钮上方，`space-3` 间距。
+- **步骤指示器**：`.lesson-steps`，位于底部操作按钮上方，6 个 `.step-dot`，`8dp`，间距 `10dp`。
+- **次按钮**：`.btn-secondary`，仅在 Step 5 口语显示「SKIP SPEAKING」。
+- **主按钮**：`.btn`，全宽，高度 `48dp–56dp`。
 - **按钮文案**：
   - 未完成步骤：提示当前所需操作，如「SELECT ANSWER TO CONTINUE」。
   - 已完成步骤：「NEXT STEP」。
   - 最后一步：「FINISH LESSON」。
 
-### 5.8 完成页
+### 5.8 学习页区域架构图（按 CSS 命名）
+
+```
+┌────────────────────────────────────────┐
+│  .lesson-topbar                        │
+│  ┌────────┬──────────────────┬───────┐ │
+│  │ .back  │ .lesson-header   │ .pla- │ │
+│  │ -btn   │ -center          │ cehol-│ │
+│  │        │ .lesson-header-id│ der   │ │
+│  │        │ .lesson-header-  │       │ │
+│  │        │   title          │       │ │
+│  └────────┴──────────────────┴───────┘ │
+├────────────────────────────────────────┤
+│  .lesson-content                       │
+│  ┌──────────────────────────────────┐  │
+│  │ .lesson-banner                   │  │
+│  ├──────────────────────────────────┤  │
+│  │ .lesson-text / .step-title /     │  │
+│  │ .fill-sentence / .choices /      │  │
+│  │ .spelling-input / .question /    │  │
+│  │ .radio-option / .speaking-script │  │
+│  └──────────────────────────────────┘  │
+├────────────────────────────────────────┤
+│  .lesson-steps                         │
+│  ○ ○ ○ ○ ○ ○  (.step-dot)              │
+├────────────────────────────────────────┤
+│  .lesson-bottom                        │
+│  [ .btn-secondary ] (only Step 5)      │
+│  [ .btn ]                              │
+└────────────────────────────────────────┘
+```
+
+| 区域 | CSS 类名 | 职责 |
+|------|----------|------|
+| 顶部栏 | `.lesson-topbar` | 返回、课程编号/标题 |
+| 标题区 | `.lesson-header-center` | 居中承载编号与标题 |
+| 课程编号 | `.lesson-header-id` | 小字大写，强调色 |
+| 课程标题 | `.lesson-header-title` | 最多两行 |
+| 右侧占位 | `.lesson-topbar-placeholder` | 视觉平衡 |
+| 内容区 | `.lesson-content` | 滚动承载各步骤内容 |
+| 步骤指示器 | `.lesson-steps` | 6 个步骤状态圆点 |
+| 步骤圆点 | `.step-dot` | 已完成/当前/未解锁 |
+| 底部操作 | `.lesson-bottom` | 主按钮 + 可选次按钮 |
+| 主按钮 | `.btn` | 下一步/检查/完成 |
+| 次按钮 | `.btn-secondary` | Step 5 跳过口语 |
+
+### 5.9 完成页
 
 ```
 ┌────────────────────────────────────┐
