@@ -15,12 +15,12 @@
 
 ### 核心原则
 
-- **离线优先**：ASR/TTS/词典全部打包进 APK，仅课程 YAML 需联网下载
+- **离线优先**：ASR/TTS/词典/课程 JSON 全部打包进 APK，不依赖线上拉取
 - **纯本地**：无账号、无云端同步、无社交功能
 - **非商业**：个人开源项目，课程内容由 LLM 原创生成，仅供学习交流
 - **输入→加工→输出**：每课 6 个 Step 按认知规律递进，15-25 min/课
 - **Android 优先**：当前专注于 Android 原生开发，iOS 版本后续通过 Vibe Coding 复刻
-- **统一 UI 风格**：所有 UI 组件必须严格遵循 `SwissTheme` 设计规范（详见 `.agents/docs/ui-design/theme.md`），禁止使用 Material3 默认样式
+- **统一 UI 风格**：所有 UI 组件必须严格遵循 `SwissTheme` 设计规范（详见 [`docs/ui/swiss-minimalist.md`](docs/ui/swiss-minimalist.md)），禁止使用 Material3 默认样式
 
 ---
 
@@ -52,7 +52,23 @@
 
 ---
 
-## 3. 文档与图表规范
+## 3. 项目文档入口
+
+所有项目文档统一收纳在 `docs/` 目录，并通过 [`docs/README.md`](docs/README.md) 作为总索引。该索引按阅读顺序列出需求、交互、数据、系统、视觉、工程、任务拆解等全部文档，开发前应先通读索引确定上下文。
+
+主要文档分类：
+
+| 分类 | 路径 | 说明 |
+|------|------|------|
+| 需求与设计规范 | `docs/superpowers/specs/` | 信息架构、课程交互、内容导入、进度模型、启动引导、设置、错误处理等 |
+| 视觉设计系统 | `docs/ui/swiss-minimalist.md` | Swiss Theme 颜色、字体、间距、组件、布局架构 |
+| 交互 Demo | `docs/demo/index.html` | 低保真可交互 Demo |
+| 工程与开发计划 | `docs/vibe-flow/` | 系统架构、数据模型、工程化基建、任务拆解 |
+| 设计任务清单 | `docs/DESIGN-TODO.md` | 已完成与待设计项跟踪 |
+
+---
+
+## 4. 文档与图表规范
 
 - **图表统一使用 Mermaid**：所有结构图、流程图、类图、状态图等统一使用 Markdown 原生的 Mermaid 语法绘制，确保在 GitHub、GitLab 及支持 Mermaid 的渲染器中可直接查看。
 - **避免 ASCII 流程图与外部图片**：不要使用纯 ASCII 流程图、截图或外部绘图工具代替 Mermaid；只有纯粹的 UI 布局线框图可保留简化 ASCII。
