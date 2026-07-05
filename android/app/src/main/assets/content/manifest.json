@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "schemaVersion": 1,
+  "minAppVersion": "1.0.0",
+  "updatedAt": "2026-07-05",
+  "books": [
+    {
+      "id": "book01",
+      "title": "First Things First",
+      "subtitle": "新概念英语第一册",
+      "order": 1,
+      "totalLessons": 2,
+      "path": "books/book01/book.json"
+    }
+  ]
+}

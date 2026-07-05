@@ -24,8 +24,8 @@
 - 配置 Hilt Application 类。
 
 **完成标准**：
-- [ ] 项目能成功编译并运行在模拟器/真机上。
-- [ ] 运行 `./gradlew ktlintCheck detekt lintDebug` 无错误。
+- [x] 项目能成功编译并运行在模拟器/真机上。
+- [x] 运行 `./gradlew ktlintCheck detekt lintDebug` 无错误。
 
 **手动验证**：
 1. 打开 Android Studio，点击 Run，看到空白 Hello World 页面。

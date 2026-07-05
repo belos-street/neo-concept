@@ -1,0 +1,107 @@
+{
+  "id": "book01-L02",
+  "bookId": "book01",
+  "displayNumber": "02",
+  "title": "Is this your...?",
+  "subtitle": "",
+  "banner": {
+    "local": null,
+    "remote": "https://picsum.photos/seed/book01l02/800/450",
+    "placeholder": "banner_placeholder"
+  },
+  "introduction": {
+    "knowledgePoints": [
+      "形容词性物主代词 your / my",
+      "一般疑问句及其肯定/否定回答"
+    ],
+    "speakingScenarios": [
+      "确认物品归属"
+    ],
+    "learningObjectives": [
+      "能用 'Is this your...?' 确认物品归属",
+      "能回答 'Yes, it is.' / 'No, it isn't.'"
+    ]
+  },
+  "text": {
+    "paragraphs": [
+      {
+        "id": "p1",
+        "sentences": [
+          { "id": "s1", "text": "Is this your pen?" },
+          { "id": "s2", "text": "Yes, it is." },
+          { "id": "s3", "text": "Is this your book?" },
+          { "id": "s4", "text": "No, it isn't. It's his book." }
+        ]
+      }
+    ]
+  },
+  "vocabulary": [
+    {
+      "id": "v1",
+      "word": "pen",
+      "phonetic": "/pen/",
+      "translation": "钢笔",
+      "example": "This is my pen.",
+      "contextSentence": "Is this your pen?"
+    },
+    {
+      "id": "v2",
+      "word": "book",
+      "phonetic": "/bʊk/",
+      "translation": "书",
+      "example": "I like this book.",
+      "contextSentence": "Is this your book?"
+    },
+    {
+      "id": "v3",
+      "word": "his",
+      "phonetic": "/hɪz/",
+      "translation": "他的",
+      "example": "This is his car.",
+      "contextSentence": "It's his book."
+    }
+  ],
+  "exercises": {
+    "fillInBlanks": [
+      {
+        "id": "fb1",
+        "sentence": "Is this ______ pen? Yes, it is.",
+        "answer": "your",
+        "options": ["your", "my", "his", "her"]
+      },
+      {
+        "id": "fb2",
+        "sentence": "No, it ______. It's his book.",
+        "answer": "isn't",
+        "options": ["isn't", "is", "aren't", "don't"]
+      }
+    ],
+    "spelling": [
+      { "id": "sp1", "vocabularyId": "v1" },
+      { "id": "sp2", "vocabularyId": "v2" }
+    ],
+    "comprehension": {
+      "questions": [
+        {
+          "id": "cq1",
+          "question": "What is not the speaker's?",
+          "options": [
+            "The pen.",
+            "The book.",
+            "The bag.",
+            "The watch."
+          ],
+          "answer": 1,
+          "explanation": "原文中说 'No, it isn't. It's his book.'，所以书不是说话者的。"
+        }
+      ]
+    },
+    "speaking": {
+      "sentences": [
+        { "id": "ss1", "text": "Is this your pen?", "normalizedText": "is this your pen" },
+        { "id": "ss2", "text": "Yes, it is.", "normalizedText": "yes it is" },
+        { "id": "ss3", "text": "No, it isn't. It's his book.", "normalizedText": "no it isn't it's his book" }
+      ]
+    }
+  }
+}

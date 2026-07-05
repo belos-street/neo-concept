@@ -1,6 +1,6 @@
 # Neo Concept — 数据模型设计
 
-> 状态：待用户确认
+> 状态：已确认（与 `content-import-design.md` 对齐）
 > 目标：定义课程内容、用户进度、设置、运行时状态的完整数据模型，作为编码阶段的契约。
 
 ---
@@ -24,17 +24,21 @@
 ```kotlin
 @Serializable
 data class Manifest(
+    val version: String,              // 内容集版本，如 "1.0.0"
     val schemaVersion: Int,           // 内容 schema 版本，如 1
+    val minAppVersion: String,        // 最低 App 版本，如 "1.0.0"
+    val updatedAt: String,            // 更新日期，如 "2026-07-05"
     val books: List<ManifestBook>     // 4 本书的清单
 )
 
 @Serializable
 data class ManifestBook(
-    val bookId: String,               // 如 "book01"
+    val id: String,                   // 如 "book01"
     val title: String,                // 书名
     val subtitle: String,             // 副标题
+    val order: Int,                   // 显示顺序
     val totalLessons: Int,            // 总课数
-    val assetPath: String             // 如 "content/books/book01/"
+    val path: String                  // 相对 manifest.json 的路径，如 "books/book01/book.json"
 )
 ```
 
@@ -43,19 +47,21 @@ data class ManifestBook(
 ```kotlin
 @Serializable
 data class Book(
-    val bookId: String,
+    val id: String,
     val title: String,
     val subtitle: String,
+    val order: Int,
     val totalLessons: Int,
     val lessons: List<BookLessonRef>  // 课程索引列表
 )
 
 @Serializable
 data class BookLessonRef(
-    val lessonId: String,             // 全局唯一，如 "book01-L01"
-    val number: Int,                  // 课号，如 1
+    val id: String,                   // 全局唯一课程 ID，如 "book01-L01"
+    val displayNumber: String,        // 显示课号，如 "01"
     val title: String,                // 课文标题
-    val assetPath: String             // 如 "books/book01/lessons/L01/lesson.json"
+    val path: String,                 // 相对 book.json 的路径，如 "lessons/L01/lesson.json"
+    val banner: Banner                // 课程 banner 配置
 )
 ```
 
@@ -64,18 +70,23 @@ data class BookLessonRef(
 ```kotlin
 @Serializable
 data class Lesson(
-    val lessonId: String,
+    val id: String,
     val bookId: String,
-    val number: Int,
+    val displayNumber: String,
     val title: String,
-    val bannerUrl: String?,           // 远程 HTTPS URL，离线时显示占位图
+    val subtitle: String,
+    val banner: Banner,
     val introduction: Introduction,
-    val text: List<Sentence>,         // 课文句子列表
-    val vocabulary: List<VocabularyItem>, // 本课核心词汇
-    val fillInTheBlank: List<FillBlankItem>,
-    val spelling: List<SpellingItem>,
-    val reading: List<ReadingQuestion>,
-    val speaking: List<String>        // 跟读句子原文
+    val text: Text,
+    val vocabulary: List<VocabularyItem>,
+    val exercises: Exercises
+)
+
+@Serializable
+data class Banner(
+    val local: String?,               // 本地相对路径，如 "banners/L01.webp"
+    val remote: String?,              // 远程 HTTPS URL
+    val placeholder: String           // App 内置占位图资源名
 )
 
 @Serializable
@@ -86,48 +97,72 @@ data class Introduction(
 )
 
 @Serializable
+data class Text(
+    val paragraphs: List<Paragraph>
+)
+
+@Serializable
+data class Paragraph(
+    val id: String,
+    val sentences: List<Sentence>
+)
+
+@Serializable
 data class Sentence(
     val id: String,                   // 句子唯一标识
     val text: String,                 // 完整英文句子
-    val translation: String           // 中文翻译
+    val normalizedText: String? = null // ASR 比对用归一化文本
 )
 
 @Serializable
 data class VocabularyItem(
+    val id: String,
     val word: String,
     val phonetic: String,
-    val meaning: String,              // 中文释义
+    val translation: String,          // 中文释义
     val example: String,              // 例句
-    val exampleTranslation: String
+    val contextSentence: String       // 含该词的课文原句，用于拼写提示
 )
 
 @Serializable
-data class FillBlankItem(
-    val sentenceId: String,           // 对应课文句子
-    val blanks: List<Blank>,          // 一个句子可能有多个空
-    val choices: List<String>         // 候选词（所有空共用或每空独立）
+data class Exercises(
+    val fillInBlanks: List<FillInBlank>,
+    val spelling: List<Spelling>,
+    val comprehension: Comprehension,
+    val speaking: Speaking
 )
 
 @Serializable
-data class Blank(
-    val index: Int,
-    val answer: String
+data class FillInBlank(
+    val id: String,
+    val sentence: String,             // 带空格的句子，如 "______ me!"
+    val answer: String,               // 正确答案
+    val options: List<String>         // 候选词（整题共用）
 )
 
 @Serializable
-data class SpellingItem(
-    val word: String,
-    val phonetic: String,
-    val meaning: String,
-    val hintSentenceId: String        // 提示用的上下文句子
+data class Spelling(
+    val id: String,
+    val vocabularyId: String          // 引用 vocabulary 中对应词条的 id
 )
 
 @Serializable
-data class ReadingQuestion(
+data class Comprehension(
+    val questions: List<ComprehensionQuestion>
+)
+
+@Serializable
+data class ComprehensionQuestion(
     val id: String,
     val question: String,
     val options: List<String>,        // 4 个选项
-    val correctIndex: Int             // 正确答案索引
+    val answer: Int,                  // 正确答案索引
+    val explanation: String           // 解析
+)
+
+@Serializable
+data class Speaking(
+    val sentences: List<Sentence>
 )
 ```
 
@@ -280,14 +315,18 @@ data class ContinueLesson(
 
 ```mermaid
 erDiagram
-    MANIFEST ||--o{ BOOK : contains
+    MANIFEST ||--o{ MANIFEST_BOOK : contains
+    MANIFEST_BOOK ||--|| BOOK : references
     BOOK ||--o{ BOOK_LESSON_REF : contains
     BOOK_LESSON_REF ||--|| LESSON : references
-    LESSON ||--o{ SENTENCE : contains
+    LESSON ||--o{ PARAGRAPH : contains
+    PARAGRAPH ||--o{ SENTENCE : contains
     LESSON ||--o{ VOCABULARY_ITEM : contains
-    LESSON ||--o{ FILL_BLANK_ITEM : contains
-    LESSON ||--o{ SPELLING_ITEM : contains
-    LESSON ||--o{ READING_QUESTION : contains
+    LESSON ||--o{ EXERCISES : has_one
+    EXERCISES ||--o{ FILL_IN_BLANK : contains
+    EXERCISES ||--o{ SPELLING : contains
+    EXERCISES ||--o{ COMPREHENSION : contains
+    EXERCISES ||--o{ SPEAKING : contains
     LESSON ||--|| LESSON_PROGRESS : tracked_by
     BOOK ||--|| BOOK_PROGRESS : derived_from
     LESSON_PROGRESS ||--o{ APP_PROGRESS : contributes_to
@@ -305,11 +344,12 @@ erDiagram
 
 ---
 
-## 9. 待确认决策
+## 9. 已确认决策
 
-1. **FillBlankItem.choices**：是每个 blank 独立候选词，还是整题共用一组候选词？（当前按整题共用设计）
-2. **SpellingItem.hintSentenceId**：是否允许为空，为空时拼写练习不显示上下文提示？
-3. **LessonProgress.completedSteps**：用 `List<Int>` 还是 `Set<Int>`？（推荐 `Set`，但序列化后无差别）
-4. **AppSettings**：是否需要单独存储每个设置项，还是整体序列化为一个 JSON 对象？（推荐整体序列化）
-5. **LookupHistory**：v1.0 是否实现查词历史？（此前设计未包含，可选）
-6. **DictionaryEntry**：是否需要额外拆分音标、释义列表等字段用于 UI 展示？
+1. **课程内容结构**：以 `content-import-design.md` 为唯一来源，`manifest.json` / `book.json` / `lesson.json` 字段命名与其保持一致。
+2. **填词候选词**：`FillInBlank.options` 整题共用一组候选词。
+3. **拼写提示**：`Spelling` 通过 `vocabularyId` 引用 `VocabularyItem.contextSentence`，不为空。
+4. **LessonProgress.completedSteps**：使用 `List<Int>`。
+5. **AppSettings**：整体序列化为一个 JSON 对象。
+6. **LookupHistory**：v1.0 不实现。
+7. **DictionaryEntry**：保留原表字段，UI 展示时按需拆分。

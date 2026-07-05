@@ -1,0 +1,31 @@
+{
+  "id": "book01",
+  "title": "First Things First",
+  "subtitle": "新概念英语第一册",
+  "order": 1,
+  "totalLessons": 2,
+  "lessons": [
+    {
+      "id": "book01-L01",
+      "displayNumber": "01",
+      "title": "Excuse me!",
+      "path": "lessons/L01/lesson.json",
+      "banner": {
+        "local": null,
+        "remote": "https://picsum.photos/seed/book01l01/800/450",
+        "placeholder": "banner_placeholder"
+      }
+    },
+    {
+      "id": "book01-L02",
+      "displayNumber": "02",
+      "title": "Is this your...?",
+      "path": "lessons/L02/lesson.json",
+      "banner": {
+        "local": null,
+        "remote": "https://picsum.photos/seed/book01l02/800/450",
+        "placeholder": "banner_placeholder"
+      }
+    }
+  ]
+}

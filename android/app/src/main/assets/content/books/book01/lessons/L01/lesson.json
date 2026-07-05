@@ -1,0 +1,130 @@
+{
+  "id": "book01-L01",
+  "bookId": "book01",
+  "displayNumber": "01",
+  "title": "Excuse me!",
+  "subtitle": "",
+  "banner": {
+    "local": null,
+    "remote": "https://picsum.photos/seed/book01l01/800/450",
+    "placeholder": "banner_placeholder"
+  },
+  "introduction": {
+    "knowledgePoints": [
+      "疑问句 'Is this your...?' 的用法",
+      "礼貌用语 'Excuse me'"
+    ],
+    "speakingScenarios": [
+      "在公共场合向陌生人询问物品归属"
+    ],
+    "learningObjectives": [
+      "能用 'Is this your...?' 询问物品归属",
+      "能听懂并回应 'Yes, it is.' / 'Pardon?'"
+    ]
+  },
+  "text": {
+    "paragraphs": [
+      {
+        "id": "p1",
+        "sentences": [
+          { "id": "s1", "text": "Excuse me!" },
+          { "id": "s2", "text": "Yes?" },
+          { "id": "s3", "text": "Is this your handbag?" },
+          { "id": "s4", "text": "Pardon?" },
+          { "id": "s5", "text": "Is this your handbag?" },
+          { "id": "s6", "text": "Yes, it is." },
+          { "id": "s7", "text": "Thank you very much." }
+        ]
+      }
+    ]
+  },
+  "vocabulary": [
+    {
+      "id": "v1",
+      "word": "excuse",
+      "phonetic": "/ɪkˈskjuːs/",
+      "translation": "原谅；借口",
+      "example": "Excuse me, where is the station?",
+      "contextSentence": "Excuse me! Is this your handbag?"
+    },
+    {
+      "id": "v2",
+      "word": "handbag",
+      "phonetic": "/ˈhændbæɡ/",
+      "translation": "手提包",
+      "example": "She bought a new handbag.",
+      "contextSentence": "Is this your handbag?"
+    },
+    {
+      "id": "v3",
+      "word": "pardon",
+      "phonetic": "/ˈpɑːdn/",
+      "translation": "请再说一遍；原谅",
+      "example": "Pardon? I didn't catch that.",
+      "contextSentence": "Pardon?"
+    },
+    {
+      "id": "v4",
+      "word": "yes",
+      "phonetic": "/jes/",
+      "translation": "是；是的",
+      "example": "Yes, I understand.",
+      "contextSentence": "Yes, it is."
+    }
+  ],
+  "exercises": {
+    "fillInBlanks": [
+      {
+        "id": "fb1",
+        "sentence": "______ me! Is this your handbag?",
+        "answer": "Excuse",
+        "options": ["Excuse", "Sorry", "Please", "Hello"]
+      },
+      {
+        "id": "fb2",
+        "sentence": "Is this your ______? Yes, it is.",
+        "answer": "handbag",
+        "options": ["handbag", "coat", "watch", "car"]
+      }
+    ],
+    "spelling": [
+      { "id": "sp1", "vocabularyId": "v1" },
+      { "id": "sp2", "vocabularyId": "v2" }
+    ],
+    "comprehension": {
+      "questions": [
+        {
+          "id": "cq1",
+          "question": "What does the woman ask?",
+          "options": [
+            "Is this your coat?",
+            "Is this your handbag?",
+            "Is this your car?",
+            "Is this your watch?"
+          ],
+          "answer": 1,
+          "explanation": "原文中男士问的是 'Is this your handbag?'。"
+        },
+        {
+          "id": "cq2",
+          "question": "How does the woman respond when she doesn't hear clearly?",
+          "options": [
+            "Sorry?",
+            "Pardon?",
+            "What?",
+            "Repeat?"
+          ],
+          "answer": 1,
+          "explanation": "原文中没听清时说的是 'Pardon?'。"
+        }
+      ]
+    },
+    "speaking": {
+      "sentences": [
+        { "id": "ss1", "text": "Excuse me!", "normalizedText": "excuse me" },
+        { "id": "ss2", "text": "Is this your handbag?", "normalizedText": "is this your handbag" },
+        { "id": "ss3", "text": "Thank you very much.", "normalizedText": "thank you very much" }
+      ]
+    }
+  }
+}
