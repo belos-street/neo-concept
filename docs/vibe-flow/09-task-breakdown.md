@@ -48,12 +48,13 @@
 - 创建 `ContentRepository`，支持从 `assets/content/` 读取 JSON。
 
 **完成标准**：
-- [ ] 能正确解析 `manifest.json` / `book.json` / `lesson.json`。
-- [ ] JSON 结构异常时返回 `Result.Error`。
+- [x] 能正确解析 `manifest.json` / `book.json` / `lesson.json`。
+- [x] JSON 结构异常时返回 `Result.Error`。
 
 **手动验证**：
 1. 在 `app/src/main/assets/content/` 放入示例 `manifest.json`、`book01/book.json`、`book01/lessons/L01/lesson.json`。
 2. 写一个简单的 Log 测试，启动 App 后查看日志输出解析后的书名、课数、课文标题。
+3. 已补充 `ContentParsingTest` 单元测试，直接解析 assets 中的 JSON，验证书名、课数、课文标题、段落数、词汇数等。
 
 **验证点**：
 - 书名、课数与 JSON 一致。
@@ -67,13 +68,14 @@
 - 损坏的课程记录到日志并隐藏。
 
 **完成标准**：
-- [ ] 启动后 `ContentIndex` 包含所有健康课程。
-- [ ] 损坏课程被过滤，并 Toast 提示「部分课程暂不可用」。
+- [x] 启动后 `ContentIndex` 包含所有健康课程。
+- [x] 损坏课程被过滤，并 Toast 提示「部分课程暂不可用」。
 
 **手动验证**：
 1. 故意将某个 `lesson.json` 改为非法 JSON。
 2. 启动 App，观察是否只有健康课程显示，且出现 Toast 提示。
 3. 查看 Logcat 是否有损坏课程的具体错误信息。
+4. 已补充 `ContentIndexTest` 单元测试，模拟损坏课程场景，验证健康课程保留、损坏课程进入 `corruptedEntries`。
 
 **验证点**：
 - 健康课程正常显示。
@@ -92,8 +94,8 @@
 - 左上角设置入口按钮。
 
 **完成标准**：
-- [ ] 首页正确渲染 4 本书。
-- [ ] 进度条与完成数量实时计算（当前初始为 0）。
+- [x] 首页正确渲染 4 本书。
+- [x] 进度条与完成数量实时计算（当前初始为 0）。
 
 **手动验证**：
 1. 启动 App，查看首页布局是否与 Demo 一致。

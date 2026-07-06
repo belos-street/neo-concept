@@ -24,6 +24,8 @@ complexity:
     active: true
     functionThreshold: 6
     constructorThreshold: 7
+    ignoreAnnotated:
+      - Composable
   NestedBlockDepth:
     active: true
     threshold: 4
@@ -48,6 +50,8 @@ naming:
     active: true
     functionPattern: '[a-z][a-zA-Z0-9]*'
     excludeClassPattern: '$^'
+    ignoreAnnotated:
+      - Composable
 
 performance:
   active: true
@@ -61,6 +65,8 @@ style:
     active: true
     ignorePropertyDeclaration: true
     ignoreCompanionObjectPropertyDeclaration: true
+    ignoreAnnotated:
+      - Composable
   MaxLineLength:
     active: true
     maxLineLength: 120
