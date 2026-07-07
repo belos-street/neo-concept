@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Neo Concept</string>
+    <string name="content_partially_unavailable">部分课程暂不可用</string>
 </resources>

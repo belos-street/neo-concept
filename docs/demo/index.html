@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neo Concept — 交互 Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --fg: #000000;
+      --muted: #F2F2F2;
+      --accent: #FF3000;
+      --success: #006E2C;
+      --warning: #B25E00;
+      --locked: #9E9E9E;
+      --border: #000000;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #E5E5E5;
+      color: var(--fg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    #phone {
+      width: 375px;
+      height: 812px;
+      background: var(--bg);
+      border: 12px solid #111;
+      border-radius: 40px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .screen.active { display: flex; }
+
+    /* Header */
+    .topbar {
+      padding: 20px 20px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .topbar h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+    }
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+    }
+    .icon-btn:active { background: var(--fg); color: var(--bg); }
+    .back-btn {
+      border: none;
+      padding: 0;
+      background: transparent;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Cards */
+    .content { padding: 0 20px 24px; overflow-y: auto; }
+    .card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+      background: var(--bg);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .card:active { background: var(--muted); }
+    .card.locked { opacity: 0.45; cursor: not-allowed; }
+    .card.completed { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
+    .book-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .book-num {
+      font-size: 48px;
+      font-weight: 900;
+      line-height: 1;
+      min-width: 64px;
+    }
+    .book-info { flex: 1; }
+    .book-title {
+      font-size: 18px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 4px;
+    }
+    .book-meta {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    .completed .book-meta { color: #AAA; }
+    .progress-bar {
+      height: 6px;
+      background: var(--muted);
+      border: 1px solid var(--border);
+      margin-bottom: 6px;
+    }
+    .progress-fill { height: 100%; background: var(--accent); }
+    .completed .progress-fill { background: var(--bg); }
+    .progress-text { font-size: 12px; font-weight: 500; }
+
+    /* Continue card */
+    .continue-card {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+    .continue-card .book-title { color: var(--bg); }
+    .continue-card .book-meta { color: rgba(255,255,255,0.85); }
+    .continue-card .progress-bar { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.4); }
+    .continue-card .progress-fill { background: var(--bg); }
+    .btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 14px;
+      border: 2px solid var(--border);
+      background: var(--fg);
+      color: var(--bg);
+      font-size: 14px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+    }
+    .continue-card .btn {
+      background: var(--bg);
+      color: var(--accent);
+      border-color: var(--bg);
+    }
+
+    /* Course list */
+    .section-title {
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      padding: 12px 20px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 2px solid var(--border);
+      color: var(--accent);
+    }
+    .lesson-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #DDD;
+    }
+    .lesson-row.locked { opacity: 0.45; }
+    .lesson-num {
+      font-size: 22px;
+      font-weight: 900;
+      width: 44px;
+    }
+    .lesson-title {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .status-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dot-current { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+    .ring { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); }
+    .check { color: var(--success); font-weight: 900; font-size: 18px; }
+    .lock { color: var(--locked); }
+    .skip-dot { position: relative; }
+    .skip-dot::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--warning);
+      border: 1px solid var(--bg);
+    }
+
+    /* Settings */
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid #DDD;
+    }
+    .setting-label { font-size: 15px; font-weight: 500; }
+    .setting-value { font-size: 14px; color: #666; }
+
+    /* Intro */
+    .intro-banner { padding: 0 0 16px; }
+    .placeholder-img {
+      width: 100%;
+      height: 180px;
+      background: var(--muted);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #999;
+    }
+    .intro-lesson-title {
+      font-size: 28px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+      margin: 0 0 20px;
+    }
+    .intro-section { margin-bottom: 18px; }
+    .intro-label {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .intro-section ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .intro-section li { margin-bottom: 4px; }
+
+    /* Toast */
+    #toast {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--fg);
+      color: var(--bg);
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    #toast.show { opacity: 1; }
+
+    /* Word Modal */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+    .modal-overlay.show { display: flex; }
+    .word-modal {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 100%;
+      max-width: 320px;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .word-text {
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+    .word-phonetic {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sound-btn {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .word-meaning {
+      font-size: 15px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #DDD;
+    }
+    .word-example-label {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .word-example {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 4px;
+    }
+    .word-example-cn {
+      font-size: 13px;
+      color: #666;
+    }
+
+    /* =========================================================
+       Lesson Page Layout (按区域命名，对应设计文档架构图)
+       ========================================================= */
+
+    /* Region: lesson-topbar */
+    .lesson-topbar {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--border);
+      min-height: 64px;
+    }
+    .lesson-header-center {
+      flex: 1;
+      text-align: center;
+      padding: 0 12px;
+    }
+    .lesson-header-id {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+    .lesson-header-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .lesson-topbar-placeholder {
+      width: 40px;
+    }
+
+    /* Region: lesson-content */
+    .lesson-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .lesson-banner {
+      width: 100%;
+      height: 160px;
+      background: var(--muted);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: #999;
+    }
+    .lesson-text {
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .lesson-text .sentence {
+      display: inline;
+      cursor: pointer;
+      padding: 2px 0;
+    }
+    .lesson-text .sentence:hover { background: var(--muted); }
+    .lesson-text .word {
+      cursor: pointer;
+      border-bottom: 1px dashed var(--border);
+    }
+    .lesson-text .word:hover { color: var(--accent); }
+    .vocab-toggle {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 12px 0;
+      border-top: 2px solid var(--border);
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+    }
+    .vocab-list { display: none; }
+    .vocab-list.open { display: block; }
+    .vocab-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 0;
+      border-bottom: 1px solid #EEE;
+    }
+    .vocab-word { font-weight: 700; }
+    .vocab-phonetic { color: #666; font-size: 13px; }
+    .vocab-meaning { font-size: 14px; color: #333; }
+
+    /* Region: lesson-steps (bottom step indicator) */
+    .lesson-steps {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border-top: 1px solid #DDD;
+    }
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--locked);
+    }
+    .step-dot.done { background: var(--fg); }
+    .step-dot.current { background: var(--accent); }
+
+    /* Region: lesson-bottom */
+    .lesson-bottom {
+      padding: 16px 20px 24px;
+      border-top: 2px solid var(--border);
+    }
+    .lesson-bottom .btn { margin-top: 0; }
+    .lesson-bottom .btn-secondary {
+      background: var(--bg);
+      color: var(--fg);
+      margin-bottom: 10px;
+    }
+
+    /* Step content components */
+    .step-title {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    /* Step 2: Fill-in-the-blank */
+    .fill-sentence {
+      font-size: 16px;
+      line-height: 2;
+      margin-bottom: 24px;
+    }
+    .blank {
+      display: inline-block;
+      min-width: 80px;
+      padding: 2px 8px;
+      border-bottom: 2px solid var(--border);
+      text-align: center;
+      font-weight: 700;
+      margin: 0 2px;
+    }
+    .blank.filled { border-bottom-color: var(--accent); }
+    .choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .choice-chip {
+      padding: 10px 16px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .choice-chip:active { background: var(--muted); }
+    .choice-chip.selected {
+      background: var(--fg);
+      color: var(--bg);
+      border-color: var(--fg);
+    }
+
+    /* Step 3: Spelling */
+    .spelling-prompt {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .spelling-hint {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+    .spelling-input {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      outline: none;
+    }
+    .spelling-input:focus { border-color: var(--accent); }
+    .spelling-context {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+      padding: 12px;
+      background: var(--muted);
+      border-left: 3px solid var(--accent);
+    }
+    .spelling-context .blank { border-bottom-color: var(--accent); }
+
+    /* Step 4: Reading comprehension */
+    .question {
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid #EEE;
+      cursor: pointer;
+    }
+    .radio-ring {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .radio-option.selected .radio-ring {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+    .radio-option.selected .radio-ring::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--bg);
+    }
+
+    /* Step 5: Speaking */
+    .speaking-script {
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+      padding: 16px;
+      background: var(--muted);
+      border: 2px solid var(--border);
+    }
+    .mic-button {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      border: 3px solid var(--border);
+      background: var(--bg);
+      margin: 0 auto 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      cursor: pointer;
+    }
+    .mic-button:active { background: var(--muted); }
+    .mic-button.recording {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--bg);
+    }
+    .speaking-tip {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+    }
+
+    /* Completion Screen */
+    .completion {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .completion-check {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 4px solid var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: var(--success);
+      margin-bottom: 16px;
+    }
+    .completion-title {
+      font-size: 24px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+    .key-vocab-title {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      align-self: flex-start;
+    }
+    .key-vocab-list {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 32px;
+    }
+    .key-vocab-item {
+      display: flex;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #EEE;
+      font-size: 14px;
+    }
+
+    /* Selection Sheet / Dialog */
+    .sheet-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: none;
+      align-items: flex-end;
+      z-index: 101;
+    }
+    .sheet-overlay.show { display: flex; }
+    .sheet {
+      width: 100%;
+      background: var(--bg);
+      border-top: 2px solid var(--border);
+      padding: 20px;
+    }
+    .sheet-title {
+      font-size: 14px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .sheet-option {
+      padding: 14px 0;
+      border-bottom: 1px solid #EEE;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .sheet-option.selected { color: var(--accent); font-weight: 700; }
+
+    .dialog-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 102;
+    }
+    .dialog-overlay.show { display: flex; }
+    .dialog {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 100%;
+      max-width: 280px;
+    }
+    .dialog-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .dialog-text { font-size: 14px; color: #555; margin-bottom: 20px; line-height: 1.5; }
+    .dialog-actions { display: flex; gap: 12px; }
+    .dialog-actions .btn { flex: 1; margin-top: 0; font-size: 13px; padding: 12px; }
+    .dialog-actions .btn-cancel { background: var(--bg); color: var(--fg); }
+  </style>
+</head>
+<body>
+  <div id="phone">
+    <!-- Home -->
+    <div id="home" class="screen active">
+      <div class="topbar">
+        <h1>Neo Concept</h1>
+        <button class="icon-btn" onclick="show('settings')" aria-label="设置">⚙</button>
+      </div>
+      <div class="content">
+        <div class="card continue-card" onclick="showBook(0)">
+          <div class="book-row">
+            <div class="book-info">
+              <div class="book-title">继续学习</div>
+              <div class="book-meta">Book 1 · Lesson 7 · Step 3 拼写练习</div>
+              <div class="progress-bar"><div class="progress-fill" style="width: 35%"></div></div>
+              <div class="progress-text">已完成 6 / 144 课</div>
+            </div>
+          </div>
+          <button class="btn">继续学习</button>
+        </div>
+
+        <div class="card" onclick="showBook(0)">
+          <div class="book-row">
+            <div class="book-num" style="color:var(--accent)">01</div>
+            <div class="book-info">
+              <div class="book-title">First Things First</div>
+              <div class="book-meta">144 课 · 进行中</div>
+              <div class="progress-bar"><div class="progress-fill" style="width: 35%"></div></div>
+              <div class="progress-text">已完成 6 / 144</div>
+            </div>
+            <div style="font-size:20px">→</div>
+          </div>
+        </div>
+
+        <div class="card" onclick="toast('进入 Book 2')">
+          <div class="book-row">
+            <div class="book-num" style="color:var(--fg)">02</div>
+            <div class="book-info">
+              <div class="book-title">Practice & Progress</div>
+              <div class="book-meta">96 课 · 未开始</div>
+              <div class="progress-bar"><div class="progress-fill" style="width: 0%"></div></div>
+              <div class="progress-text">已完成 0 / 96</div>
+            </div>
+            <div style="font-size:20px">→</div>
+          </div>
+        </div>
+
+        <div class="card" onclick="toast('进入 Book 3')">
+          <div class="book-row">
+            <div class="book-num" style="color:var(--fg)">03</div>
+            <div class="book-info">
+              <div class="book-title">Developing Skills</div>
+              <div class="book-meta">60 课 · 未开始</div>
+              <div class="progress-bar"><div class="progress-fill" style="width: 0%"></div></div>
+              <div class="progress-text">已完成 0 / 60</div>
+            </div>
+            <div style="font-size:20px">→</div>
+          </div>
+        </div>
+
+        <div class="card" onclick="toast('进入 Book 4')">
+          <div class="book-row">
+            <div class="book-num" style="color:var(--fg)">04</div>
+            <div class="book-info">
+              <div class="book-title">Fluency in English</div>
+              <div class="book-meta">60 课 · 未开始</div>
+              <div class="progress-bar"><div class="progress-fill" style="width: 0%"></div></div>
+              <div class="progress-text">已完成 0 / 60</div>
+            </div>
+            <div style="font-size:20px">→</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Book Detail -->
+    <div id="book" class="screen">
+      <div class="topbar">
+        <button class="back-btn" onclick="show('home')">← 返回</button>
+        <h1 style="font-size:18px">Book 1</h1>
+        <div style="width:40px"></div>
+      </div>
+      <div id="sections"></div>
+    </div>
+
+    <!-- Pre-lesson Intro -->
+    <div id="intro" class="screen">
+      <div class="topbar">
+        <button class="back-btn" onclick="show('book')">← 返回</button>
+        <h1 style="font-size:18px" id="intro-title">课前导读</h1>
+        <div style="width:40px"></div>
+      </div>
+      <div class="content">
+        <div class="intro-banner">
+          <div class="placeholder-img" id="intro-banner-placeholder">
+            <span>BANNER PLACEHOLDER</span>
+          </div>
+        </div>
+        <h2 class="intro-lesson-title" id="intro-lesson-title">Lesson 01</h2>
+        <div class="intro-section">
+          <div class="intro-label">知识点</div>
+          <ul id="intro-points">
+            <li>疑问句 'Is this your...?' 的用法</li>
+            <li>礼貌用语 'Excuse me'</li>
+          </ul>
+        </div>
+        <div class="intro-section">
+          <div class="intro-label">口语场景</div>
+          <ul id="intro-scenarios">
+            <li>在公共场合向陌生人询问物品归属</li>
+          </ul>
+        </div>
+        <div class="intro-section">
+          <div class="intro-label">学习目标</div>
+          <ul id="intro-objectives">
+            <li>能用 'Is this your...?' 询问物品归属</li>
+            <li>能听懂并回应 'Yes, it is.' / 'Pardon?'</li>
+          </ul>
+        </div>
+        <button class="btn" style="margin-top:24px" onclick="goToStep(1)">开始学习</button>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div id="settings" class="screen">
+      <div class="topbar">
+        <button class="back-btn" onclick="show('home')">← 返回</button>
+        <h1 style="font-size:18px">设置</h1>
+        <div style="width:40px"></div>
+      </div>
+      <div class="content">
+        <div class="setting-item" onclick="openSheet('tts-speed', ['0.8x', '1.0x', '1.2x'])"><span class="setting-label">TTS 语速</span><span class="setting-value" id="tts-speed-value">1.0x &gt;</span></div>
+        <div class="setting-item"><span class="setting-label">TTS 音色</span><span class="setting-value">默认 &gt;</span></div>
+        <div class="setting-item" onclick="openSheet('font-size', ['跟随系统', '标准', '大'])"><span class="setting-label">字体大小</span><span class="setting-value" id="font-size-value">标准 &gt;</span></div>
+        <div class="setting-item" onclick="openDialog('清除缓存', '将删除 banner 图片缓存和 TTS 音频缓存，不影响学习进度。')"><span class="setting-label">清除图片与音频缓存</span><span class="setting-value">&gt;</span></div>
+        <div class="setting-item"><span class="setting-label">离线内容管理</span><span class="setting-value">&gt;</span></div>
+        <div class="setting-item"><span class="setting-label">关于 / 开源协议</span><span class="setting-value">&gt;</span></div>
+      </div>
+    </div>
+
+    <!-- Step 1: Text Reading -->
+    <div id="step1" class="screen lesson-screen">
+      <div class="lesson-topbar">
+        <button class="back-btn" onclick="show('book')">← 返回</button>
+        <div class="lesson-header-center">
+          <div class="lesson-header-id">Lesson 01</div>
+          <h2 class="lesson-header-title">Excuse me!</h2>
+        </div>
+        <div class="lesson-topbar-placeholder"></div>
+      </div>
+      <div class="lesson-content">
+        <div class="lesson-banner">BANNER PLACEHOLDER</div>
+        <div class="lesson-text">
+          <span class="sentence"><span class="word" onclick="openWordModal(event, 'Excuse', '/ɪkˈskjuːs/', '原谅；借口', 'Excuse me, where is the station?', '打扰一下，车站在哪里？')">Excuse</span> me!</span>
+          <span class="sentence"> Is this your <span class="word" onclick="openWordModal(event, 'handbag', '/ˈhændbæɡ/', '手提包', 'Is this your handbag?', '这是你的手提包吗？')">handbag</span>?</span>
+          <span class="sentence"> Pardon?</span>
+          <span class="sentence"> Is this your handbag?</span>
+          <span class="sentence"> Yes, it is.</span>
+          <span class="sentence"> Thank you very much.</span>
+        </div>
+        <div class="vocab-toggle" onclick="toggleVocab()">
+          <span>核心词汇</span>
+          <span id="vocab-arrow">▼</span>
+        </div>
+        <div class="vocab-list" id="vocab-list">
+          <div class="vocab-item">
+            <button class="sound-btn">🔊</button>
+            <div>
+              <div><span class="vocab-word">excuse</span> <span class="vocab-phonetic">/ɪkˈskjuːs/</span></div>
+              <div class="vocab-meaning">原谅；借口</div>
+            </div>
+          </div>
+          <div class="vocab-item">
+            <button class="sound-btn">🔊</button>
+            <div>
+              <div><span class="vocab-word">handbag</span> <span class="vocab-phonetic">/ˈhændbæɡ/</span></div>
+              <div class="vocab-meaning">手提包</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-steps" id="steps-step1">
+        <span class="step-dot current"></span>
+        <span class="step-dot"></span>
+        <span class="step-dot"></span>
+        <span class="step-dot"></span>
+        <span class="step-dot"></span>
+        <span class="step-dot"></span>
+      </div>
+      <div class="lesson-bottom">
+        <button class="btn" onclick="goToStep(2)">START EXERCISES</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Fill-in-the-blank -->
+    <div id="step2" class="screen lesson-screen">
+      <div class="lesson-topbar">
+        <button class="back-btn" onclick="show('book')">← 返回</button>
+        <div class="lesson-header-center">
+          <div class="lesson-header-id">Lesson 01</div>
+          <h2 class="lesson-header-title">Excuse me!</h2>
+        </div>
+        <div class="lesson-topbar-placeholder"></div>
+      </div>
+      <div class="lesson-content">
+        <div class="step-title">STEP 2 — FILL IN THE BLANK</div>
+        <div class="fill-sentence">
+          <span class="sentence"><span class="blank" id="blank1"></span> me!</span>
+          <span class="sentence"> Is this your <span class="blank" id="blank2"></span>?</span>
+        </div>
+        <div class="choices">
+          <button class="choice-chip" onclick="fillBlank(1, 'Excuse', this)">Excuse</button>
+          <button class="choice-chip" onclick="fillBlank(1, 'Sorry', this)">Sorry</button>
+          <button class="choice-chip" onclick="fillBlank(2, 'handbag', this)">handbag</button>
+          <button class="choice-chip" onclick="fillBlank(2, 'wallet', this)">wallet</button>
+        </div>
+      </div>
+      <div class="lesson-steps" id="steps-step2">
+        <span class="step-dot done"></span>
+        <span class="step-dot current"></span>
+        <span class="step-dot"></span>
+        <span class="step-dot"></span>
+        <span class="step-dot"></span>
+        <span class="step-dot"></span>
+      </div>
+      <div class="lesson-bottom">
+        <button class="btn" onclick="goToStep(3)">CHECK</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Spelling -->
+    <div id="step3" class="screen lesson-screen">
+      <div class="lesson-topbar">
+        <button class="back-btn" onclick="show('book')">← 返回</button>
+        <div class="lesson-header-center">
+          <div class="lesson-header-id">Lesson 01</div>
+          <h2 class="lesson-header-title">Excuse me!</h2>
+        </div>
+        <div class="lesson-topbar-placeholder"></div>
+      </div>
+      <div class="lesson-content">
+        <div class="step-title">STEP 3 — SPELLING</div>
+        <div class="spelling-prompt">手提包</div>
+        <div class="spelling-hint" onclick="toast('播放读音 + 音标')">🔊 点击播放读音 /ˈhændbæɡ/</div>
+        <input type="text" class="spelling-input" placeholder="输入英文单词" id="spelling-input">
+        <div class="spelling-context">
+          Is this your <span class="blank">_____</span>?
+        </div>
+      </div>
+      <div class="lesson-steps" id="steps-step3">
+        <span class="step-dot done"></span>
+        <span class="step-dot done"></span>
+        <span class="step-dot current"></span>
+        <span class="step-dot"></span>
+        <span class="step-dot"></span>
+        <span class="step-dot"></span>
+      </div>
+      <div class="lesson-bottom">
+        <button class="btn" onclick="goToStep(4)">CHECK</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Reading Comprehension -->
+    <div id="step4" class="screen lesson-screen">
+      <div class="lesson-topbar">
+        <button class="back-btn" onclick="show('book')">← 返回</button>
+        <div class="lesson-header-center">
+          <div class="lesson-header-id">Lesson 01</div>
+          <h2 class="lesson-header-title">Excuse me!</h2>
+        </div>
+        <div class="lesson-topbar-placeholder"></div>
+      </div>
+      <div class="lesson-content">
+        <div class="step-title">STEP 4 — READING</div>
+        <div class="question">What does the woman ask about?</div>
+        <div class="radio-option" onclick="selectRadio(this)">
+          <div class="radio-ring"></div>
+          <span>A handbag.</span>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this)">
+          <div class="radio-ring"></div>
+          <span>A wallet.</span>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this)">
+          <div class="radio-ring"></div>
+          <span>A watch.</span>
+        </div>
+        <div class="radio-option" onclick="selectRadio(this)">
+          <div class="radio-ring"></div>
+          <span>A coat.</span>
+        </div>
+      </div>
+      <div class="lesson-steps" id="steps-step4">
+        <span class="step-dot done"></span>
+        <span class="step-dot done"></span>
+        <span class="step-dot done"></span>
+        <span class="step-dot current"></span>
+        <span class="step-dot"></span>
+        <span class="step-dot"></span>
+      </div>
+      <div class="lesson-bottom">
+        <button class="btn" onclick="goToStep(5)">CHECK</button>
+      </div>
+    </div>
+
+    <!-- Step 5: Speaking -->
+    <div id="step5" class="screen lesson-screen">
+      <div class="lesson-topbar">
+        <button class="back-btn" onclick="show('book')">← 返回</button>
+        <div class="lesson-header-center">
+          <div class="lesson-header-id">Lesson 01</div>
+          <h2 class="lesson-header-title">Excuse me!</h2>
+        </div>
+        <div class="lesson-topbar-placeholder"></div>
+      </div>
+      <div class="lesson-content">
+        <div class="step-title">STEP 5 — SPEAKING</div>
+        <div class="speaking-script">
+          Excuse me!<br>
+          Is this your handbag?<br>
+          Yes, it is.
+        </div>
+        <button class="mic-button" id="mic-btn" onclick="toggleMic()">🎙</button>
+        <div class="speaking-tip">按住麦克风跟读上面的句子</div>
+      </div>
+      <div class="lesson-steps" id="steps-step5">
+        <span class="step-dot done"></span>
+        <span class="step-dot done"></span>
+        <span class="step-dot done"></span>
+        <span class="step-dot done"></span>
+        <span class="step-dot current"></span>
+        <span class="step-dot"></span>
+      </div>
+      <div class="lesson-bottom">
+        <button class="btn btn-secondary" onclick="goToStep(6)">SKIP SPEAKING</button>
+        <button class="btn" onclick="goToStep(6)">CONTINUE</button>
+      </div>
+    </div>
+
+    <!-- Step 6: Completion -->
+    <div id="step6" class="screen">
+      <div class="topbar">
+        <button class="back-btn" onclick="show('book')">← 返回</button>
+        <h1 style="font-size:18px">完成</h1>
+        <div style="width:40px"></div>
+      </div>
+      <div class="completion">
+        <div class="completion-check">✓</div>
+        <div class="completion-title">LESSON COMPLETED</div>
+        <div class="key-vocab-title">KEY VOCABULARY</div>
+        <div class="key-vocab-list">
+          <div class="key-vocab-item"><strong>excuse</strong><span>/ɪkˈskjuːs/</span><span>原谅；借口</span></div>
+          <div class="key-vocab-item"><strong>handbag</strong><span>/ˈhændbæɡ/</span><span>手提包</span></div>
+          <div class="key-vocab-item"><strong>pardon</strong><span>/ˈpɑːrdn/</span><span>请再说一遍</span></div>
+        </div>
+        <button class="btn" style="margin-bottom:12px" onclick="toast('进入下一课')">NEXT LESSON</button>
+        <button class="btn btn-secondary" onclick="show('book')">BACK TO COURSE</button>
+      </div>
+    </div>
+
+    <!-- Word Modal -->
+    <div id="word-modal" class="modal-overlay" onclick="closeWordModal(event)">
+      <div class="word-modal" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeWordModal()">✕</button>
+        <div class="word-text" id="modal-word">excuse</div>
+        <div class="word-phonetic">
+          <span id="modal-phonetic">/ɪkˈskjuːs/</span>
+          <button class="sound-btn">🔊</button>
+        </div>
+        <div class="word-meaning" id="modal-meaning">v. 原谅；借口</div>
+        <div class="word-example-label">EXAMPLE</div>
+        <div class="word-example" id="modal-example">Excuse me, where is the station?</div>
+        <div class="word-example-cn" id="modal-example-cn">打扰一下，车站在哪里？</div>
+      </div>
+    </div>
+
+    <!-- Selection Sheet -->
+    <div id="sheet-overlay" class="sheet-overlay" onclick="closeSheet()">
+      <div class="sheet" onclick="event.stopPropagation()">
+        <div class="sheet-title" id="sheet-title">选择</div>
+        <div id="sheet-options"></div>
+      </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div id="dialog-overlay" class="dialog-overlay" onclick="closeDialog()">
+      <div class="dialog" onclick="event.stopPropagation()">
+        <div class="dialog-title" id="dialog-title">确认</div>
+        <div class="dialog-text" id="dialog-text">确认执行此操作？</div>
+        <div class="dialog-actions">
+          <button class="btn btn-cancel" onclick="closeDialog()">CANCEL</button>
+          <button class="btn" onclick="confirmDialog()">CONFIRM</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+  </div>
+
+  <script>
+    const lessons = [
+      { n: 1, t: 'Excuse me!', s: 'completed' },
+      { n: 2, t: 'Is this your...?', s: 'completed' },
+      { n: 3, t: 'Sorry, sir.', s: 'completed' },
+      { n: 4, t: 'Is this your...?', s: 'skipped' },
+      { n: 5, t: 'Nice to meet you.', s: 'completed' },
+      { n: 6, t: 'What make is it?', s: 'completed' },
+      { n: 7, t: 'Are you a teacher?', s: 'inprogress' },
+      { n: 8, t: "What\'s your job?", s: 'todo' },
+      { n: 9, t: 'How are you today?', s: 'todo' },
+      { n: 10, t: 'Look at...', s: 'todo' },
+      { n: 11, t: 'Is this your shirt?', s: 'todo' },
+      { n: 12, t: 'Whose is this...?', s: 'todo' }
+    ];
+
+    function show(id) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function goToStep(n) {
+      show('step' + n);
+    }
+
+    function iconFor(state) {
+      if (state === 'completed') return '<span class="status-icon check skip-dot">✓</span>';
+      if (state === 'skipped') return '<span class="status-icon check skip-dot">✓</span>';
+      if (state === 'inprogress') return '<span class="status-icon"><span class="dot-current"></span></span>';
+      return '<span class="status-icon"><span class="ring"></span></span>';
+    }
+
+    function labelFor(state) {
+      if (state === 'completed') return '已完成';
+      if (state === 'skipped') return '已完成 · 口语待补';
+      if (state === 'inprogress') return '进行中';
+      return '未开始';
+    }
+
+    function renderSections() {
+      const container = document.getElementById('sections');
+      let html = '<div class="section-title">Lessons 01–10</div>';
+      lessons.forEach(l => {
+        html += `
+          <div class="lesson-row" onclick="onLesson(${l.n}, '${l.s}')">
+            <div class="lesson-num">${String(l.n).padStart(2, '0')}</div>
+            <div class="lesson-title">${l.t}</div>
+            ${iconFor(l.s)}
+          </div>
+        `;
+      });
+      html += '<div class="section-title" style="opacity:0.4">Lessons 11–20</div>';
+      html += '<div class="lesson-row"><div class="lesson-num">11</div><div class="lesson-title">...</div><span class="status-icon"><span class="ring"></span></span></div>';
+      container.innerHTML = html;
+    }
+
+    function onLesson(n, state) {
+      const lesson = lessons.find(l => l.n === n);
+      document.getElementById('intro-lesson-title').textContent = `Lesson ${String(n).padStart(2, '0')} · ${lesson.t}`;
+      show('intro');
+    }
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1800);
+    }
+
+    function showBook(i) {
+      renderSections();
+      show('book');
+    }
+
+    function openWordModal(event, word, phonetic, meaning, example, exampleCn) {
+      event.stopPropagation();
+      document.getElementById('modal-word').textContent = word;
+      document.getElementById('modal-phonetic').textContent = phonetic;
+      document.getElementById('modal-meaning').textContent = meaning;
+      document.getElementById('modal-example').textContent = example;
+      document.getElementById('modal-example-cn').textContent = exampleCn;
+      document.getElementById('word-modal').classList.add('show');
+    }
+
+    function closeWordModal(event) {
+      if (event && event.target !== document.getElementById('word-modal') && event.target !== document.querySelector('.modal-close')) return;
+      document.getElementById('word-modal').classList.remove('show');
+    }
+
+    function toggleVocab() {
+      const list = document.getElementById('vocab-list');
+      const arrow = document.getElementById('vocab-arrow');
+      list.classList.toggle('open');
+      arrow.textContent = list.classList.contains('open') ? '▲' : '▼';
+    }
+
+    let currentBlank = 1;
+    function fillBlank(n, word, el) {
+      document.getElementById('blank' + n).textContent = word;
+      document.getElementById('blank' + n).classList.add('filled');
+      el.classList.add('selected');
+      toast('填入: ' + word);
+    }
+
+    function selectRadio(el) {
+      document.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function toggleMic() {
+      const btn = document.getElementById('mic-btn');
+      btn.classList.toggle('recording');
+      toast(btn.classList.contains('recording') ? '开始录音' : '结束录音');
+    }
+
+    let currentSheetId = null;
+    function openSheet(id, options) {
+      currentSheetId = id;
+      const titles = { 'tts-speed': 'TTS 语速', 'font-size': '字体大小' };
+      document.getElementById('sheet-title').textContent = titles[id] || '选择';
+      const valueEl = document.getElementById(id + '-value');
+      const current = valueEl ? valueEl.textContent.replace(' >', '') : '';
+      document.getElementById('sheet-options').innerHTML = options.map(opt =>
+        `<div class="sheet-option ${opt === current ? 'selected' : ''}" onclick="selectSheetOption('${opt}')">${opt}</div>`
+      ).join('');
+      document.getElementById('sheet-overlay').classList.add('show');
+    }
+
+    function selectSheetOption(value) {
+      if (currentSheetId) {
+        const el = document.getElementById(currentSheetId + '-value');
+        if (el) el.textContent = value + ' >';
+      }
+      closeSheet();
+    }
+
+    function closeSheet() {
+      currentSheetId = null;
+      document.getElementById('sheet-overlay').classList.remove('show');
+    }
+
+    let dialogCallback = null;
+    function openDialog(title, text, onConfirm) {
+      document.getElementById('dialog-title').textContent = title;
+      document.getElementById('dialog-text').textContent = text;
+      dialogCallback = onConfirm || function() { toast('已执行'); };
+      document.getElementById('dialog-overlay').classList.add('show');
+    }
+
+    function closeDialog() {
+      dialogCallback = null;
+      document.getElementById('dialog-overlay').classList.remove('show');
+    }
+
+    function confirmDialog() {
+      if (dialogCallback) dialogCallback();
+      closeDialog();
+    }
+  </script>
+</body>
+</html>
