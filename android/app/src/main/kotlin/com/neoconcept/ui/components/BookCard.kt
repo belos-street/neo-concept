@@ -3,6 +3,7 @@ package com.neoconcept.ui.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,13 +36,17 @@ fun BookCard(
     title: String,
     totalLessons: Int,
     completedLessons: Int,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isStarted = completedLessons > 0
     val progress = if (totalLessons == 0) 0f else completedLessons.toFloat() / totalLessons
 
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
         shape = RoundedCornerShape(6.dp),
         colors = CardDefaults.cardColors(containerColor = White),
         border = BorderStroke(2.dp, Black),

@@ -34,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.neoconcept.R
 import com.neoconcept.model.content.IndexedBook
 import com.neoconcept.ui.components.BookCard
+import com.neoconcept.ui.components.ContinueCard
 import com.neoconcept.ui.theme.Black
 import com.neoconcept.ui.theme.White
 
@@ -42,6 +43,8 @@ import com.neoconcept.ui.theme.White
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onSettingsClick: () -> Unit = {},
+    onContinueClick: (ContinueProgress) -> Unit = {},
+    onBookClick: (String) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -63,6 +66,8 @@ fun HomeScreen(
     ) { innerPadding ->
         HomeContent(
             uiState = uiState,
+            onContinueClick = onContinueClick,
+            onBookClick = onBookClick,
             modifier = Modifier.padding(innerPadding),
         )
     }
@@ -104,6 +109,8 @@ private fun HomeTopBar(onSettingsClick: () -> Unit) {
 @Composable
 private fun HomeContent(
     uiState: HomeUiState,
+    onContinueClick: (ContinueProgress) -> Unit,
+    onBookClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -123,6 +130,9 @@ private fun HomeContent(
             is HomeUiState.Success ->
                 BookList(
                     books = uiState.books,
+                    continueProgress = uiState.continueProgress,
+                    onContinueClick = onContinueClick,
+                    onBookClick = onBookClick,
                     modifier = Modifier.fillMaxSize(),
                 )
         }
@@ -132,11 +142,28 @@ private fun HomeContent(
 @Composable
 private fun BookList(
     books: List<IndexedBook>,
+    continueProgress: ContinueProgress?,
+    onContinueClick: (ContinueProgress) -> Unit,
+    onBookClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 20.dp, vertical = 16.dp),
     ) {
+        continueProgress?.let { progress ->
+            item(key = "continue") {
+                ContinueCard(
+                    bookTitle = progress.bookTitle,
+                    lessonTitle = progress.lessonTitle,
+                    stepLabel = progress.stepLabel,
+                    completedLessons = 0,
+                    totalLessons = progress.totalLessons,
+                    onClick = { onContinueClick(progress) },
+                    modifier = Modifier.padding(bottom = 14.dp),
+                )
+            }
+        }
+
         items(
             items = books,
             key = { it.book.id },
@@ -146,6 +173,7 @@ private fun BookList(
                 title = indexedBook.book.title,
                 totalLessons = indexedBook.book.totalLessons,
                 completedLessons = 0,
+                onClick = { onBookClick(indexedBook.book.id) },
                 modifier = Modifier.padding(bottom = 14.dp),
             )
         }
