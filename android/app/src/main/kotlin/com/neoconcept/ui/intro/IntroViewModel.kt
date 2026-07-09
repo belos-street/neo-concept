@@ -6,10 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.neoconcept.data.repository.ContentRepository
 import com.neoconcept.data.repository.ProgressRepository
+import com.neoconcept.di.ApplicationScope
 import com.neoconcept.model.progress.AppProgress
 import com.neoconcept.model.progress.LessonProgress
 import com.neoconcept.model.progress.LessonStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +25,7 @@ class IntroViewModel
         private val savedStateHandle: SavedStateHandle,
         private val contentRepository: ContentRepository,
         private val progressRepository: ProgressRepository,
+        @ApplicationScope private val applicationScope: CoroutineScope,
     ) : ViewModel() {
         private val refPath: String = checkNotNull(savedStateHandle["refPath"])
         private val bookId: String = checkNotNull(savedStateHandle["bookId"])
@@ -49,8 +52,8 @@ class IntroViewModel
             }
         }
 
-        fun startLearning() {
-            viewModelScope.launch {
+        fun startLearning(onSaved: () -> Unit) {
+            applicationScope.launch {
                 progressRepository.saveAppProgress(
                     AppProgress(bookId = bookId, lessonId = lessonId, step = 1),
                 )
@@ -61,6 +64,7 @@ class IntroViewModel
                         lastStep = 1,
                     ),
                 )
+                onSaved()
             }
         }
     }

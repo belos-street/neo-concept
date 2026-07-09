@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import com.neoconcept.model.content.Lesson
 import com.neoconcept.ui.theme.Black
 import com.neoconcept.ui.theme.MutedGray
@@ -95,8 +96,9 @@ fun IntroScreen(
                     IntroContent(
                         lesson = state.lesson,
                         onStartLearning = {
-                            viewModel.startLearning()
-                            onStartLearning()
+                            viewModel.startLearning {
+                                onStartLearning()
+                            }
                         },
                     )
             }
@@ -184,7 +186,9 @@ private fun IntroBanner(banner: com.neoconcept.model.content.Banner) {
                     }
                 }
 
-                else -> {}
+                else -> {
+                    SubcomposeAsyncImageContent()
+                }
             }
         }
     }
