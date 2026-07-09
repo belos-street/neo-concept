@@ -74,6 +74,7 @@ class BookDetailViewModel
                             title = indexedLesson.ref.title,
                             subtitle = indexedLesson.lesson.subtitle,
                             status = progress?.status ?: LessonStatus.NOT_STARTED,
+                            path = indexedLesson.ref.path,
                         )
                     }
                 groups.add(

@@ -9,6 +9,7 @@ data class LessonRow(
     val title: String,
     val subtitle: String,
     val status: LessonStatus,
+    val path: String,
 )
 
 data class LessonGroup(

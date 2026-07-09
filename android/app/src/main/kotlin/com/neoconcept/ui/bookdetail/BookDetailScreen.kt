@@ -3,6 +3,7 @@ package com.neoconcept.ui.bookdetail
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,6 +45,7 @@ import com.neoconcept.ui.theme.White
 fun BookDetailScreen(
     viewModel: BookDetailViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
+    onLessonClick: (String, String) -> Unit = { _, _ -> },
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -74,6 +76,7 @@ fun BookDetailScreen(
                     LessonGroupedList(
                         groups = state.groups,
                         modifier = Modifier.fillMaxSize(),
+                        onLessonClick = onLessonClick,
                     )
             }
         }
@@ -117,6 +120,7 @@ private fun BookDetailTopBar(
 private fun LessonGroupedList(
     groups: List<LessonGroup>,
     modifier: Modifier = Modifier,
+    onLessonClick: (String, String) -> Unit,
 ) {
     LazyColumn(modifier = modifier) {
         groups.forEach { group ->
@@ -125,7 +129,10 @@ private fun LessonGroupedList(
             }
             group.lessons.forEach { lesson ->
                 item(key = lesson.lessonId) {
-                    LessonRowItem(lesson = lesson)
+                    LessonRowItem(
+                        lesson = lesson,
+                        onLessonClick = { onLessonClick(lesson.path, lesson.lessonId) },
+                    )
                 }
                 item(key = "divider_${lesson.lessonId}") {
                     HorizontalDivider(
@@ -157,12 +164,16 @@ private fun GroupHeader(
 }
 
 @Composable
-private fun LessonRowItem(lesson: LessonRow) {
+private fun LessonRowItem(
+    lesson: LessonRow,
+    onLessonClick: () -> Unit,
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier =
             Modifier
                 .fillMaxWidth()
+                .clickable { onLessonClick() }
                 .padding(horizontal = 20.dp, vertical = 16.dp),
     ) {
         Text(
