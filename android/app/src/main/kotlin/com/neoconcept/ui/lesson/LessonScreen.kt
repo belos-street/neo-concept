@@ -157,6 +157,26 @@ private fun StepContent(
     currentStep: Int,
     modifier: Modifier = Modifier,
 ) {
+    if (currentStep == 1) {
+        Step1Content(
+            lesson = lesson,
+            modifier = modifier,
+        )
+    } else {
+        StepPlaceholder(
+            lesson = lesson,
+            currentStep = currentStep,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun StepPlaceholder(
+    lesson: Lesson,
+    currentStep: Int,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier.padding(horizontal = 20.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
