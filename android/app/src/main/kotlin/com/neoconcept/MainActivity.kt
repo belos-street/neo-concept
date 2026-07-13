@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.neoconcept.ui.bookdetail.BookDetailScreen
+import com.neoconcept.ui.completion.CompletionScreen
 import com.neoconcept.ui.home.HomeScreen
 import com.neoconcept.ui.intro.IntroScreen
 import com.neoconcept.ui.lesson.LessonScreen
@@ -79,6 +80,7 @@ private fun AppNavigation() {
             )
         }
         lessonRoute(navController = navController)
+        completionRoute(navController = navController)
     }
 }
 
@@ -94,9 +96,37 @@ private fun NavGraphBuilder.lessonRoute(navController: NavController) {
             ),
     ) { backStackEntry ->
         val bookId = checkNotNull(backStackEntry.arguments?.getString("bookId"))
+        val lessonId = checkNotNull(backStackEntry.arguments?.getString("lessonId"))
         LessonScreen(
             onBackClick = {
                 navController.popBackStack("book/$bookId", inclusive = false)
+            },
+            onComplete = {
+                navController.navigate("completion/$bookId/$lessonId")
+            },
+        )
+    }
+}
+
+private fun NavGraphBuilder.completionRoute(navController: NavController) {
+    composable(
+        route = "completion/{bookId}/{lessonId}",
+        arguments =
+            listOf(
+                navArgument("bookId") { type = NavType.StringType },
+                navArgument("lessonId") { type = NavType.StringType },
+            ),
+    ) { backStackEntry ->
+        val bookId = checkNotNull(backStackEntry.arguments?.getString("bookId"))
+        CompletionScreen(
+            onBackToBook = {
+                navController.popBackStack("book/$bookId", inclusive = false)
+            },
+            onNextLesson = { nextLesson ->
+                val encodedPath = Uri.encode(nextLesson.path)
+                navController.navigate("intro/$bookId/$encodedPath/${nextLesson.id}") {
+                    popUpTo("book/$bookId") { inclusive = false }
+                }
             },
         )
     }

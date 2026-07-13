@@ -54,6 +54,7 @@ private const val TOTAL_STEPS = 6
 fun LessonScreen(
     viewModel: LessonViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
+    onComplete: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -67,7 +68,14 @@ fun LessonScreen(
         bottomBar = {
             LessonBottomBar(
                 uiState = uiState,
-                onNextClick = { viewModel.moveToNextStep() },
+                onNextClick = {
+                    val state = uiState as? LessonUiState.Success
+                    if (state != null && state.currentStep >= TOTAL_STEPS) {
+                        onComplete()
+                    } else {
+                        viewModel.moveToNextStep()
+                    }
+                },
                 onStepClick = { viewModel.goToStep(it) },
             )
         },

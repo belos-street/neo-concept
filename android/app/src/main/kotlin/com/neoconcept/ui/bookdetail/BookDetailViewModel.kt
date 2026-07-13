@@ -30,10 +30,10 @@ class BookDetailViewModel
         val uiState: StateFlow<BookDetailUiState> = _uiState.asStateFlow()
 
         init {
-            loadBookDetail()
+            refresh()
         }
 
-        private fun loadBookDetail() {
+        fun refresh() {
             viewModelScope.launch {
                 contentRepository.buildIndex().fold(
                     onSuccess = { index ->
