@@ -54,7 +54,7 @@ fun Step1Content(
         remember(lesson.vocabulary) {
             lesson.vocabulary.associateBy { it.word.lowercase() }
         }
-    var selectedVocabulary by remember { mutableStateOf<VocabularyItem?>(null) }
+    var selectedWord by remember { mutableStateOf<SelectedWord?>(null) }
 
     Column(
         modifier = modifier.verticalScroll(rememberScrollState()),
@@ -71,12 +71,15 @@ fun Step1Content(
                 Box(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
                     SentenceText(
                         sentence = sentence.text,
-                        vocabularyMap = vocabularyMap,
+                        vocabularyWords = vocabularyMap.keys,
                         onSentenceClick = { text ->
                             Log.d(TAG, "Play TTS: $text")
                         },
                         onWordClick = { word ->
-                            vocabularyMap[word.lowercase()]?.let { selectedVocabulary = it }
+                            selectedWord = SelectedWord(
+                                word = word,
+                                vocabulary = vocabularyMap[word.lowercase()],
+                            )
                         },
                     )
                 }
@@ -99,59 +102,68 @@ fun Step1Content(
         Spacer(modifier = Modifier.height(24.dp))
     }
 
-    selectedVocabulary?.let { vocabulary ->
+    selectedWord?.let { word ->
         VocabularyDialog(
-            vocabulary = vocabulary,
-            onDismiss = { selectedVocabulary = null },
+            selectedWord = word,
+            onDismiss = { selectedWord = null },
         )
     }
 }
+
+private data class SelectedWord(
+    val word: String,
+    val vocabulary: VocabularyItem?,
+)
 
 private data class WordRange(val start: Int, val end: Int, val word: String)
 
 @Composable
 private fun SentenceText(
     sentence: String,
-    vocabularyMap: Map<String, VocabularyItem>,
+    vocabularyWords: Set<String>,
     onSentenceClick: (String) -> Unit,
     onWordClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val annotatedString =
-        remember(sentence, vocabularyMap) {
+        remember(sentence, vocabularyWords) {
             buildAnnotatedString {
-                val tokens =
-                    Regex("[a-zA-Z]+|[^a-zA-Z]+")
-                        .findAll(sentence)
-                        .map { it.value }
-                        .filter { it.isNotEmpty() }
-                        .toList()
-                tokens.forEach { token ->
-                    if (token.matches(Regex("[a-zA-Z]+")) && vocabularyMap.containsKey(token.lowercase())) {
-                        val link =
-                            LinkAnnotation.Clickable(
-                                tag = token,
-                                styles =
-                                    TextLinkStyles(
-                                        style =
-                                            SpanStyle(
-                                                color = SwissRed,
-                                                fontWeight = FontWeight.Bold,
-                                                textDecoration = TextDecoration.Underline,
-                                            ),
-                                    ),
-                                linkInteractionListener = { onWordClick(token) },
-                            )
-                        withLink(link) { append(token) }
-                    } else {
-                        append(token)
+                Regex("[a-zA-Z]+|[^a-zA-Z]+")
+                    .findAll(sentence)
+                    .map { it.value }
+                    .filter { it.isNotEmpty() }
+                    .forEach { token ->
+                        if (token.matches(Regex("[a-zA-Z]+"))) {
+                            val isVocabulary = vocabularyWords.contains(token.lowercase())
+                            val style =
+                                if (isVocabulary) {
+                                    SpanStyle(
+                                        color = SwissRed,
+                                        fontWeight = FontWeight.Bold,
+                                        textDecoration = TextDecoration.Underline,
+                                    )
+                                } else {
+                                    SpanStyle(
+                                        color = Black,
+                                        textDecoration = TextDecoration.Underline,
+                                    )
+                                }
+                            val link =
+                                LinkAnnotation.Clickable(
+                                    tag = token,
+                                    styles = TextLinkStyles(style = style),
+                                    linkInteractionListener = { onWordClick(token) },
+                                )
+                            withLink(link) { append(token) }
+                        } else {
+                            append(token)
+                        }
                     }
-                }
             }
         }
 
     val wordRanges =
-        remember(sentence, vocabularyMap) {
+        remember(sentence, vocabularyWords) {
             val ranges = mutableListOf<WordRange>()
             var index = 0
             Regex("[a-zA-Z]+|[^a-zA-Z]+")
@@ -161,7 +173,7 @@ private fun SentenceText(
                 .forEach { token ->
                     val start = index
                     val end = index + token.length
-                    if (token.matches(Regex("[a-zA-Z]+")) && vocabularyMap.containsKey(token.lowercase())) {
+                    if (token.matches(Regex("[a-zA-Z]+"))) {
                         ranges.add(WordRange(start, end, token))
                     }
                     index = end
@@ -173,20 +185,20 @@ private fun SentenceText(
 
     Box(
         modifier =
-                    modifier
-                        .fillMaxWidth()
-                        .pointerInput(sentence) {
-                            detectTapGestures { offset ->
-                                val layout = textLayoutResult ?: return@detectTapGestures
-                                val textOffset = layout.getOffsetForPosition(offset)
-                                val clickedWord = wordRanges.find { textOffset in it.start until it.end }
-                                if (clickedWord != null) {
-                                    onWordClick(clickedWord.word)
-                                } else {
-                                    onSentenceClick(sentence)
-                                }
-                            }
-                        },
+            modifier
+                .fillMaxWidth()
+                .pointerInput(sentence) {
+                    detectTapGestures { offset ->
+                        val layout = textLayoutResult ?: return@detectTapGestures
+                        val textOffset = layout.getOffsetForPosition(offset)
+                        val clickedWord = wordRanges.find { textOffset in it.start until it.end }
+                        if (clickedWord != null) {
+                            onWordClick(clickedWord.word)
+                        } else {
+                            onSentenceClick(sentence)
+                        }
+                    }
+                },
     ) {
         Text(
             text = annotatedString,
@@ -206,57 +218,46 @@ private fun VocabularySection(
     vocabulary: List<VocabularyItem>,
     modifier: Modifier = Modifier,
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
     Column(modifier = modifier) {
         Text(
             text = "核心词汇",
             style = MaterialTheme.typography.labelLarge,
             color = SwissRed,
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = if (expanded) "点击折叠" else "点击展开",
-            style = MaterialTheme.typography.bodyMedium,
-            color = LockedGray,
-            modifier = Modifier.clickable { expanded = !expanded },
-        )
-        if (expanded) {
-            Spacer(modifier = Modifier.height(12.dp))
-            vocabulary.forEach { item ->
-                Card(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp),
-                    shape = RoundedCornerShape(0.dp),
-                    colors = CardDefaults.cardColors(containerColor = MutedGray),
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = item.word,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Black,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            text = item.phonetic,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = LockedGray,
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = item.translation,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Black,
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "例：${item.example}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = LockedGray,
-                        )
-                    }
+        Spacer(modifier = Modifier.height(12.dp))
+        vocabulary.forEach { item ->
+            Card(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp),
+                shape = RoundedCornerShape(0.dp),
+                colors = CardDefaults.cardColors(containerColor = MutedGray),
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = item.word,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Black,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(
+                        text = item.phonetic,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = LockedGray,
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = item.translation,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Black,
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "例：${item.example}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = LockedGray,
+                    )
                 }
             }
         }
@@ -265,7 +266,7 @@ private fun VocabularySection(
 
 @Composable
 private fun VocabularyDialog(
-    vocabulary: VocabularyItem,
+    selectedWord: SelectedWord,
     onDismiss: () -> Unit,
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -276,40 +277,51 @@ private fun VocabularyDialog(
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
-                    text = vocabulary.word,
+                    text = selectedWord.word,
                     style = MaterialTheme.typography.headlineSmall,
                     color = Black,
                     fontWeight = FontWeight.Bold,
                 )
-                Text(
-                    text = vocabulary.phonetic,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = LockedGray,
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = vocabulary.translation,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Black,
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "例句",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = SwissRed,
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = vocabulary.example,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Black,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "课文原句：${vocabulary.contextSentence}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = LockedGray,
-                )
+
+                selectedWord.vocabulary?.let { vocabulary ->
+                    Text(
+                        text = vocabulary.phonetic,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = LockedGray,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = vocabulary.translation,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Black,
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "例句",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = SwissRed,
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = vocabulary.example,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Black,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "课文原句：${vocabulary.contextSentence}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = LockedGray,
+                    )
+                } ?: run {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "未找到释义",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = LockedGray,
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "关闭",
