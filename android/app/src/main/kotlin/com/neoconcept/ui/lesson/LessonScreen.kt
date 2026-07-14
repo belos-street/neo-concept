@@ -30,8 +30,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +61,7 @@ fun LessonScreen(
     onComplete: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var canProceedToNext by remember { mutableStateOf(true) }
 
     Scaffold(
         topBar = {
@@ -68,6 +73,7 @@ fun LessonScreen(
         bottomBar = {
             LessonBottomBar(
                 uiState = uiState,
+                canProceedToNext = canProceedToNext,
                 onNextClick = {
                     val state = uiState as? LessonUiState.Success
                     if (state != null && state.currentStep >= TOTAL_STEPS) {
@@ -99,12 +105,18 @@ fun LessonScreen(
                         style = MaterialTheme.typography.bodyLarge,
                     )
 
-                is LessonUiState.Success ->
+                is LessonUiState.Success -> {
+                    LaunchedEffect(state.currentStep) {
+                        canProceedToNext = state.currentStep !in setOf(2, 3)
+                    }
                     StepContent(
                         lesson = state.lesson,
                         currentStep = state.currentStep,
+                        onCanProceedChange = { canProceedToNext = it },
+                        onStepComplete = { viewModel.moveToNextStep() },
                         modifier = Modifier.fillMaxSize(),
                     )
+                }
             }
         }
     }
@@ -163,19 +175,35 @@ private fun LessonTopBarTitle(uiState: LessonUiState) {
 private fun StepContent(
     lesson: Lesson,
     currentStep: Int,
+    onCanProceedChange: (Boolean) -> Unit,
+    onStepComplete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (currentStep == 1) {
-        Step1Content(
-            lesson = lesson,
-            modifier = modifier,
-        )
-    } else {
-        StepPlaceholder(
-            lesson = lesson,
-            currentStep = currentStep,
-            modifier = modifier,
-        )
+    when (currentStep) {
+        1 ->
+            Step1Content(
+                lesson = lesson,
+                modifier = modifier,
+            )
+        2 ->
+            Step2Content(
+                lesson = lesson,
+                onCanProceedChange = onCanProceedChange,
+                modifier = modifier,
+            )
+        3 ->
+            Step3Content(
+                lesson = lesson,
+                onCanProceedChange = onCanProceedChange,
+                onStepComplete = onStepComplete,
+                modifier = modifier,
+            )
+        else ->
+            StepPlaceholder(
+                lesson = lesson,
+                currentStep = currentStep,
+                modifier = modifier,
+            )
     }
 }
 
@@ -227,6 +255,7 @@ private fun StepPlaceholder(
 @Composable
 private fun LessonBottomBar(
     uiState: LessonUiState,
+    canProceedToNext: Boolean,
     onNextClick: () -> Unit,
     onStepClick: (Int) -> Unit,
 ) {
@@ -245,6 +274,7 @@ private fun LessonBottomBar(
             Spacer(modifier = Modifier.height(16.dp))
             NextStepButton(
                 currentStep = uiState.currentStep,
+                enabled = canProceedToNext,
                 onClick = onNextClick,
             )
         }
@@ -352,21 +382,25 @@ private fun StepDot(
 @Composable
 private fun NextStepButton(
     currentStep: Int,
+    enabled: Boolean,
     onClick: () -> Unit,
 ) {
     val label = if (currentStep < TOTAL_STEPS) "下一步" else "完成"
     Button(
         onClick = onClick,
+        enabled = enabled,
         modifier =
             Modifier
                 .fillMaxWidth()
                 .height(52.dp),
         colors =
             ButtonDefaults.buttonColors(
-                containerColor = SwissRed,
+                containerColor = if (enabled) SwissRed else LockedGray,
                 contentColor = White,
+                disabledContainerColor = LockedGray,
+                disabledContentColor = White,
             ),
-        border = BorderStroke(2.dp, Black),
+        border = BorderStroke(2.dp, if (enabled) Black else LockedGray),
         shape = MaterialTheme.shapes.extraSmall,
     ) {
         Text(

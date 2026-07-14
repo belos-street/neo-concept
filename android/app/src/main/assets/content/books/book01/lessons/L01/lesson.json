@@ -85,6 +85,24 @@
         "sentence": "Is this your ______? Yes, it is.",
         "answer": "handbag",
         "options": ["handbag", "coat", "watch", "car"]
+      },
+      {
+        "id": "fb3",
+        "sentence": "______? I didn't hear you.",
+        "answer": "Pardon",
+        "options": ["Pardon", "Sorry", "Please", "Hello"]
+      },
+      {
+        "id": "fb4",
+        "sentence": "______, it is.",
+        "answer": "Yes",
+        "options": ["Yes", "No", "Maybe", "Sure"]
+      },
+      {
+        "id": "fb5",
+        "sentence": "______ you very much.",
+        "answer": "Thank",
+        "options": ["Thank", "See", "Give", "Tell"]
       }
     ],
     "spelling": [
