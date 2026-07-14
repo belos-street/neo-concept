@@ -318,9 +318,9 @@
 - 所有题目答对后进入 Step 5。
 
 **完成标准**：
-- [ ] 题目和选项正确渲染。
-- [ ] 选择答案有视觉反馈。
-- [ ] 答错提示重新选择；全对后下一步可用。
+- [x] 题目和选项正确渲染。
+- [x] 选择答案有视觉反馈。
+- [x] 答错提示重新选择；全对后下一步可用。
 
 **手动验证**：
 1. 进入 Step 4，检查题目数量（至少 8–10 题）。
@@ -355,6 +355,34 @@
 - 脚本内容正确。
 - 麦克风按钮状态反馈。
 - 跳过口语后状态正确。
+
+### P5-5 课程 JSON 数据结构验证
+
+**实现内容**：
+- 在 Phase 5 所有练习步骤实现完成后，统一检查 `lesson.json` / `book.json` / `manifest.json` 的数据结构是否满足全部步骤需求。
+- 确认无需再新增或修改字段类型，仅保留内容层面的填充（题目数量、句子文本、选项文案等）。
+- 将最终稳定的 JSON Schema 同步到 [06-data-model.md](06-data-model.md)。
+
+**完成标准**：
+- [ ] Step 2–5 所需的全部字段均已在 `Lesson` 数据类中定义且被使用。
+- [ ] 不存在某个练习步骤依赖未声明字段或临时解析的情况。
+- [ ] `manifest.json` / `book.json` / `lesson.json` 的层级关系无需调整。
+- [ ] 已更新 [06-data-model.md](06-data-model.md) 与当前 JSON 结构一致。
+
+**手动验证**：
+1. 打开 [Lesson.kt](file:///Users/apple/code/personal/neo-concept/android/app/src/main/kotlin/com/neoconcept/model/content/Lesson.kt)，逐字段核对：
+   - `exercises.fillInBlanks` 支持 Step 2。
+   - `exercises.spelling` 支持 Step 3。
+   - `exercises.comprehension.questions` 支持 Step 4。
+   - `exercises.speaking.sentences` 支持 Step 5。
+2. 检查至少一份完整 `lesson.json`（如 L01）能覆盖上述四个练习类型且无解析报错。
+3. 对比 [06-data-model.md](06-data-model.md)，若描述与代码不一致则修正文档。
+
+**验证点**：
+- 所有练习步骤都有对应的数据类字段。
+- JSON 中无冗余字段被代码依赖。
+- 数据模型文档与代码实现一致。
+- 后续新增课程只需复制结构并填充内容，无需改类型。
 
 ---
 

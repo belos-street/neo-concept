@@ -134,6 +134,78 @@
           ],
           "answer": 1,
           "explanation": "原文中没听清时说的是 'Pardon?'。"
+        },
+        {
+          "id": "cq3",
+          "question": "What item is the woman asking about?",
+          "options": [
+            "A coat",
+            "A watch",
+            "A handbag",
+            "A car"
+          ],
+          "answer": 2,
+          "explanation": "对话围绕 handbag 展开。"
+        },
+        {
+          "id": "cq4",
+          "question": "What is the answer to 'Is this your handbag?'",
+          "options": [
+            "No, it isn't.",
+            "Yes, it is.",
+            "I don't know.",
+            "Maybe."
+          ],
+          "answer": 1,
+          "explanation": "原文回答是 'Yes, it is.'。"
+        },
+        {
+          "id": "cq5",
+          "question": "What does the woman say at the end?",
+          "options": [
+            "Goodbye.",
+            "Thank you very much.",
+            "See you.",
+            "You're welcome."
+          ],
+          "answer": 1,
+          "explanation": "原文最后一句是 'Thank you very much.'。"
+        },
+        {
+          "id": "cq6",
+          "question": "Who speaks first in the dialogue?",
+          "options": [
+            "The man",
+            "The woman",
+            "A child",
+            "A teacher"
+          ],
+          "answer": 1,
+          "explanation": "课文以 'Excuse me!' 开头，说话者是女士。"
+        },
+        {
+          "id": "cq7",
+          "question": "What does 'Pardon?' mean in this lesson?",
+          "options": [
+            "Goodbye",
+            "Please say that again",
+            "Thank you",
+            "Yes"
+          ],
+          "answer": 1,
+          "explanation": "Pardon? 表示请对方再说一遍。"
+        },
+        {
+          "id": "cq8",
+          "question": "Which sentence uses 'Excuse me' correctly?",
+          "options": [
+            "Excuse me, where is the station?",
+            "Excuse me, I don't like you.",
+            "Excuse me, goodbye.",
+            "Excuse me, you are wrong."
+          ],
+          "answer": 0,
+          "explanation": "Excuse me 用于礼貌地打扰或询问。"
         }
       ]
     },

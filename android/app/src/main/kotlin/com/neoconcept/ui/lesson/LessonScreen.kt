@@ -107,7 +107,7 @@ fun LessonScreen(
 
                 is LessonUiState.Success -> {
                     LaunchedEffect(state.currentStep) {
-                        canProceedToNext = state.currentStep !in setOf(2, 3)
+                        canProceedToNext = state.currentStep !in setOf(2, 3, 4)
                     }
                     StepContent(
                         lesson = state.lesson,
@@ -193,6 +193,13 @@ private fun StepContent(
             )
         3 ->
             Step3Content(
+                lesson = lesson,
+                onCanProceedChange = onCanProceedChange,
+                onStepComplete = onStepComplete,
+                modifier = modifier,
+            )
+        4 ->
+            Step4Content(
                 lesson = lesson,
                 onCanProceedChange = onCanProceedChange,
                 onStepComplete = onStepComplete,
