@@ -121,7 +121,7 @@
             "Is this your watch?"
           ],
           "answer": 1,
-          "explanation": "原文中男士问的是 'Is this your handbag?'。"
+          "explanation": "句型 'Is this your + 名词？' 用于询问物品归属；handbag 指女士手提包。"
         },
         {
           "id": "cq2",
@@ -133,7 +133,7 @@
             "Repeat?"
           ],
           "answer": 1,
-          "explanation": "原文中没听清时说的是 'Pardon?'。"
+          "explanation": "没听清时可用 'Pardon?' 礼貌地请对方重复，语气比 'What?' 更客气。"
         },
         {
           "id": "cq3",
@@ -145,7 +145,7 @@
             "A car"
           ],
           "answer": 2,
-          "explanation": "对话围绕 handbag 展开。"
+          "explanation": "handbag 由 hand + bag 复合而成，常指女士随身携带的手提包。"
         },
         {
           "id": "cq4",
@@ -157,7 +157,7 @@
             "Maybe."
           ],
           "answer": 1,
-          "explanation": "原文回答是 'Yes, it is.'。"
+          "explanation": "对 'Is this your...?' 的肯定回答用 'Yes, it is.'；此处 it is 不缩写为 it's。"
         },
         {
           "id": "cq5",
@@ -169,7 +169,7 @@
             "You're welcome."
           ],
           "answer": 1,
-          "explanation": "原文最后一句是 'Thank you very much.'。"
+          "explanation": "'Thank you very much.' 是表达感谢的常用句，very much 用来加强感谢的语气。"
         },
         {
           "id": "cq6",
@@ -181,7 +181,7 @@
             "A teacher"
           ],
           "answer": 1,
-          "explanation": "课文以 'Excuse me!' 开头，说话者是女士。"
+          "explanation": "'Excuse me!' 常用于引起陌生人注意或礼貌地打断对方，是本课核心礼貌用语。"
         },
         {
           "id": "cq7",
@@ -193,7 +193,7 @@
             "Yes"
           ],
           "answer": 1,
-          "explanation": "Pardon? 表示请对方再说一遍。"
+          "explanation": "'Pardon?' 作感叹词单独使用，表示 '请再说一遍'，适合没听清时使用。"
         },
         {
           "id": "cq8",
@@ -205,7 +205,7 @@
             "Excuse me, you are wrong."
           ],
           "answer": 0,
-          "explanation": "Excuse me 用于礼貌地打扰或询问。"
+          "explanation": "'Excuse me' 后常接问句，用于礼貌地请求帮助或询问信息，不用于告别或批评。"
         }
       ]
     },

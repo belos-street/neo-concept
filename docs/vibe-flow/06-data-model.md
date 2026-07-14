@@ -157,7 +157,7 @@ data class ComprehensionQuestion(
     val question: String,
     val options: List<String>,        // 4 个选项
     val answer: Int,                  // 正确答案索引
-    val explanation: String           // 解析
+    val explanation: String           // 错题解析：可包含语法点、固定搭配、用法对比或原文依据
 )
 
 @Serializable

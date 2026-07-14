@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,8 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.delay
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,25 +61,23 @@ fun Step4Content(
         answeredCorrectly = false
     }
 
+    LaunchedEffect(answeredCorrectly) {
+        if (!answeredCorrectly) return@LaunchedEffect
+        delay(500)
+        val nextIndex = currentIndex + 1
+        if (nextIndex >= questions.size) {
+            onCanProceedChange(true)
+            onStepComplete()
+        } else {
+            currentIndex = nextIndex
+        }
+    }
+
     fun onOptionClick(index: Int) {
         if (answeredCorrectly) return
         selectedOption = index
         if (index == currentQuestion?.answer) {
             answeredCorrectly = true
-            val nextIndex = currentIndex + 1
-            if (nextIndex >= questions.size) {
-                onCanProceedChange(true)
-            }
-        }
-    }
-
-    fun onNext() {
-        if (!answeredCorrectly) return
-        val nextIndex = currentIndex + 1
-        if (nextIndex >= questions.size) {
-            onStepComplete()
-        } else {
-            currentIndex = nextIndex
         }
     }
 
@@ -104,7 +100,6 @@ fun Step4Content(
                 selectedOption = selectedOption,
                 answeredCorrectly = answeredCorrectly,
                 onOptionClick = ::onOptionClick,
-                onNext = ::onNext,
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
         } ?: run {
@@ -128,7 +123,6 @@ private fun QuestionCard(
     selectedOption: Int,
     answeredCorrectly: Boolean,
     onOptionClick: (Int) -> Unit,
-    onNext: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isWrong = selectedOption != -1 && selectedOption != question.answer && !answeredCorrectly
@@ -168,35 +162,19 @@ private fun QuestionCard(
             }
 
             if (isWrong) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "答错了，请重新选择",
+                    text = "答错了",
                     style = MaterialTheme.typography.bodyMedium,
                     color = WarningOrange,
                     fontWeight = FontWeight.Bold,
                 )
-            }
-
-            if (answeredCorrectly) {
-                Spacer(modifier = Modifier.height(16.dp))
-                val isLast = index == total
-                Button(
-                    onClick = onNext,
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
-                    colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = SwissRed,
-                            contentColor = White,
-                        ),
-                    border = BorderStroke(2.dp, Black),
-                    shape = MaterialTheme.shapes.extraSmall,
-                ) {
-                    Text(
-                        text = if (isLast) "完成" else "下一题",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = question.explanation,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Black,
+                )
             }
         }
     }
