@@ -64,6 +64,25 @@ class LessonViewModel
             saveProgress(nextStep)
         }
 
+        fun skipSpeaking() {
+            val state = _uiState.value as? LessonUiState.Success ?: return
+            val nextStep = TOTAL_STEPS
+            if (nextStep == state.currentStep) return
+            _uiState.value = state.copy(currentStep = nextStep)
+            applicationScope.launch {
+                progressRepository.saveAppProgress(
+                    AppProgress(bookId = bookId, lessonId = lessonId, step = nextStep),
+                )
+                progressRepository.saveLessonProgress(
+                    LessonProgress(
+                        lessonId = lessonId,
+                        status = LessonStatus.SPEAKING_PENDING,
+                        lastStep = nextStep,
+                    ),
+                )
+            }
+        }
+
         fun goToStep(step: Int) {
             val state = _uiState.value as? LessonUiState.Success ?: return
             val target = step.coerceIn(1, TOTAL_STEPS)

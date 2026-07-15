@@ -107,13 +107,14 @@ fun LessonScreen(
 
                 is LessonUiState.Success -> {
                     LaunchedEffect(state.currentStep) {
-                        canProceedToNext = state.currentStep !in setOf(2, 3, 4)
+                        canProceedToNext = state.currentStep !in setOf(2, 3, 4, 5)
                     }
                     StepContent(
                         lesson = state.lesson,
                         currentStep = state.currentStep,
                         onCanProceedChange = { canProceedToNext = it },
                         onStepComplete = { viewModel.moveToNextStep() },
+                        onSkipSpeaking = { viewModel.skipSpeaking() },
                         modifier = Modifier.fillMaxSize(),
                     )
                 }
@@ -177,6 +178,7 @@ private fun StepContent(
     currentStep: Int,
     onCanProceedChange: (Boolean) -> Unit,
     onStepComplete: () -> Unit,
+    onSkipSpeaking: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (currentStep) {
@@ -203,6 +205,13 @@ private fun StepContent(
                 lesson = lesson,
                 onCanProceedChange = onCanProceedChange,
                 onStepComplete = onStepComplete,
+                modifier = modifier,
+            )
+        5 ->
+            Step5Content(
+                lesson = lesson,
+                onCanProceedChange = onCanProceedChange,
+                onSkipSpeaking = onSkipSpeaking,
                 modifier = modifier,
             )
         else ->

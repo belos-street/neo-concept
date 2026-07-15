@@ -45,7 +45,8 @@ class CompletionViewModel
                             return@fold
                         }
 
-                        markLessonCompleted()
+                        val existingProgress = progressRepository.loadLessonProgress(bookId).find { it.lessonId == lessonId }
+                        markLessonCompleted(existingProgress?.status)
 
                         val nextLesson = findNextLesson(indexedBook.lessons, lessonId)
                         _uiState.value =
@@ -72,11 +73,12 @@ class CompletionViewModel
             return if (nextIndex in lessons.indices) lessons[nextIndex].ref else null
         }
 
-        private suspend fun markLessonCompleted() {
+        private suspend fun markLessonCompleted(existingStatus: LessonStatus?) {
+            val status = if (existingStatus == LessonStatus.SPEAKING_PENDING) LessonStatus.SPEAKING_PENDING else LessonStatus.COMPLETED
             progressRepository.saveLessonProgress(
                 LessonProgress(
                     lessonId = lessonId,
-                    status = LessonStatus.COMPLETED,
+                    status = status,
                     lastStep = TOTAL_STEPS,
                 ),
             )
